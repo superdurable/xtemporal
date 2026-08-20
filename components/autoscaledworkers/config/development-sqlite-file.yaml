@@ -144,7 +144,7 @@ namespaceDefaults:
       URI: "file:///tmp/temporal_vis_archival/development"
 
 publicClient:
-    hostPort: "127.0.0.1:7233"
+  hostPort: "127.0.0.1:7233"
 
 dynamicConfigClient:
   filepath: "config/dynamicconfig/development-sql.yaml"
