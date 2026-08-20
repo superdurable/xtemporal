@@ -8,4 +8,4 @@ if [[ -n "$container_ids" ]]; then
 fi
 docker network prune --force >/dev/null
 docker volume prune --force >/dev/null
-rm -rf /home/runner/go/pkg/mod /home/runner/.cache/go-build
+rm -rf /home/runner/go/pkg/mod /home/runner/.cache/go-build 2>/dev/null || true
