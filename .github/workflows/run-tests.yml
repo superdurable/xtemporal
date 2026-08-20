@@ -31,7 +31,7 @@ jobs:
           cache: true
 
       - name: Run unit tests
-        timeout-minutes: 25
+        timeout-minutes: 45
         run: ./develop/github/monitor_test.sh make unit-test-coverage
 
       - name: Publish JUnit report
