@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/temporal-server/common/log"
 	"github.com/uber-go/tally/v4"
-	"go.temporal.io/server/common/log"
 )
 
 type prefixRecordingHandler struct {

@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/gocql/gocql"
-	"go.temporal.io/server/common/config"
+	"github.com/superdurable/temporal-server/common/config"
 )
 
 var (

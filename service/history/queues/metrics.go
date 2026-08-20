@@ -3,9 +3,9 @@ package queues
 import (
 	"fmt"
 
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 // TODO: task type tag value should be generated from enums.TaskType,

@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/superdurable/temporal-server/common/headers"
+	"github.com/superdurable/temporal-server/common/log"
+	dbschemas "github.com/superdurable/temporal-server/schema"
+	"github.com/superdurable/temporal-server/temporal/environment"
+	"github.com/superdurable/temporal-server/tools/common/schema"
 	"github.com/urfave/cli"
-	"go.temporal.io/server/common/headers"
-	"go.temporal.io/server/common/log"
-	dbschemas "go.temporal.io/server/schema"
-	"go.temporal.io/server/temporal/environment"
-	"go.temporal.io/server/tools/common/schema"
 )
 
 // RunTool runs the temporal-cassandra-tool command line tool

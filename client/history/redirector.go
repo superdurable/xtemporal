@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/convert"
-	"go.temporal.io/server/common/membership"
-	serviceerrors "go.temporal.io/server/common/serviceerror"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/convert"
+	"github.com/superdurable/temporal-server/common/membership"
+	serviceerrors "github.com/superdurable/temporal-server/common/serviceerror"
 )
 
 type (

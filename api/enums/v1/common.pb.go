@@ -235,7 +235,7 @@ const file_temporal_server_api_enums_v1_common_proto_rawDesc = "" +
 	"\x18CALLBACK_STATE_SCHEDULED\x10\x02\x12\x1e\n" +
 	"\x1aCALLBACK_STATE_BACKING_OFF\x10\x03\x12\x19\n" +
 	"\x15CALLBACK_STATE_FAILED\x10\x04\x12\x1c\n" +
-	"\x18CALLBACK_STATE_SUCCEEDED\x10\x05B*Z(go.temporal.io/server/api/enums/v1;enumsb\x06proto3"
+	"\x18CALLBACK_STATE_SUCCEEDED\x10\x05B<Z:github.com/superdurable/temporal-server/api/enums/v1;enumsb\x06proto3"
 
 var (
 	file_temporal_server_api_enums_v1_common_proto_rawDescOnce sync.Once

@@ -1,7 +1,7 @@
 package chasm
 
 import (
-	"go.temporal.io/server/common/nexus/nexusrpc"
+	"github.com/superdurable/temporal-server/common/nexus/nexusrpc"
 )
 
 // MSPointer is a special CHASM type which components can use to access their Node's underlying backend (i.e. mutable

@@ -1,8 +1,8 @@
 package archival
 
 import (
-	"go.temporal.io/server/common/quotas"
-	"go.temporal.io/server/service/history/configs"
+	"github.com/superdurable/temporal-server/common/quotas"
+	"github.com/superdurable/temporal-server/service/history/configs"
 	"go.uber.org/fx"
 )
 

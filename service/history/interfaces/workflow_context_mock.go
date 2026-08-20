@@ -13,11 +13,11 @@ import (
 	context "context"
 	reflect "reflect"
 
-	persistence "go.temporal.io/server/api/persistence/v1"
-	definition "go.temporal.io/server/common/definition"
-	locks "go.temporal.io/server/common/locks"
-	persistence0 "go.temporal.io/server/common/persistence"
-	update "go.temporal.io/server/service/history/workflow/update"
+	persistence "github.com/superdurable/temporal-server/api/persistence/v1"
+	definition "github.com/superdurable/temporal-server/common/definition"
+	locks "github.com/superdurable/temporal-server/common/locks"
+	persistence0 "github.com/superdurable/temporal-server/common/persistence"
+	update "github.com/superdurable/temporal-server/service/history/workflow/update"
 	gomock "go.uber.org/mock/gomock"
 )
 

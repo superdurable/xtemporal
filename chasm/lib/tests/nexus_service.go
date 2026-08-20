@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
-	"go.temporal.io/server/chasm"
+	"github.com/superdurable/temporal-server/chasm"
 )
 
 var TestOperation = nexus.NewSyncOperation("TestOperation", func(ctx context.Context, input string, options nexus.StartOperationOptions) (string, error) {

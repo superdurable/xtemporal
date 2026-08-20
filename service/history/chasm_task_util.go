@@ -4,15 +4,15 @@ import (
 	"context"
 	"errors"
 
-	enumsspb "go.temporal.io/server/api/enums/v1"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/client"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/service/history/consts"
-	historyi "go.temporal.io/server/service/history/interfaces"
-	"go.temporal.io/server/service/history/tasks"
+	enumsspb "github.com/superdurable/temporal-server/api/enums/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/client"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/service/history/consts"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 // validateChasmSideEffectTask completes validation of a CHASM side effect task

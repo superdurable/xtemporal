@@ -14,10 +14,10 @@ import (
 	reflect "reflect"
 	time "time"
 
-	enums "go.temporal.io/server/api/enums/v1"
-	backoff "go.temporal.io/server/common/backoff"
-	tasks "go.temporal.io/server/common/tasks"
-	tasks0 "go.temporal.io/server/service/history/tasks"
+	enums "github.com/superdurable/temporal-server/api/enums/v1"
+	backoff "github.com/superdurable/temporal-server/common/backoff"
+	tasks "github.com/superdurable/temporal-server/common/tasks"
+	tasks0 "github.com/superdurable/temporal-server/service/history/tasks"
 	gomock "go.uber.org/mock/gomock"
 )
 

@@ -178,7 +178,7 @@ from that Span itself and the currently active Span can be received from the `co
 // DoFoo is a function in the common package
 func DoFoo(ctx context.Context, x int, y string) string {
    var span trace.Span
-   ctx, span = trace.SpanFromContext(ctx).TracerProvider().Tracer("go.temporal.io/server/common").Start("DoFoo")
+   ctx, span = trace.SpanFromContext(ctx).TracerProvider().Tracer("github.com/superdurable/temporal-server/common").Start("DoFoo")
    defer span.End()
    return fmt.Sprintf("%v-%v", y, x)
 }

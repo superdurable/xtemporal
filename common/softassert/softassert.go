@@ -12,8 +12,8 @@
 package softassert
 
 import (
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
 )
 
 // That performs a soft assertion by logging an error if the given condition is false.

@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/codec"
 	historypb "go.temporal.io/api/history/v1"
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/codec"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

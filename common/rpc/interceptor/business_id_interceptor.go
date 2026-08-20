@@ -3,9 +3,9 @@ package interceptor
 import (
 	"context"
 
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/namespace"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/namespace"
 	"google.golang.org/grpc"
 )
 

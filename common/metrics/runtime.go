@@ -5,9 +5,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/server/common/build"
-	"go.temporal.io/server/common/headers"
-	"go.temporal.io/server/common/log"
+	"github.com/superdurable/temporal-server/common/build"
+	"github.com/superdurable/temporal-server/common/headers"
+	"github.com/superdurable/temporal-server/common/log"
 )
 
 const (

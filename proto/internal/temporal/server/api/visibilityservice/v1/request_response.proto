@@ -7,7 +7,7 @@ package temporal.server.api.visibilityservice.v1;
 import "temporal/api/common/v1/message.proto";
 import "temporal/server/api/chasm/v1/message.proto";
 
-option go_package = "go.temporal.io/server/api/visibilityservice/v1;visibilityservice";
+option go_package = "github.com/superdurable/temporal-server/api/visibilityservice/v1;visibilityservice";
 
 message ListChasmExecutionsRequest {
   // (-- api-linter: core::0141::forbidden-types=disabled --)

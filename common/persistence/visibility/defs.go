@@ -1,10 +1,10 @@
 package visibility
 
 import (
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin/mysql"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin/postgresql"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin/sqlite"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/mysql"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/postgresql"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/sqlite"
 )
 
 const (

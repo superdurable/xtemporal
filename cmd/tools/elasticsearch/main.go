@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"go.temporal.io/server/tools/elasticsearch"
+	"github.com/superdurable/temporal-server/tools/elasticsearch"
 )
 
 func main() {

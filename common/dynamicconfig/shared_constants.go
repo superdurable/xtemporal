@@ -3,7 +3,7 @@ package dynamicconfig
 import (
 	"time"
 
-	"go.temporal.io/server/common/primitives"
+	"github.com/superdurable/temporal-server/common/primitives"
 )
 
 const GlobalDefaultNumTaskQueuePartitions = 4

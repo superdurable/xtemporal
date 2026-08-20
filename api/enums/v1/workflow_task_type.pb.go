@@ -97,7 +97,7 @@ const file_temporal_server_api_enums_v1_workflow_task_type_proto_rawDesc = "" +
 	"\x1eWORKFLOW_TASK_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19WORKFLOW_TASK_TYPE_NORMAL\x10\x01\x12 \n" +
 	"\x1cWORKFLOW_TASK_TYPE_TRANSIENT\x10\x02\x12\"\n" +
-	"\x1eWORKFLOW_TASK_TYPE_SPECULATIVE\x10\x03B*Z(go.temporal.io/server/api/enums/v1;enumsb\x06proto3"
+	"\x1eWORKFLOW_TASK_TYPE_SPECULATIVE\x10\x03B<Z:github.com/superdurable/temporal-server/api/enums/v1;enumsb\x06proto3"
 
 var (
 	file_temporal_server_api_enums_v1_workflow_task_type_proto_rawDescOnce sync.Once

@@ -1,10 +1,10 @@
 package configs
 
 import (
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/retrypolicy"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/retrypolicy"
 )
 
 // Config represents configuration for history service
@@ -629,7 +629,7 @@ func NewConfig(
 		ShardSyncTimerJitterCoefficient:  dynamicconfig.TransferProcessorMaxPollIntervalJitterCoefficient.Get(dc),
 
 		// history client: client/history/client.go set the client timeout 30s
-		// TODO: Return this value to the client: go.temporal.io/server/issues/294
+		// TODO: Return this value to the client: github.com/superdurable/temporal-server/issues/294
 		LongPollExpirationInterval:          dynamicconfig.HistoryLongPollExpirationInterval.Get(dc),
 		EnableParentClosePolicy:             dynamicconfig.EnableParentClosePolicy.Get(dc),
 		NumParentClosePolicySystemWorkflows: dynamicconfig.NumParentClosePolicySystemWorkflows.Get(dc),

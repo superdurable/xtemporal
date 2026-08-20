@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin"
-	"go.temporal.io/server/common/softassert"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin"
+	"github.com/superdurable/temporal-server/common/softassert"
 )
 
 const (

@@ -12,11 +12,11 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	v1 "github.com/superdurable/temporal-server/api/clock/v1"
+	v12 "github.com/superdurable/temporal-server/api/deployment/v1"
+	v14 "github.com/superdurable/temporal-server/api/enums/v1"
 	v13 "go.temporal.io/api/deployment/v1"
 	v11 "go.temporal.io/api/taskqueue/v1"
-	v1 "go.temporal.io/server/api/clock/v1"
-	v12 "go.temporal.io/server/api/deployment/v1"
-	v14 "go.temporal.io/server/api/enums/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -821,7 +821,7 @@ const file_temporal_server_api_persistence_v1_task_queues_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\v29.temporal.server.api.persistence.v1.TaskQueueTypeUserDataR\x05value:\x028\x01\"\x81\x01\n" +
 	"\x1aVersionedTaskQueueUserData\x12I\n" +
 	"\x04data\x18\x01 \x01(\v25.temporal.server.api.persistence.v1.TaskQueueUserDataR\x04data\x12\x18\n" +
-	"\aversion\x18\x02 \x01(\x03R\aversionB6Z4go.temporal.io/server/api/persistence/v1;persistenceb\x06proto3"
+	"\aversion\x18\x02 \x01(\x03R\aversionBHZFgithub.com/superdurable/temporal-server/api/persistence/v1;persistenceb\x06proto3"
 
 var (
 	file_temporal_server_api_persistence_v1_task_queues_proto_rawDescOnce sync.Once

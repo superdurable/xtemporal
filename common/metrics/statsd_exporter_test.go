@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/log"
+	"github.com/superdurable/temporal-server/common/log"
 )
 
 func TestStatsdExporter(t *testing.T) {

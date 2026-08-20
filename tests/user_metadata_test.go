@@ -5,12 +5,12 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/superdurable/temporal-server/common/testing/parallelsuite"
+	"github.com/superdurable/temporal-server/tests/testcore"
 	commonpb "go.temporal.io/api/common/v1"
 	sdkpb "go.temporal.io/api/sdk/v1"
 	updatepb "go.temporal.io/api/update/v1"
 	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/server/common/testing/parallelsuite"
-	"go.temporal.io/server/tests/testcore"
 )
 
 type UserMetadataSuite struct {

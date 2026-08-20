@@ -13,9 +13,9 @@ import (
 	context "context"
 	reflect "reflect"
 
-	namespace "go.temporal.io/server/common/namespace"
-	pingable "go.temporal.io/server/common/pingable"
-	interfaces "go.temporal.io/server/service/history/interfaces"
+	namespace "github.com/superdurable/temporal-server/common/namespace"
+	pingable "github.com/superdurable/temporal-server/common/pingable"
+	interfaces "github.com/superdurable/temporal-server/service/history/interfaces"
 	gomock "go.uber.org/mock/gomock"
 )
 

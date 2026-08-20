@@ -8,12 +8,12 @@ import (
 	"reflect"
 	"regexp"
 
+	"github.com/superdurable/temporal-server/api/adminservice/v1"
+	"github.com/superdurable/temporal-server/api/historyservice/v1"
+	"github.com/superdurable/temporal-server/api/matchingservice/v1"
+	"github.com/superdurable/temporal-server/cmd/tools/codegen"
 	commonpb "go.temporal.io/api/common/v1"
 	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/server/api/adminservice/v1"
-	"go.temporal.io/server/api/historyservice/v1"
-	"go.temporal.io/server/api/matchingservice/v1"
-	"go.temporal.io/server/cmd/tools/codegen"
 )
 
 const maxMessageDepth = 5

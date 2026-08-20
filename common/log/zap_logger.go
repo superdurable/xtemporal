@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"go.temporal.io/server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/log/tag"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

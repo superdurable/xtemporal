@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
-	"go.temporal.io/server/common/convert"
-	"go.temporal.io/server/common/goro"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/membership"
-	"go.temporal.io/server/common/metrics"
-	serviceerrors "go.temporal.io/server/common/serviceerror"
-	"go.temporal.io/server/service/history/configs"
+	"github.com/superdurable/temporal-server/common/convert"
+	"github.com/superdurable/temporal-server/common/goro"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/membership"
+	"github.com/superdurable/temporal-server/common/metrics"
+	serviceerrors "github.com/superdurable/temporal-server/common/serviceerror"
+	"github.com/superdurable/temporal-server/service/history/configs"
 )
 
 const (

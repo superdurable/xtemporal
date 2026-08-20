@@ -4,10 +4,10 @@ import (
 	"math/rand"
 	"sync"
 
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/testing/testhooks"
-	"go.temporal.io/server/common/tqid"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/testing/testhooks"
+	"github.com/superdurable/temporal-server/common/tqid"
 )
 
 type (

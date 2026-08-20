@@ -8,17 +8,17 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/api/matchingservice/v1"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	commonnexus "github.com/superdurable/temporal-server/common/nexus"
+	p "github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/tests/testcore"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	nexuspb "go.temporal.io/api/nexus/v1"
 	"go.temporal.io/api/operatorservice/v1"
 	"go.temporal.io/api/serviceerror"
 	taskqueuepb "go.temporal.io/api/taskqueue/v1"
-	"go.temporal.io/server/api/matchingservice/v1"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	commonnexus "go.temporal.io/server/common/nexus"
-	p "go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/tests/testcore"
 )
 
 func TestNexusEndpointsFunctionalSuite(t *testing.T) {

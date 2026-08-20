@@ -96,7 +96,7 @@ const file_temporal_server_api_enums_v1_fairness_state_proto_rawDesc = "" +
 	"\x1aFAIRNESS_STATE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11FAIRNESS_STATE_V0\x10\x01\x12\x15\n" +
 	"\x11FAIRNESS_STATE_V1\x10\x02\x12\x15\n" +
-	"\x11FAIRNESS_STATE_V2\x10\x03B*Z(go.temporal.io/server/api/enums/v1;enumsb\x06proto3"
+	"\x11FAIRNESS_STATE_V2\x10\x03B<Z:github.com/superdurable/temporal-server/api/enums/v1;enumsb\x06proto3"
 
 var (
 	file_temporal_server_api_enums_v1_fairness_state_proto_rawDescOnce sync.Once

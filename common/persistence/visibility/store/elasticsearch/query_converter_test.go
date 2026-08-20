@@ -7,9 +7,9 @@ import (
 
 	"github.com/olivere/elastic/v7"
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/store/query"
 	"github.com/temporalio/sqlparser"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/common/persistence/visibility/store/query"
 )
 
 func TestQueryConverter_GetDatetimeFormat(t *testing.T) {

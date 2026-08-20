@@ -10,7 +10,7 @@ import (
 	reflect "reflect"
 	unsafe "unsafe"
 
-	_ "go.temporal.io/server/api/common/v1"
+	_ "github.com/superdurable/temporal-server/api/common/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -75,7 +75,7 @@ const file_temporal_server_api_adminservice_v1_service_proto_rawDesc = "" +
 	"#GenerateLastHistoryReplicationTasks\x12O.temporal.server.api.adminservice.v1.GenerateLastHistoryReplicationTasksRequest\x1aP.temporal.server.api.adminservice.v1.GenerateLastHistoryReplicationTasksResponse\"\x06\x8a\xb5\x18\x02\b\x03\x12\xb5\x01\n" +
 	"\x1aDescribeTaskQueuePartition\x12F.temporal.server.api.adminservice.v1.DescribeTaskQueuePartitionRequest\x1aG.temporal.server.api.adminservice.v1.DescribeTaskQueuePartitionResponse\"\x06\x8a\xb5\x18\x02\b\x03\x12\xbe\x01\n" +
 	"\x1dForceUnloadTaskQueuePartition\x12I.temporal.server.api.adminservice.v1.ForceUnloadTaskQueuePartitionRequest\x1aJ.temporal.server.api.adminservice.v1.ForceUnloadTaskQueuePartitionResponse\"\x06\x8a\xb5\x18\x02\b\x03\x12\x94\x01\n" +
-	"\x0fMigrateSchedule\x12;.temporal.server.api.adminservice.v1.MigrateScheduleRequest\x1a<.temporal.server.api.adminservice.v1.MigrateScheduleResponse\"\x06\x8a\xb5\x18\x02\b\x03B8Z6go.temporal.io/server/api/adminservice/v1;adminserviceb\x06proto3"
+	"\x0fMigrateSchedule\x12;.temporal.server.api.adminservice.v1.MigrateScheduleRequest\x1a<.temporal.server.api.adminservice.v1.MigrateScheduleResponse\"\x06\x8a\xb5\x18\x02\b\x03BJZHgithub.com/superdurable/temporal-server/api/adminservice/v1;adminserviceb\x06proto3"
 
 var file_temporal_server_api_adminservice_v1_service_proto_goTypes = []any{
 	(*RebuildMutableStateRequest)(nil),                  // 0: temporal.server.api.adminservice.v1.RebuildMutableStateRequest

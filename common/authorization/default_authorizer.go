@@ -3,8 +3,8 @@ package authorization
 import (
 	"context"
 
+	"github.com/superdurable/temporal-server/common/api"
 	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/server/common/api"
 )
 
 type (

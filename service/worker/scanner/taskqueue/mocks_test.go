@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	p "go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/common/primitives/timestamp"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	p "github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/common/primitives/timestamp"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

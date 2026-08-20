@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/common/testing/nettest"
+	"github.com/superdurable/temporal-server/common/testing/nettest"
 )
 
 func TestPipe_Accept(t *testing.T) {

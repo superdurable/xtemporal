@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	historyspb "github.com/superdurable/temporal-server/api/history/v1"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/log"
 	"go.temporal.io/api/serviceerror"
-	historyspb "go.temporal.io/server/api/history/v1"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/log"
 )
 
 func TestWorkflowRebuilderImpl_RebuildableCheck(t *testing.T) {

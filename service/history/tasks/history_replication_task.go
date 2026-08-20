@@ -3,8 +3,8 @@ package tasks
 import (
 	"time"
 
-	enumsspb "go.temporal.io/server/api/enums/v1"
-	"go.temporal.io/server/common/definition"
+	enumsspb "github.com/superdurable/temporal-server/api/enums/v1"
+	"github.com/superdurable/temporal-server/common/definition"
 )
 
 var _ Task = (*HistoryReplicationTask)(nil)

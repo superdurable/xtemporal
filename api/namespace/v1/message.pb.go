@@ -87,7 +87,7 @@ const file_temporal_server_api_namespace_v1_message_proto_rawDesc = "" +
 	".temporal/server/api/namespace/v1/message.proto\x12 temporal.server.api.namespace.v1\"\x8e\x01\n" +
 	"\x12NamespaceCacheInfo\x129\n" +
 	"\x1aitems_in_cache_by_id_count\x18\x01 \x01(\x03R\x15itemsInCacheByIdCount\x12=\n" +
-	"\x1citems_in_cache_by_name_count\x18\x02 \x01(\x03R\x17itemsInCacheByNameCountB2Z0go.temporal.io/server/api/namespace/v1;namespaceb\x06proto3"
+	"\x1citems_in_cache_by_name_count\x18\x02 \x01(\x03R\x17itemsInCacheByNameCountBDZBgithub.com/superdurable/temporal-server/api/namespace/v1;namespaceb\x06proto3"
 
 var (
 	file_temporal_server_api_namespace_v1_message_proto_rawDescOnce sync.Once

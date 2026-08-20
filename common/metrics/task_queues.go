@@ -3,7 +3,7 @@ package metrics
 import (
 	"strconv"
 
-	"go.temporal.io/server/common/tqid"
+	"github.com/superdurable/temporal-server/common/tqid"
 )
 
 const (

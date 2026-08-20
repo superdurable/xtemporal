@@ -3,8 +3,8 @@ package chasm
 import (
 	"encoding/base64"
 
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
 	commonpb "go.temporal.io/api/common/v1"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
 )
 
 // NexusCompletionHandlerURL is the user-visible URL for Nexus->CHASM callbacks.

@@ -169,7 +169,7 @@ const file_temporal_server_api_chasm_v1_message_proto_rawDesc = "" +
 	"\x04memo\x18\n" +
 	" \x01(\v2\x1c.temporal.api.common.v1.MemoR\x04memo\x12>\n" +
 	"\n" +
-	"chasm_memo\x18\v \x01(\v2\x1f.temporal.api.common.v1.PayloadR\tchasmMemoB*Z(go.temporal.io/server/api/chasm/v1;chasmb\x06proto3"
+	"chasm_memo\x18\v \x01(\v2\x1f.temporal.api.common.v1.PayloadR\tchasmMemoB<Z:github.com/superdurable/temporal-server/api/chasm/v1;chasmb\x06proto3"
 
 var (
 	file_temporal_server_api_chasm_v1_message_proto_rawDescOnce sync.Once

@@ -5,12 +5,12 @@ import (
 	"net"
 	"net/url"
 
+	"github.com/superdurable/temporal-server/common/auth"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/tools/common/schema"
 	"github.com/urfave/cli"
-	"go.temporal.io/server/common/auth"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/tools/common/schema"
 )
 
 // setupSchema executes the setupSchemaTask

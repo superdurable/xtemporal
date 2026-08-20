@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/emirpasic/gods/maps/treemap"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	taskqueuespb "go.temporal.io/server/api/taskqueue/v1"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	taskqueuespb "github.com/superdurable/temporal-server/api/taskqueue/v1"
 )
 
 // fairLevel is a pair of "pass" and "id". Pass is a number that can be assigned to cause

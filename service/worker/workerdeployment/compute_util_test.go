@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	wciiface "github.com/superdurable/temporal-server/components/autoscaledworkers/wci/workflow/iface"
 	computepb "go.temporal.io/api/compute/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	wciiface "go.temporal.io/auto-scaled-workers/wci/workflow/iface"
 )
 
 func TestComputeConfigScalingGroupsToWCISpec_EmptyGroups(t *testing.T) {

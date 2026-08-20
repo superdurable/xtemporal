@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/tools/tdbg"
+	"github.com/superdurable/temporal-server/tools/tdbg"
 )
 
 // testFlagLookup helps to test the behaviour of the command line flags.

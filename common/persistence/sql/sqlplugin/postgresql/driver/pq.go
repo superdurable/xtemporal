@@ -6,7 +6,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin"
 )
 
 type PQDriver struct{}

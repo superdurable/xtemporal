@@ -3,9 +3,9 @@ package protoassert_test
 import (
 	"testing"
 
+	"github.com/superdurable/temporal-server/common/testing/protoassert"
 	commonpb "go.temporal.io/api/common/v1"
 	workflowpb "go.temporal.io/api/workflow/v1"
-	"go.temporal.io/server/common/testing/protoassert"
 )
 
 const myUUID = "deb7b204-b384-4fde-85c6-e5a56c42336a"

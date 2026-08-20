@@ -285,7 +285,7 @@ const file_temporal_server_api_enums_v1_replication_proto_rawDesc = "" +
 	"\x1dReplicationFlowControlCommand\x120\n" +
 	",REPLICATION_FLOW_CONTROL_COMMAND_UNSPECIFIED\x10\x00\x12+\n" +
 	"'REPLICATION_FLOW_CONTROL_COMMAND_RESUME\x10\x01\x12*\n" +
-	"&REPLICATION_FLOW_CONTROL_COMMAND_PAUSE\x10\x02B*Z(go.temporal.io/server/api/enums/v1;enumsb\x06proto3"
+	"&REPLICATION_FLOW_CONTROL_COMMAND_PAUSE\x10\x02B<Z:github.com/superdurable/temporal-server/api/enums/v1;enumsb\x06proto3"
 
 var (
 	file_temporal_server_api_enums_v1_replication_proto_rawDescOnce sync.Once

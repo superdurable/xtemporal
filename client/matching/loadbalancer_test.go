@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/superdurable/temporal-server/common/tqid"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/common/tqid"
 )
 
 func TestTQLoadBalancerMapping(t *testing.T) {

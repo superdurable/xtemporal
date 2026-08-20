@@ -5,7 +5,7 @@ package temporal.server.api.historyservice.v1;
 import "temporal/server/api/common/v1/api_category.proto";
 import "temporal/server/api/historyservice/v1/request_response.proto";
 
-option go_package = "go.temporal.io/server/api/historyservice/v1;historyservice";
+option go_package = "github.com/superdurable/temporal-server/api/historyservice/v1;historyservice";
 
 // HistoryService provides API to start a new long running workflow instance, as well as query and update the history
 // of workflow instances already created.

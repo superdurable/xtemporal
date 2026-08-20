@@ -5,16 +5,16 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/metrics"
-	persistencetests "go.temporal.io/server/common/persistence/persistence-tests"
-	"go.temporal.io/server/common/persistence/serialization"
-	"go.temporal.io/server/common/persistence/sql"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin"
-	_ "go.temporal.io/server/common/persistence/sql/sqlplugin/postgresql" // register plugins
-	sqltests "go.temporal.io/server/common/persistence/sql/sqlplugin/tests"
-	"go.temporal.io/server/common/resolver"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/metrics"
+	persistencetests "github.com/superdurable/temporal-server/common/persistence/persistence-tests"
+	"github.com/superdurable/temporal-server/common/persistence/serialization"
+	"github.com/superdurable/temporal-server/common/persistence/sql"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin"
+	_ "github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/postgresql" // register plugins
+	sqltests "github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/tests"
+	"github.com/superdurable/temporal-server/common/resolver"
 )
 
 type PostgreSQLSuite struct {

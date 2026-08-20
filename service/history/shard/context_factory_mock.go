@@ -12,7 +12,7 @@ package shard
 import (
 	reflect "reflect"
 
-	interfaces "go.temporal.io/server/service/history/interfaces"
+	interfaces "github.com/superdurable/temporal-server/service/history/interfaces"
 	gomock "go.uber.org/mock/gomock"
 )
 

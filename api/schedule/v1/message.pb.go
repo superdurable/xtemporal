@@ -1141,7 +1141,7 @@ const file_temporal_server_api_schedule_v1_message_proto_rawDesc = "" +
 	"\n" +
 	"next_times\x18\x03 \x03(\x03R\tnextTimes\x12#\n" +
 	"\rnominal_times\x18\x04 \x03(\x03R\fnominalTimes\x12\x1c\n" +
-	"\tcompleted\x18\x05 \x01(\bR\tcompletedB0Z.go.temporal.io/server/api/schedule/v1;scheduleb\x06proto3"
+	"\tcompleted\x18\x05 \x01(\bR\tcompletedBBZ@github.com/superdurable/temporal-server/api/schedule/v1;scheduleb\x06proto3"
 
 var (
 	file_temporal_server_api_schedule_v1_message_proto_rawDescOnce sync.Once

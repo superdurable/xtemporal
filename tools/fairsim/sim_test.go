@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/service/matching/counter"
+	"github.com/superdurable/temporal-server/service/matching/counter"
 )
 
 func newTestSimulator() *simulator {

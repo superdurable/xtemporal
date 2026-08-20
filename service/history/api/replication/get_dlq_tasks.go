@@ -3,10 +3,10 @@ package replication
 import (
 	"context"
 
-	replicationspb "go.temporal.io/server/api/replication/v1"
-	"go.temporal.io/server/common/log/tag"
-	historyi "go.temporal.io/server/service/history/interfaces"
-	"go.temporal.io/server/service/history/replication"
+	replicationspb "github.com/superdurable/temporal-server/api/replication/v1"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
+	"github.com/superdurable/temporal-server/service/history/replication"
 )
 
 func GetDLQTasks(

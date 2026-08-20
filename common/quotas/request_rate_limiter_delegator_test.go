@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/common/quotas"
+	"github.com/superdurable/temporal-server/common/quotas"
 )
 
 // blockingRequestRateLimiter is a rate limiter that blocks in its Wait method until the context is canceled.

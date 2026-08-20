@@ -1,9 +1,9 @@
 package activity
 
 import (
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/chasm/lib/activity/gen/activitypb/v1"
-	"go.temporal.io/server/common/namespace"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/chasm/lib/activity/gen/activitypb/v1"
+	"github.com/superdurable/temporal-server/common/namespace"
 	"google.golang.org/grpc"
 )
 

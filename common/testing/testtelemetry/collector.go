@@ -7,9 +7,9 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/superdurable/temporal-server/common/testing/freeport"
 	ctrace "go.opentelemetry.io/proto/otlp/collector/trace/v1"
 	trace "go.opentelemetry.io/proto/otlp/trace/v1"
-	"go.temporal.io/server/common/testing/freeport"
 	"google.golang.org/grpc"
 )
 

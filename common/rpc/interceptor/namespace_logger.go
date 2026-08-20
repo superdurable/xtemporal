@@ -5,11 +5,11 @@ import (
 	"crypto/md5"
 	"fmt"
 
-	"go.temporal.io/server/common/api"
-	"go.temporal.io/server/common/authorization"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/namespace"
+	"github.com/superdurable/temporal-server/common/api"
+	"github.com/superdurable/temporal-server/common/authorization"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/namespace"
 	"google.golang.org/grpc"
 )
 

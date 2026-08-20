@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	test "github.com/superdurable/temporal-server/common/testing"
+	"github.com/superdurable/temporal-server/common/testing/testvars"
 	historypb "go.temporal.io/api/history/v1"
-	test "go.temporal.io/server/common/testing"
-	"go.temporal.io/server/common/testing/testvars"
 )
 
 // sampleCompactHistory is used in almost every test.

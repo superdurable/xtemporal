@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/nexus/nexusrpc"
+	"github.com/superdurable/temporal-server/common/nexus/nexusrpc"
 )
 
 type successHandler struct {

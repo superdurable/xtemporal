@@ -1,8 +1,8 @@
 package scheduler
 
 import (
-	"go.temporal.io/server/chasm"
-	legacyscheduler "go.temporal.io/server/service/worker/scheduler"
+	"github.com/superdurable/temporal-server/chasm"
+	legacyscheduler "github.com/superdurable/temporal-server/service/worker/scheduler"
 	"go.uber.org/fx"
 )
 

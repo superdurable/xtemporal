@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"go.temporal.io/server/common/testing/nettest"
+	"github.com/superdurable/temporal-server/common/testing/nettest"
 )
 
 type (

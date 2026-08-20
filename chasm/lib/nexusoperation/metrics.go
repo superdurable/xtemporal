@@ -1,7 +1,7 @@
 package nexusoperation
 
 import (
-	"go.temporal.io/server/common/metrics"
+	"github.com/superdurable/temporal-server/common/metrics"
 )
 
 var OutboundRequestCounter = metrics.NewCounterDef(

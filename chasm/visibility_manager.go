@@ -7,10 +7,10 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/superdurable/temporal-server/api/visibilityservice/v1"
+	"github.com/superdurable/temporal-server/common/payload"
 	commonpb "go.temporal.io/api/common/v1"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/api/visibilityservice/v1"
-	"go.temporal.io/server/common/payload"
 	"google.golang.org/protobuf/proto"
 )
 

@@ -3,14 +3,14 @@ package describemutablestate
 import (
 	"context"
 
-	"go.temporal.io/server/api/historyservice/v1"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/definition"
-	"go.temporal.io/server/common/locks"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/service/history/api"
-	historyi "go.temporal.io/server/service/history/interfaces"
-	"go.temporal.io/server/service/history/workflow"
+	"github.com/superdurable/temporal-server/api/historyservice/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/definition"
+	"github.com/superdurable/temporal-server/common/locks"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/service/history/api"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
+	"github.com/superdurable/temporal-server/service/history/workflow"
 )
 
 func Invoke(

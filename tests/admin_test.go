@@ -6,17 +6,17 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/superdurable/temporal-server/api/adminservice/v1"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/primitives/timestamp"
+	"github.com/superdurable/temporal-server/common/testing/parallelsuite"
+	"github.com/superdurable/temporal-server/common/testing/testvars"
+	"github.com/superdurable/temporal-server/tests/testcore"
 	commonpb "go.temporal.io/api/common/v1"
 	sdkclient "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/workflow"
-	"go.temporal.io/server/api/adminservice/v1"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/primitives/timestamp"
-	"go.temporal.io/server/common/testing/parallelsuite"
-	"go.temporal.io/server/common/testing/testvars"
-	"go.temporal.io/server/tests/testcore"
 )
 
 type AdminTestSuite struct {

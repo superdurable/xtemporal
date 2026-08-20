@@ -3,8 +3,8 @@ package workflow
 import (
 	"context"
 
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/persistence"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/persistence"
 )
 
 //go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination transaction_mock.go

@@ -7,11 +7,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/service/worker/scheduler"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/service/worker/scheduler"
 )
 
 // TestReplays tests workflow logic backwards compatibility from previous versions.

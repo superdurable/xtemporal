@@ -11,6 +11,18 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	v118 "github.com/superdurable/temporal-server/api/adminservice/v1"
+	v18 "github.com/superdurable/temporal-server/api/clock/v1"
+	v119 "github.com/superdurable/temporal-server/api/common/v1"
+	v112 "github.com/superdurable/temporal-server/api/enums/v1"
+	v122 "github.com/superdurable/temporal-server/api/health/v1"
+	v19 "github.com/superdurable/temporal-server/api/history/v1"
+	v116 "github.com/superdurable/temporal-server/api/namespace/v1"
+	v110 "github.com/superdurable/temporal-server/api/persistence/v1"
+	v117 "github.com/superdurable/temporal-server/api/replication/v1"
+	v113 "github.com/superdurable/temporal-server/api/taskqueue/v1"
+	v120 "github.com/superdurable/temporal-server/api/token/v1"
+	v11 "github.com/superdurable/temporal-server/api/workflow/v1"
 	v123 "go.temporal.io/api/activity/v1"
 	v14 "go.temporal.io/api/common/v1"
 	v16 "go.temporal.io/api/deployment/v1"
@@ -23,18 +35,6 @@ import (
 	v111 "go.temporal.io/api/taskqueue/v1"
 	v15 "go.temporal.io/api/workflow/v1"
 	v1 "go.temporal.io/api/workflowservice/v1"
-	v118 "go.temporal.io/server/api/adminservice/v1"
-	v18 "go.temporal.io/server/api/clock/v1"
-	v119 "go.temporal.io/server/api/common/v1"
-	v112 "go.temporal.io/server/api/enums/v1"
-	v122 "go.temporal.io/server/api/health/v1"
-	v19 "go.temporal.io/server/api/history/v1"
-	v116 "go.temporal.io/server/api/namespace/v1"
-	v110 "go.temporal.io/server/api/persistence/v1"
-	v117 "go.temporal.io/server/api/replication/v1"
-	v113 "go.temporal.io/server/api/taskqueue/v1"
-	v120 "go.temporal.io/server/api/token/v1"
-	v11 "go.temporal.io/server/api/workflow/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	descriptorpb "google.golang.org/protobuf/types/descriptorpb"
@@ -11160,7 +11160,7 @@ const file_temporal_server_api_historyservice_v1_request_response_proto_rawDesc 
 	"\x1a\bshard_id\"j\n" +
 	"\x1cCancelNexusOperationResponse\x12J\n" +
 	"\bresponse\x18\x01 \x01(\v2..temporal.api.nexus.v1.CancelOperationResponseR\bresponse:t\n" +
-	"\arouting\x12\x1f.google.protobuf.MessageOptions\x18\xc28 \x01(\v25.temporal.server.api.historyservice.v1.RoutingOptionsR\arouting\x88\x01\x01B<Z:go.temporal.io/server/api/historyservice/v1;historyserviceb\x06proto3"
+	"\arouting\x12\x1f.google.protobuf.MessageOptions\x18\xc28 \x01(\v25.temporal.server.api.historyservice.v1.RoutingOptionsR\arouting\x88\x01\x01BNZLgithub.com/superdurable/temporal-server/api/historyservice/v1;historyserviceb\x06proto3"
 
 var (
 	file_temporal_server_api_historyservice_v1_request_response_proto_rawDescOnce sync.Once

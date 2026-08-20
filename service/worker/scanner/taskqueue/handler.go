@@ -5,10 +5,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/server/common/log/tag"
-	p "go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/service/matching"
-	"go.temporal.io/server/service/worker/scanner/executor"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	p "github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/service/matching"
+	"github.com/superdurable/temporal-server/service/worker/scanner/executor"
 )
 
 type handlerStatus = executor.TaskStatus

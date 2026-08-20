@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"go.temporal.io/server/tools/tdbg"
+	"github.com/superdurable/temporal-server/tools/tdbg"
 )
 
 func main() {

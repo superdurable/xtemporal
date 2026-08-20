@@ -3,9 +3,9 @@ package elasticsearch
 import (
 	"os"
 
+	"github.com/superdurable/temporal-server/common/log"
+	commonschema "github.com/superdurable/temporal-server/tools/common/schema"
 	"github.com/urfave/cli"
-	"go.temporal.io/server/common/log"
-	commonschema "go.temporal.io/server/tools/common/schema"
 )
 
 const (

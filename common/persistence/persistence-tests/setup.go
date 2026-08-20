@@ -5,11 +5,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin/mysql"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin/postgresql"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin/sqlite"
-	"go.temporal.io/server/temporal/environment"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/mysql"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/postgresql"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/sqlite"
+	"github.com/superdurable/temporal-server/temporal/environment"
 )
 
 const (

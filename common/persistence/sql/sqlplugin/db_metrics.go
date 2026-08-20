@@ -5,8 +5,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/metrics"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/metrics"
 )
 
 type DBMetricsReporter struct {

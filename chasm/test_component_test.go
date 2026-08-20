@@ -7,9 +7,9 @@ import (
 	"sort"
 	"strings"
 
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
 	"google.golang.org/protobuf/proto"
 )
 

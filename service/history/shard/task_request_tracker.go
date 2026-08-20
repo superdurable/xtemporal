@@ -3,8 +3,8 @@ package shard
 import (
 	"sync"
 
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 type (

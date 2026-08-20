@@ -3,7 +3,7 @@ package interceptor
 import (
 	"context"
 
-	"go.temporal.io/server/common/contextutil"
+	"github.com/superdurable/temporal-server/common/contextutil"
 	"google.golang.org/grpc"
 )
 

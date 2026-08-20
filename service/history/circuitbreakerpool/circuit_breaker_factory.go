@@ -1,8 +1,8 @@
 package circuitbreakerpool
 
 import (
-	"go.temporal.io/server/common/circuitbreaker"
-	"go.temporal.io/server/common/collection"
+	"github.com/superdurable/temporal-server/common/circuitbreaker"
+	"github.com/superdurable/temporal-server/common/collection"
 )
 
 type CircuitBreakerPool[K comparable] struct {

@@ -4,7 +4,7 @@ package temporal.server.api.health.v1;
 
 import "temporal/server/api/enums/v1/cluster.proto";
 
-option go_package = "go.temporal.io/server/api/health/v1;health";
+option go_package = "github.com/superdurable/temporal-server/api/health/v1;health";
 
 // Individual health check result.
 // The check_type field uses human-readable strings rather than an enum for extensibility.

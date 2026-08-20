@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"go.temporal.io/server/common/cluster"
+	"github.com/superdurable/temporal-server/common/cluster"
 )
 
 type (

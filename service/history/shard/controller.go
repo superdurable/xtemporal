@@ -3,9 +3,9 @@ package shard
 import (
 	"context"
 
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/pingable"
-	historyi "go.temporal.io/server/service/history/interfaces"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/pingable"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
 )
 
 //go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination controller_mock.go

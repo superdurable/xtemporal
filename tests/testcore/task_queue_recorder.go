@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 // TaskQueueRecorder wraps an ExecutionManager to record ALL task writes

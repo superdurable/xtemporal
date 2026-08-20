@@ -1,6 +1,6 @@
 package tdbg_test
 
-import "go.temporal.io/server/tools/tdbg"
+import "github.com/superdurable/temporal-server/tools/tdbg"
 
 func (s *utilSuite) TestStringToEnum_MapCaseInsensitive() {
 	enumValues := map[string]int32{

@@ -6,14 +6,14 @@ import (
 	"sync"
 	"unsafe"
 
-	historyspb "go.temporal.io/server/api/history/v1"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/cache"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/persistence/transitionhistory"
-	"go.temporal.io/server/common/persistence/versionhistory"
-	"go.temporal.io/server/service/history/configs"
+	historyspb "github.com/superdurable/temporal-server/api/history/v1"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/cache"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/persistence/transitionhistory"
+	"github.com/superdurable/temporal-server/common/persistence/versionhistory"
+	"github.com/superdurable/temporal-server/service/history/configs"
 )
 
 type (

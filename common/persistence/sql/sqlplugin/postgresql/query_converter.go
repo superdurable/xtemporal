@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/store/query"
+	"github.com/superdurable/temporal-server/common/searchattribute/sadefs"
 	"github.com/temporalio/sqlparser"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin"
-	"go.temporal.io/server/common/persistence/visibility/store/query"
-	"go.temporal.io/server/common/searchattribute/sadefs"
 )
 
 var maxDatetime = time.Date(9999, 12, 31, 23, 59, 59, 0, time.UTC)

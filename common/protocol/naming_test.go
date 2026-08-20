@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/temporal-server/common/protocol"
 	protocolpb "go.temporal.io/api/protocol/v1"
-	"go.temporal.io/server/common/protocol"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/emptypb"
 )

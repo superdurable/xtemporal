@@ -658,7 +658,7 @@ const file_temporal_server_api_cli_v1_message_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a:\n" +
 	"\fMappingEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B&Z$go.temporal.io/server/api/cli/v1;clib\x06proto3"
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B8Z6github.com/superdurable/temporal-server/api/cli/v1;clib\x06proto3"
 
 var (
 	file_temporal_server_api_cli_v1_message_proto_rawDescOnce sync.Once

@@ -3,8 +3,8 @@ package replication
 import (
 	"time"
 
-	"go.temporal.io/server/common/metrics"
-	ctasks "go.temporal.io/server/common/tasks"
+	"github.com/superdurable/temporal-server/common/metrics"
+	ctasks "github.com/superdurable/temporal-server/common/tasks"
 )
 
 type (

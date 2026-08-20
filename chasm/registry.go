@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
-	"go.temporal.io/server/common/log"
+	"github.com/superdurable/temporal-server/common/log"
 	"google.golang.org/grpc"
 )
 

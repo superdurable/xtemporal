@@ -6,10 +6,10 @@ package logtags
 import (
 	"strings"
 
-	"go.temporal.io/server/common/api"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/tasktoken"
+	"github.com/superdurable/temporal-server/common/api"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/tasktoken"
 )
 
 type (

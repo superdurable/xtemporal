@@ -12,7 +12,7 @@ package log
 import (
 	reflect "reflect"
 
-	tag "go.temporal.io/server/common/log/tag"
+	tag "github.com/superdurable/temporal-server/common/log/tag"
 	gomock "go.uber.org/mock/gomock"
 )
 

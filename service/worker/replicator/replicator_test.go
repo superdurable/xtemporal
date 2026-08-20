@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/common/cluster"
-	"go.temporal.io/server/common/persistence"
+	"github.com/superdurable/temporal-server/common/cluster"
+	"github.com/superdurable/temporal-server/common/persistence"
 	"go.uber.org/mock/gomock"
 )
 

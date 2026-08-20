@@ -1,8 +1,8 @@
 package tasktoken
 
 import (
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	tokenspb "go.temporal.io/server/api/token/v1"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	tokenspb "github.com/superdurable/temporal-server/api/token/v1"
 )
 
 type Serializer struct{}

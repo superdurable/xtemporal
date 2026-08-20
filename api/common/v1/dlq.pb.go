@@ -261,7 +261,7 @@ const file_temporal_server_api_common_v1_dlq_proto_rawDesc = "" +
 	"\rHistoryDLQKey\x12#\n" +
 	"\rtask_category\x18\x01 \x01(\x05R\ftaskCategory\x12%\n" +
 	"\x0esource_cluster\x18\x02 \x01(\tR\rsourceCluster\x12%\n" +
-	"\x0etarget_cluster\x18\x03 \x01(\tR\rtargetClusterB/Z-go.temporal.io/server/api/common/v1;commonspbb\x06proto3"
+	"\x0etarget_cluster\x18\x03 \x01(\tR\rtargetClusterBAZ?github.com/superdurable/temporal-server/api/common/v1;commonspbb\x06proto3"
 
 var (
 	file_temporal_server_api_common_v1_dlq_proto_rawDescOnce sync.Once

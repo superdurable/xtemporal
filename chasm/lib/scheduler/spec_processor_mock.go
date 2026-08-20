@@ -13,8 +13,8 @@ import (
 	reflect "reflect"
 	time "time"
 
+	scheduler "github.com/superdurable/temporal-server/service/worker/scheduler"
 	enums "go.temporal.io/api/enums/v1"
-	scheduler "go.temporal.io/server/service/worker/scheduler"
 	gomock "go.uber.org/mock/gomock"
 )
 

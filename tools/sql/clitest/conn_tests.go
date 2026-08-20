@@ -4,11 +4,11 @@ import (
 	"net"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/tools/common/schema/test"
-	"go.temporal.io/server/tools/sql"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/tools/common/schema/test"
+	"github.com/superdurable/temporal-server/tools/sql"
 )
 
 type (

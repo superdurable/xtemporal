@@ -4,9 +4,9 @@ import (
 	"sync"
 	"time"
 
-	"go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 var _ Monitor = (*monitorImpl)(nil)

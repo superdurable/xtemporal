@@ -8,8 +8,8 @@ import (
 	"math/rand"
 
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/api/matchingservice/v1"
-	"go.temporal.io/server/common/tqid"
+	"github.com/superdurable/temporal-server/api/matchingservice/v1"
+	"github.com/superdurable/temporal-server/common/tqid"
 	"google.golang.org/grpc"
 )
 

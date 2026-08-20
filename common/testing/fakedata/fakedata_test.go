@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/testing/fakedata"
+	"github.com/superdurable/temporal-server/common/testing/fakedata"
 )
 
 type Failure struct {

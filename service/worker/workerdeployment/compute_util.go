@@ -1,8 +1,8 @@
 package workerdeployment
 
 import (
+	wciiface "github.com/superdurable/temporal-server/components/autoscaledworkers/wci/workflow/iface"
 	computepb "go.temporal.io/api/compute/v1"
-	wciiface "go.temporal.io/auto-scaled-workers/wci/workflow/iface"
 	"go.temporal.io/sdk/workflow"
 )
 

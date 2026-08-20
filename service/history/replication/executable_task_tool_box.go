@@ -1,18 +1,18 @@
 package replication
 
 import (
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/client"
-	"go.temporal.io/server/common/cluster"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/persistence/serialization"
-	ctasks "go.temporal.io/server/common/tasks"
-	"go.temporal.io/server/service/history/configs"
-	"go.temporal.io/server/service/history/replication/eventhandler"
-	"go.temporal.io/server/service/history/shard"
-	wcache "go.temporal.io/server/service/history/workflow/cache"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/client"
+	"github.com/superdurable/temporal-server/common/cluster"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/persistence/serialization"
+	ctasks "github.com/superdurable/temporal-server/common/tasks"
+	"github.com/superdurable/temporal-server/service/history/configs"
+	"github.com/superdurable/temporal-server/service/history/replication/eventhandler"
+	"github.com/superdurable/temporal-server/service/history/shard"
+	wcache "github.com/superdurable/temporal-server/service/history/workflow/cache"
 	"go.uber.org/fx"
 )
 

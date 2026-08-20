@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package temporal.server.api.clock.v1;
 
-option go_package = "go.temporal.io/server/api/clock/v1;clock";
+option go_package = "github.com/superdurable/temporal-server/api/clock/v1;clock";
 
 message VectorClock {
   int32 shard_id = 1;

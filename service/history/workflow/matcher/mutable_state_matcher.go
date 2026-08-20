@@ -1,7 +1,7 @@
 package matcher
 
 import (
-	persistencespb "go.temporal.io/server/api/persistence/v1"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
 )
 
 /*

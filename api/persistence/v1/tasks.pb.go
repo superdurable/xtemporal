@@ -11,10 +11,10 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	v1 "github.com/superdurable/temporal-server/api/clock/v1"
+	v11 "github.com/superdurable/temporal-server/api/taskqueue/v1"
 	v12 "go.temporal.io/api/common/v1"
 	v13 "go.temporal.io/api/enums/v1"
-	v1 "go.temporal.io/server/api/clock/v1"
-	v11 "go.temporal.io/server/api/taskqueue/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -648,7 +648,7 @@ const file_temporal_server_api_persistence_v1_tasks_proto_rawDesc = "" +
 	"\bpriority\x18\x01 \x01(\x05R\bpriority\"[\n" +
 	"\aTaskKey\x127\n" +
 	"\tfire_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\bfireTime\x12\x17\n" +
-	"\atask_id\x18\x02 \x01(\x03R\x06taskIdB6Z4go.temporal.io/server/api/persistence/v1;persistenceb\x06proto3"
+	"\atask_id\x18\x02 \x01(\x03R\x06taskIdBHZFgithub.com/superdurable/temporal-server/api/persistence/v1;persistenceb\x06proto3"
 
 var (
 	file_temporal_server_api_persistence_v1_tasks_proto_rawDescOnce sync.Once

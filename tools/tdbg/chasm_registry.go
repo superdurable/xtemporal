@@ -1,11 +1,11 @@
 package tdbg
 
 import (
-	"go.temporal.io/server/chasm"
-	chasmscheduler "go.temporal.io/server/chasm/lib/scheduler"
-	chasmtests "go.temporal.io/server/chasm/lib/tests"
-	chasmworkflow "go.temporal.io/server/chasm/lib/workflow"
-	"go.temporal.io/server/common/log"
+	"github.com/superdurable/temporal-server/chasm"
+	chasmscheduler "github.com/superdurable/temporal-server/chasm/lib/scheduler"
+	chasmtests "github.com/superdurable/temporal-server/chasm/lib/tests"
+	chasmworkflow "github.com/superdurable/temporal-server/chasm/lib/workflow"
+	"github.com/superdurable/temporal-server/common/log"
 )
 
 func newChasmRegistry(logger log.Logger) (*chasm.Registry, error) {

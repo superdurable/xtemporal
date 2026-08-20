@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"go.temporal.io/server/tools/flakereport"
+	"github.com/superdurable/temporal-server/tools/flakereport"
 )
 
 func main() {

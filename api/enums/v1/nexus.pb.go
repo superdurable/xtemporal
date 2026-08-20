@@ -131,7 +131,7 @@ const file_temporal_server_api_enums_v1_nexus_proto_rawDesc = "" +
 	"\x1fNEXUS_OPERATION_STATE_SUCCEEDED\x10\x04\x12 \n" +
 	"\x1cNEXUS_OPERATION_STATE_FAILED\x10\x05\x12\"\n" +
 	"\x1eNEXUS_OPERATION_STATE_CANCELED\x10\x06\x12#\n" +
-	"\x1fNEXUS_OPERATION_STATE_TIMED_OUT\x10\aB*Z(go.temporal.io/server/api/enums/v1;enumsb\x06proto3"
+	"\x1fNEXUS_OPERATION_STATE_TIMED_OUT\x10\aB<Z:github.com/superdurable/temporal-server/api/enums/v1;enumsb\x06proto3"
 
 var (
 	file_temporal_server_api_enums_v1_nexus_proto_rawDescOnce sync.Once

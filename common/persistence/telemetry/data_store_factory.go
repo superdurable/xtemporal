@@ -1,9 +1,9 @@
 package telemetry
 
 import (
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/persistence"
 	"go.opentelemetry.io/otel/trace"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/persistence"
 )
 
 type (

@@ -34,7 +34,7 @@ import "temporal/server/api/taskqueue/v1/message.proto";
 import "temporal/server/api/token/v1/message.proto";
 import "temporal/server/api/workflow/v1/message.proto";
 
-option go_package = "go.temporal.io/server/api/historyservice/v1;historyservice";
+option go_package = "github.com/superdurable/temporal-server/api/historyservice/v1;historyservice";
 
 extend google.protobuf.MessageOptions {
   optional RoutingOptions routing = 7234;

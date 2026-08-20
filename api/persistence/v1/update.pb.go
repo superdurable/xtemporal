@@ -385,7 +385,7 @@ const file_temporal_server_api_persistence_v1_update_proto_rawDesc = "" +
 	"completion\x12W\n" +
 	"\tadmission\x18\x03 \x01(\v27.temporal.server.api.persistence.v1.UpdateAdmissionInfoH\x00R\tadmission\x12\x80\x01\n" +
 	" last_update_versioned_transition\x18\x04 \x01(\v27.temporal.server.api.persistence.v1.VersionedTransitionR\x1dlastUpdateVersionedTransitionB\a\n" +
-	"\x05valueB6Z4go.temporal.io/server/api/persistence/v1;persistenceb\x06proto3"
+	"\x05valueBHZFgithub.com/superdurable/temporal-server/api/persistence/v1;persistenceb\x06proto3"
 
 var (
 	file_temporal_server_api_persistence_v1_update_proto_rawDescOnce sync.Once

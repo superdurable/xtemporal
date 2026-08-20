@@ -1,7 +1,7 @@
 package api
 
 import (
-	historyi "go.temporal.io/server/service/history/interfaces"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
 )
 
 type WorkflowLease interface {

@@ -6,17 +6,17 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	schedulespb "github.com/superdurable/temporal-server/api/schedule/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/chasm/lib/scheduler"
+	schedulerpb "github.com/superdurable/temporal-server/chasm/lib/scheduler/gen/schedulerpb/v1"
+	"github.com/superdurable/temporal-server/common/testing/protorequire"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	schedulepb "go.temporal.io/api/schedule/v1"
 	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	workflowpb "go.temporal.io/api/workflow/v1"
 	"go.temporal.io/api/workflowservice/v1"
-	schedulespb "go.temporal.io/server/api/schedule/v1"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/chasm/lib/scheduler"
-	schedulerpb "go.temporal.io/server/chasm/lib/scheduler/gen/schedulerpb/v1"
-	"go.temporal.io/server/common/testing/protorequire"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

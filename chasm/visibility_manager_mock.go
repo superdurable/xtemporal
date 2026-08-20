@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	visibilityservice "go.temporal.io/server/api/visibilityservice/v1"
+	visibilityservice "github.com/superdurable/temporal-server/api/visibilityservice/v1"
 	gomock "go.uber.org/mock/gomock"
 )
 

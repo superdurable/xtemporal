@@ -3,7 +3,7 @@ package log
 import (
 	"testing"
 
-	"go.temporal.io/server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/log/tag"
 	"go.uber.org/zap"
 )
 

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/service/history/consts"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/service/history/consts"
 )
 
 // Immediate is a sentinel value to express that a task must be executed immediately instead of delayed to a certain

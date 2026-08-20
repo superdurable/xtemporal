@@ -12,16 +12,16 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/collection"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/goro"
-	"go.temporal.io/server/common/headers"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/common/pingable"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/collection"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/goro"
+	"github.com/superdurable/temporal-server/common/headers"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/common/pingable"
 )
 
 const (
@@ -87,7 +87,7 @@ type (
 		InitialFailoverVersion int64 `yaml:"initialFailoverVersion"`
 		// RPCAddress indicate the remote service address(Host:Port). Host can be DNS name.
 		RPCAddress string `yaml:"rpcAddress"`
-		// HTTPAddress indicates the address of the [go.temporal.io/server/service/frontend.HTTPAPIServer].
+		// HTTPAddress indicates the address of the [github.com/superdurable/temporal-server/service/frontend.HTTPAPIServer].
 		// E.g. "localhost:7243".
 		HTTPAddress string `yaml:"httpAddress"`
 		// ClusterID allows to explicitly set the ID of the cluster. Optional.

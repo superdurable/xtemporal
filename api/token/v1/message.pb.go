@@ -11,9 +11,9 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
-	v12 "go.temporal.io/server/api/clock/v1"
-	v1 "go.temporal.io/server/api/history/v1"
-	v11 "go.temporal.io/server/api/persistence/v1"
+	v12 "github.com/superdurable/temporal-server/api/clock/v1"
+	v1 "github.com/superdurable/temporal-server/api/history/v1"
+	v11 "github.com/superdurable/temporal-server/api/persistence/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -719,7 +719,7 @@ const file_temporal_server_api_token_v1_message_proto_rawDesc = "" +
 	"\x03ref\x18\x04 \x01(\v23.temporal.server.api.persistence.v1.StateMachineRefR\x03ref\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x05 \x01(\tR\trequestId\x12#\n" +
-	"\rcomponent_ref\x18\x06 \x01(\fR\fcomponentRefB*Z(go.temporal.io/server/api/token/v1;tokenb\x06proto3"
+	"\rcomponent_ref\x18\x06 \x01(\fR\fcomponentRefB<Z:github.com/superdurable/temporal-server/api/token/v1;tokenb\x06proto3"
 
 var (
 	file_temporal_server_api_token_v1_message_proto_rawDescOnce sync.Once

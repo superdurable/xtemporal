@@ -13,7 +13,7 @@ import (
 	reflect "reflect"
 	time "time"
 
-	log "go.temporal.io/server/common/log"
+	log "github.com/superdurable/temporal-server/common/log"
 	gomock "go.uber.org/mock/gomock"
 )
 

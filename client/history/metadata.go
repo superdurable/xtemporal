@@ -3,8 +3,8 @@ package history
 import (
 	"strconv"
 
+	"github.com/superdurable/temporal-server/common/headers"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/common/headers"
 	"google.golang.org/grpc/metadata"
 )
 

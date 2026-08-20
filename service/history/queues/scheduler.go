@@ -3,17 +3,17 @@
 package queues
 
 import (
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/definition"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/quotas"
-	"go.temporal.io/server/common/tasks"
-	"go.temporal.io/server/service/history/configs"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/definition"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/quotas"
+	"github.com/superdurable/temporal-server/common/tasks"
+	"github.com/superdurable/temporal-server/service/history/configs"
 )
 
 const (

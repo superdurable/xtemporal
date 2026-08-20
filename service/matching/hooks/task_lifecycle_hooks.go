@@ -3,10 +3,10 @@ package hooks
 import (
 	"context"
 
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/tqid"
 	deploymentpb "go.temporal.io/api/deployment/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/tqid"
 )
 
 type (

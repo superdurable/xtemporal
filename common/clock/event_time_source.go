@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"go.temporal.io/server/common/util"
+	"github.com/superdurable/temporal-server/common/util"
 )
 
 type (

@@ -3,8 +3,8 @@
 package logtags
 
 import (
-	"go.temporal.io/server/api/adminservice/v1"
-	"go.temporal.io/server/common/log/tag"
+	"github.com/superdurable/temporal-server/api/adminservice/v1"
+	"github.com/superdurable/temporal-server/common/log/tag"
 )
 
 func (wt *WorkflowTags) extractFromAdminServiceServerMessage(message any) []tag.Tag {

@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/goro"
+	"github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/goro"
 )
 
 func block()   { <-make(chan struct{}) }

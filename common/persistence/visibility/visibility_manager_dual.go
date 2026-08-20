@@ -5,10 +5,10 @@ import (
 	"errors"
 	"sync"
 
-	"go.temporal.io/server/api/visibilityservice/v1"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/persistence/visibility/manager"
+	"github.com/superdurable/temporal-server/api/visibilityservice/v1"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/manager"
 )
 
 type (

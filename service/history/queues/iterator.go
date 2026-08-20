@@ -3,8 +3,8 @@ package queues
 import (
 	"fmt"
 
-	"go.temporal.io/server/common/collection"
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/common/collection"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 type (

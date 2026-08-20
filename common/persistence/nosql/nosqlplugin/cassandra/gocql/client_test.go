@@ -9,9 +9,9 @@ import (
 
 	"github.com/gocql/gocql"
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/common/auth"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/resolver"
+	"github.com/superdurable/temporal-server/common/auth"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/resolver"
 	"go.uber.org/mock/gomock"
 )
 

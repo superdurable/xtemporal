@@ -1,8 +1,8 @@
 package faultinjection
 
 import (
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/persistence"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/persistence"
 )
 
 type (

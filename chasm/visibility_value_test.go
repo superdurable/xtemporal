@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/payload"
+	"github.com/superdurable/temporal-server/common/payload"
 )
 
 func TestVisibilityValue(t *testing.T) {

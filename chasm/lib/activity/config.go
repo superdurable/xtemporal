@@ -3,8 +3,8 @@ package activity
 import (
 	"time"
 
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/retrypolicy"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/retrypolicy"
 )
 
 var (

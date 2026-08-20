@@ -4,8 +4,8 @@ import (
 	"context"
 	"io"
 
+	serviceerrors "github.com/superdurable/temporal-server/common/serviceerror"
 	"go.temporal.io/api/serviceerror"
-	serviceerrors "go.temporal.io/server/common/serviceerror"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

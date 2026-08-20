@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/primitives"
-	"go.temporal.io/server/common/telemetry"
+	"github.com/superdurable/temporal-server/common/primitives"
+	"github.com/superdurable/temporal-server/common/telemetry"
 )
 
 func TestSupplementTraceExportersFromEnv(t *testing.T) {

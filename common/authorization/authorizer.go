@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/superdurable/temporal-server/common/config"
 	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/server/common/config"
 )
 
 const (

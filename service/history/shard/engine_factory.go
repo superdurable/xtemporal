@@ -2,7 +2,7 @@
 
 package shard
 
-import historyi "go.temporal.io/server/service/history/interfaces"
+import historyi "github.com/superdurable/temporal-server/service/history/interfaces"
 
 type (
 	// EngineFactory is used to create an instance of sharded history engine

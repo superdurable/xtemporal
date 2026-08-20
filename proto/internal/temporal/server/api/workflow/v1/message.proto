@@ -5,7 +5,7 @@ package temporal.server.api.workflow.v1;
 import "temporal/api/common/v1/message.proto";
 import "temporal/server/api/clock/v1/message.proto";
 
-option go_package = "go.temporal.io/server/api/workflow/v1;workflow";
+option go_package = "github.com/superdurable/temporal-server/api/workflow/v1;workflow";
 
 message ParentExecutionInfo {
   string namespace_id = 1;

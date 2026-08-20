@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	definition "go.temporal.io/server/common/definition"
+	definition "github.com/superdurable/temporal-server/common/definition"
 	gomock "go.uber.org/mock/gomock"
 )
 

@@ -1,7 +1,7 @@
 package authorization
 
 import (
-	"go.temporal.io/server/common/api"
+	"github.com/superdurable/temporal-server/common/api"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 

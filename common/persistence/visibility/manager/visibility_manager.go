@@ -1,19 +1,19 @@
 package manager
 
 // -aux_files is required here due to Closeable interface being in another file.
-//go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination visibility_manager_mock.go -aux_files go.temporal.io/server/common/persistence=../../data_interfaces.go
+//go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination visibility_manager_mock.go -aux_files github.com/superdurable/temporal-server/common/persistence=../../data_interfaces.go
 
 import (
 	"context"
 	"time"
 
+	"github.com/superdurable/temporal-server/api/visibilityservice/v1"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/persistence"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	workflowpb "go.temporal.io/api/workflow/v1"
 	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/server/api/visibilityservice/v1"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/persistence"
 )
 
 type (

@@ -5,11 +5,11 @@ package nsreplication
 import (
 	"context"
 
+	replicationspb "github.com/superdurable/temporal-server/api/replication/v1"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/persistence"
 	"go.temporal.io/api/serviceerror"
-	replicationspb "go.temporal.io/server/api/replication/v1"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/persistence"
 )
 
 type (

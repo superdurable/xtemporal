@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
-	"go.temporal.io/server/common/auth"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/metrics"
-	commongocql "go.temporal.io/server/common/persistence/nosql/nosqlplugin/cassandra/gocql"
-	"go.temporal.io/server/common/resolver"
-	"go.temporal.io/server/tools/common/schema"
+	"github.com/superdurable/temporal-server/common/auth"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/metrics"
+	commongocql "github.com/superdurable/temporal-server/common/persistence/nosql/nosqlplugin/cassandra/gocql"
+	"github.com/superdurable/temporal-server/common/resolver"
+	"github.com/superdurable/temporal-server/tools/common/schema"
 )
 
 type (

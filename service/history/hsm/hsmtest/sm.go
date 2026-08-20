@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"go.temporal.io/server/service/history/hsm"
+	"github.com/superdurable/temporal-server/service/history/hsm"
 )
 
 var (

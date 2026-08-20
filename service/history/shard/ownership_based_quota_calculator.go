@@ -1,7 +1,7 @@
 package shard
 
 import (
-	"go.temporal.io/server/common/quotas/calculator"
+	"github.com/superdurable/temporal-server/common/quotas/calculator"
 )
 
 type (

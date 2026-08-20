@@ -252,7 +252,7 @@ const file_temporal_server_chasm_lib_activity_proto_v1_tasks_proto_rawDesc = "" 
 	"\x17StartToCloseTimeoutTask\x12\x14\n" +
 	"\x05stamp\x18\x01 \x01(\x05R\x05stamp\",\n" +
 	"\x14HeartbeatTimeoutTask\x12\x14\n" +
-	"\x05stamp\x18\x01 \x01(\x05R\x05stampBDZBgo.temporal.io/server/chasm/lib/activity/gen/activitypb;activitypbb\x06proto3"
+	"\x05stamp\x18\x01 \x01(\x05R\x05stampBVZTgithub.com/superdurable/temporal-server/chasm/lib/activity/gen/activitypb;activitypbb\x06proto3"
 
 var (
 	file_temporal_server_chasm_lib_activity_proto_v1_tasks_proto_rawDescOnce sync.Once

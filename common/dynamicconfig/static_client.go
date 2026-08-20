@@ -1,6 +1,6 @@
 package dynamicconfig
 
-import "go.temporal.io/server/common/log"
+import "github.com/superdurable/temporal-server/common/log"
 
 type (
 	// StaticClient is a simple implementation of Client that just looks up in a map.

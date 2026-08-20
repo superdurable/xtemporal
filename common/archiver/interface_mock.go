@@ -13,8 +13,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	archiver "go.temporal.io/server/api/archiver/v1"
-	searchattribute "go.temporal.io/server/common/searchattribute"
+	archiver "github.com/superdurable/temporal-server/api/archiver/v1"
+	searchattribute "github.com/superdurable/temporal-server/common/searchattribute"
 	gomock "go.uber.org/mock/gomock"
 )
 

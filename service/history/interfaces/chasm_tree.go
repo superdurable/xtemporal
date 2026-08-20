@@ -6,9 +6,9 @@ import (
 	"context"
 	"time"
 
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/service/history/tasks"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 var _ ChasmTree = (*chasm.Node)(nil)

@@ -3,10 +3,10 @@ package scheduler
 import (
 	"time"
 
-	schedulespb "go.temporal.io/server/api/schedule/v1"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/chasm/lib/scheduler/gen/schedulerpb/v1"
-	schedulescommon "go.temporal.io/server/common/schedules"
+	schedulespb "github.com/superdurable/temporal-server/api/schedule/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/chasm/lib/scheduler/gen/schedulerpb/v1"
+	schedulescommon "github.com/superdurable/temporal-server/common/schedules"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

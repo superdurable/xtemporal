@@ -4,7 +4,7 @@ import (
 	"slices"
 	"time"
 
-	"go.temporal.io/server/common/collection"
+	"github.com/superdurable/temporal-server/common/collection"
 )
 
 const (

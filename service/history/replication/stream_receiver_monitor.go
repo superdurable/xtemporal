@@ -8,15 +8,15 @@ import (
 	"sync/atomic"
 	"time"
 
-	enumsspb "go.temporal.io/server/api/enums/v1"
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/channel"
-	"go.temporal.io/server/common/cluster"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/service/history/shard"
-	"go.temporal.io/server/service/history/tasks"
+	enumsspb "github.com/superdurable/temporal-server/api/enums/v1"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/channel"
+	"github.com/superdurable/temporal-server/common/cluster"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/service/history/shard"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 const (

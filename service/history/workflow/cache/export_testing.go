@@ -1,8 +1,8 @@
 package cache
 
 import (
-	historyi "go.temporal.io/server/service/history/interfaces"
-	"go.temporal.io/server/service/history/workflow"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
+	"github.com/superdurable/temporal-server/service/history/workflow"
 )
 
 // GetMutableState returns the MutableState for the given key from the cache.

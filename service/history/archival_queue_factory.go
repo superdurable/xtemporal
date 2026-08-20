@@ -1,19 +1,19 @@
 package history
 
 import (
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/metrics"
-	ctasks "go.temporal.io/server/common/tasks"
-	"go.temporal.io/server/common/telemetry"
-	"go.temporal.io/server/service/history/archival"
-	"go.temporal.io/server/service/history/configs"
-	historyi "go.temporal.io/server/service/history/interfaces"
-	"go.temporal.io/server/service/history/queues"
-	"go.temporal.io/server/service/history/tasks"
-	"go.temporal.io/server/service/history/workflow"
-	wcache "go.temporal.io/server/service/history/workflow/cache"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/metrics"
+	ctasks "github.com/superdurable/temporal-server/common/tasks"
+	"github.com/superdurable/temporal-server/common/telemetry"
+	"github.com/superdurable/temporal-server/service/history/archival"
+	"github.com/superdurable/temporal-server/service/history/configs"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
+	"github.com/superdurable/temporal-server/service/history/queues"
+	"github.com/superdurable/temporal-server/service/history/tasks"
+	"github.com/superdurable/temporal-server/service/history/workflow"
+	wcache "github.com/superdurable/temporal-server/service/history/workflow/cache"
 	"go.uber.org/fx"
 )
 

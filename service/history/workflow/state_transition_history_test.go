@@ -3,9 +3,9 @@ package workflow_test
 import (
 	"testing"
 
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/testing/protorequire"
-	"go.temporal.io/server/service/history/workflow"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/testing/protorequire"
+	"github.com/superdurable/temporal-server/service/history/workflow"
 )
 
 func TestUpdatedTranstionHistory(t *testing.T) {

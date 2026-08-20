@@ -5,8 +5,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/log"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/log"
 )
 
 // GroupBySchedulerOptions are options for creating a [GroupByScheduler].

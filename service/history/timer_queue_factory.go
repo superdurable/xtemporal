@@ -1,18 +1,18 @@
 package history
 
 import (
-	"go.temporal.io/server/client"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/persistence/visibility/manager"
-	"go.temporal.io/server/common/resource"
-	ctasks "go.temporal.io/server/common/tasks"
-	"go.temporal.io/server/common/telemetry"
-	"go.temporal.io/server/service/history/deletemanager"
-	historyi "go.temporal.io/server/service/history/interfaces"
-	"go.temporal.io/server/service/history/queues"
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/client"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/manager"
+	"github.com/superdurable/temporal-server/common/resource"
+	ctasks "github.com/superdurable/temporal-server/common/tasks"
+	"github.com/superdurable/temporal-server/common/telemetry"
+	"github.com/superdurable/temporal-server/service/history/deletemanager"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
+	"github.com/superdurable/temporal-server/service/history/queues"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 	"go.uber.org/fx"
 )
 

@@ -3,8 +3,8 @@
 package common
 
 import (
+	"github.com/superdurable/temporal-server/common/namespace"
 	sdkworker "go.temporal.io/sdk/worker"
-	"go.temporal.io/server/common/namespace"
 )
 
 type (

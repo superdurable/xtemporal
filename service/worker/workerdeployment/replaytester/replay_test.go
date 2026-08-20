@@ -12,12 +12,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	deploymentspb "github.com/superdurable/temporal-server/api/deployment/v1"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/service/worker/workerdeployment"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
-	deploymentspb "go.temporal.io/server/api/deployment/v1"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/service/worker/workerdeployment"
 )
 
 // TestReplays tests workflow logic backwards compatibility from previous versions.

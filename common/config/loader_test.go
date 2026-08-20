@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/tests/testutils"
+	"github.com/superdurable/temporal-server/tests/testutils"
 )
 
 const fileMode = os.FileMode(0644)

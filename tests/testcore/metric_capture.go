@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"go.temporal.io/server/common/metrics/metricstest"
+	"github.com/superdurable/temporal-server/common/metrics/metricstest"
 )
 
 const collectMetricNilKeepPanic = "CollectMetric keep func must not be nil; use Metric(name) to collect all readings"

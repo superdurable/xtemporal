@@ -7,8 +7,8 @@ import (
 	"context"
 	"time"
 
-	"go.temporal.io/server/api/adminservice/v1"
-	"go.temporal.io/server/common/debug"
+	"github.com/superdurable/temporal-server/api/adminservice/v1"
+	"github.com/superdurable/temporal-server/common/debug"
 	"google.golang.org/grpc"
 )
 

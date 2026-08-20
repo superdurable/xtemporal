@@ -27,7 +27,7 @@ const file_temporal_server_api_testservice_v1_service_proto_rawDesc = "" +
 	"\n" +
 	"0temporal/server/api/testservice/v1/service.proto\x12\"temporal.server.api.testservice.v1\x1a9temporal/server/api/testservice/v1/request_response.proto2\x89\x01\n" +
 	"\vTestService\x12z\n" +
-	"\tSendHello\x124.temporal.server.api.testservice.v1.SendHelloRequest\x1a5.temporal.server.api.testservice.v1.SendHelloResponse\"\x00B6Z4go.temporal.io/server/api/testservice/v1;testserviceb\x06proto3"
+	"\tSendHello\x124.temporal.server.api.testservice.v1.SendHelloRequest\x1a5.temporal.server.api.testservice.v1.SendHelloResponse\"\x00BHZFgithub.com/superdurable/temporal-server/api/testservice/v1;testserviceb\x06proto3"
 
 var file_temporal_server_api_testservice_v1_service_proto_goTypes = []any{
 	(*SendHelloRequest)(nil),  // 0: temporal.server.api.testservice.v1.SendHelloRequest

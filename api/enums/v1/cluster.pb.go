@@ -181,7 +181,7 @@ const file_temporal_server_api_enums_v1_cluster_proto_rawDesc = "" +
 	"\x14HEALTH_STATE_SERVING\x10\x01\x12\x1c\n" +
 	"\x18HEALTH_STATE_NOT_SERVING\x10\x02\x12!\n" +
 	"\x1dHEALTH_STATE_DECLINED_SERVING\x10\x03\x12\x1f\n" +
-	"\x1bHEALTH_STATE_INTERNAL_ERROR\x10\x04B*Z(go.temporal.io/server/api/enums/v1;enumsb\x06proto3"
+	"\x1bHEALTH_STATE_INTERNAL_ERROR\x10\x04B<Z:github.com/superdurable/temporal-server/api/enums/v1;enumsb\x06proto3"
 
 var (
 	file_temporal_server_api_enums_v1_cluster_proto_rawDescOnce sync.Once

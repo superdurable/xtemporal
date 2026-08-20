@@ -8,9 +8,9 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/jmoiron/sqlx"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin/postgresql/driver"
-	"go.temporal.io/server/common/resolver"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/postgresql/driver"
+	"github.com/superdurable/temporal-server/common/resolver"
 )
 
 const (

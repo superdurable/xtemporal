@@ -507,7 +507,7 @@ const file_temporal_server_api_persistence_v1_queues_proto_rawDesc = "" +
 	"partitions\x1aq\n" +
 	"\x0fPartitionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x05R\x03key\x12H\n" +
-	"\x05value\x18\x02 \x01(\v22.temporal.server.api.persistence.v1.QueuePartitionR\x05value:\x028\x01B6Z4go.temporal.io/server/api/persistence/v1;persistenceb\x06proto3"
+	"\x05value\x18\x02 \x01(\v22.temporal.server.api.persistence.v1.QueuePartitionR\x05value:\x028\x01BHZFgithub.com/superdurable/temporal-server/api/persistence/v1;persistenceb\x06proto3"
 
 var (
 	file_temporal_server_api_persistence_v1_queues_proto_rawDescOnce sync.Once

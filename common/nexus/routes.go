@@ -1,6 +1,6 @@
 package nexus
 
-import "go.temporal.io/server/common/routing"
+import "github.com/superdurable/temporal-server/common/routing"
 
 type NamespaceAndTaskQueue struct {
 	Namespace string

@@ -1,7 +1,7 @@
 package config
 
 import (
-	"go.temporal.io/server/common/primitives"
+	"github.com/superdurable/temporal-server/common/primitives"
 	"go.uber.org/fx"
 )
 

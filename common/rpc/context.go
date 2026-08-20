@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"go.temporal.io/server/common/headers"
+	"github.com/superdurable/temporal-server/common/headers"
 )
 
 type (

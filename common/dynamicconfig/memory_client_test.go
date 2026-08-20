@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
 )
 
 func TestMemoryClient(t *testing.T) {

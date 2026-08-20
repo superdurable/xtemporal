@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/common/quotas"
+	"github.com/superdurable/temporal-server/common/quotas"
 )
 
 func TestNoopRequestRateLimiterImpl(t *testing.T) {

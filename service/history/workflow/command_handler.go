@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
 	commandpb "go.temporal.io/api/command/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	historyi "go.temporal.io/server/service/history/interfaces"
 )
 
 // ErrDuplicateRegistration is returned by a [CommandHandlerRegistry] when it detects duplicate registration.

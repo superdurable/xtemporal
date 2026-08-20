@@ -2,8 +2,8 @@
 package worker_versioning
 
 import (
-	"go.temporal.io/server/common/cache"
-	"go.temporal.io/server/common/metrics"
+	"github.com/superdurable/temporal-server/common/cache"
+	"github.com/superdurable/temporal-server/common/metrics"
 )
 
 // ReactivationSignalCache deduplicates reactivation signals to version workflows.

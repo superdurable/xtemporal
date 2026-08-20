@@ -1,8 +1,8 @@
 package api
 
 import (
+	"github.com/superdurable/temporal-server/common/cluster"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/common/cluster"
 )
 
 func ValidateReplicationConfig(

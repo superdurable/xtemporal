@@ -4,11 +4,11 @@ import (
 	"context"
 	"reflect"
 
+	"github.com/superdurable/temporal-server/api/visibilityservice/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/manager"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/api/visibilityservice/v1"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/persistence/visibility/manager"
 )
 
 type ChasmVisibilityManager struct {

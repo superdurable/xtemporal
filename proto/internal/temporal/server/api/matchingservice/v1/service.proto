@@ -5,7 +5,7 @@ package temporal.server.api.matchingservice.v1;
 import "temporal/server/api/common/v1/api_category.proto";
 import "temporal/server/api/matchingservice/v1/request_response.proto";
 
-option go_package = "go.temporal.io/server/api/matchingservice/v1;matchingservice";
+option go_package = "github.com/superdurable/temporal-server/api/matchingservice/v1;matchingservice";
 
 // MatchingService API is exposed to provide support for polling from long running applications.
 // Such applications are expected to have a worker which regularly polls for WorkflowTask and ActivityTask.  For each

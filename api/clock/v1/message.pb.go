@@ -165,7 +165,7 @@ const file_temporal_server_api_clock_v1_message_proto_rawDesc = "" +
 	"wall_clock\x18\x01 \x01(\x03R\twallClock\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\x05R\aversion\x12\x1d\n" +
 	"\n" +
-	"cluster_id\x18\x03 \x01(\x03R\tclusterIdB*Z(go.temporal.io/server/api/clock/v1;clockb\x06proto3"
+	"cluster_id\x18\x03 \x01(\x03R\tclusterIdB<Z:github.com/superdurable/temporal-server/api/clock/v1;clockb\x06proto3"
 
 var (
 	file_temporal_server_api_clock_v1_message_proto_rawDescOnce sync.Once

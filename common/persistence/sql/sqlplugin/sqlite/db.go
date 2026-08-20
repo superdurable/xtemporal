@@ -6,9 +6,9 @@ import (
 	"sync"
 
 	"github.com/jmoiron/sqlx"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin"
-	sqliteschema "go.temporal.io/server/schema/sqlite"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin"
+	sqliteschema "github.com/superdurable/temporal-server/schema/sqlite"
 )
 
 // db represents a logical connection to sqlite database

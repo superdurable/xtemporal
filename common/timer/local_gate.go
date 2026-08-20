@@ -3,7 +3,7 @@ package timer
 import (
 	"time"
 
-	"go.temporal.io/server/common/clock"
+	"github.com/superdurable/temporal-server/common/clock"
 )
 
 type (

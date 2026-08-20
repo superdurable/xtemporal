@@ -5,12 +5,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/superdurable/temporal-server/common/debug"
+	"github.com/superdurable/temporal-server/common/primitives"
+	"github.com/superdurable/temporal-server/common/retrypolicy"
+	"github.com/superdurable/temporal-server/common/util"
+	"github.com/superdurable/temporal-server/service/matching/counter"
 	sdkworker "go.temporal.io/sdk/worker"
-	"go.temporal.io/server/common/debug"
-	"go.temporal.io/server/common/primitives"
-	"go.temporal.io/server/common/retrypolicy"
-	"go.temporal.io/server/common/util"
-	"go.temporal.io/server/service/matching/counter"
 )
 
 var (
@@ -1542,7 +1542,7 @@ leaves the membership ring, giving in-flight long-polls time to drain before the
 		"history.enableHistoryReplicationDLQV2",
 		true,
 		`EnableHistoryReplicationDLQV2 switches to the DLQ v2 implementation for history replication. See details in
-[go.temporal.io/server/common/persistence.QueueV2]`,
+[github.com/superdurable/temporal-server/common/persistence.QueueV2]`,
 	)
 
 	EnableDeleteWorkflowExecutionReplication = NewGlobalBoolSetting(

@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"time"
 
-	"go.temporal.io/server/common/auth"
+	"github.com/superdurable/temporal-server/common/auth"
 )
 
 const (

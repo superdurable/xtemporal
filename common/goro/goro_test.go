@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/goro"
+	"github.com/superdurable/temporal-server/common/goro"
 )
 
 func blockOnCtxReturnErr(ctx context.Context) error {

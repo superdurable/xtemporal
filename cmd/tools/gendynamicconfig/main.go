@@ -3,7 +3,7 @@ package main
 import (
 	_ "embed"
 
-	"go.temporal.io/server/cmd/tools/codegen"
+	"github.com/superdurable/temporal-server/cmd/tools/codegen"
 )
 
 type (

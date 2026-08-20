@@ -5,7 +5,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/server/common/clock"
+	"github.com/superdurable/temporal-server/common/clock"
 )
 
 // Batcher collects items concurrently passed to Add into batches and calls a processing

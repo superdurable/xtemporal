@@ -3,11 +3,11 @@ package shard
 import (
 	"time"
 
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/service/history/configs"
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/service/history/configs"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 type (

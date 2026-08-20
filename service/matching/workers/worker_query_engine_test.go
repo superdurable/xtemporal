@@ -6,10 +6,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/temporal-server/common/sqlquery"
 	deploymentpb "go.temporal.io/api/deployment/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	workerpb "go.temporal.io/api/worker/v1"
-	"go.temporal.io/server/common/sqlquery"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

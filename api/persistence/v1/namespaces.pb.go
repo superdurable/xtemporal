@@ -479,7 +479,7 @@ const file_temporal_server_api_persistence_v1_namespaces_proto_rawDesc = "" +
 	"\x10failover_history\x18\b \x03(\v22.temporal.server.api.persistence.v1.FailoverStatusR\x0ffailoverHistory\"|\n" +
 	"\x0eFailoverStatus\x12?\n" +
 	"\rfailover_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\ffailoverTime\x12)\n" +
-	"\x10failover_version\x18\x02 \x01(\x03R\x0ffailoverVersionB6Z4go.temporal.io/server/api/persistence/v1;persistenceb\x06proto3"
+	"\x10failover_version\x18\x02 \x01(\x03R\x0ffailoverVersionBHZFgithub.com/superdurable/temporal-server/api/persistence/v1;persistenceb\x06proto3"
 
 var (
 	file_temporal_server_api_persistence_v1_namespaces_proto_rawDescOnce sync.Once

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"go.temporal.io/server/tools/fairsim"
+	"github.com/superdurable/temporal-server/tools/fairsim"
 )
 
 func main() {

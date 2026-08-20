@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/common/collection"
+	"github.com/superdurable/temporal-server/common/collection"
 )
 
 // This isn't exhaustive but serves as a basic stress test to ensure our implementation is collection

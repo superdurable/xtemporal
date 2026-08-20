@@ -10,7 +10,7 @@ import (
 	reflect "reflect"
 	unsafe "unsafe"
 
-	_ "go.temporal.io/server/api/common/v1"
+	_ "github.com/superdurable/temporal-server/api/common/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -106,7 +106,7 @@ const file_temporal_server_api_historyservice_v1_service_proto_rawDesc = "" +
 	"\x16PauseWorkflowExecution\x12D.temporal.server.api.historyservice.v1.PauseWorkflowExecutionRequest\x1aE.temporal.server.api.historyservice.v1.PauseWorkflowExecutionResponse\"\x06\x8a\xb5\x18\x02\b\x01\x12\xb3\x01\n" +
 	"\x18UnpauseWorkflowExecution\x12F.temporal.server.api.historyservice.v1.UnpauseWorkflowExecutionRequest\x1aG.temporal.server.api.historyservice.v1.UnpauseWorkflowExecutionResponse\"\x06\x8a\xb5\x18\x02\b\x01\x12\xa4\x01\n" +
 	"\x13StartNexusOperation\x12A.temporal.server.api.historyservice.v1.StartNexusOperationRequest\x1aB.temporal.server.api.historyservice.v1.StartNexusOperationResponse\"\x06\x8a\xb5\x18\x02\b\x01\x12\xa7\x01\n" +
-	"\x14CancelNexusOperation\x12B.temporal.server.api.historyservice.v1.CancelNexusOperationRequest\x1aC.temporal.server.api.historyservice.v1.CancelNexusOperationResponse\"\x06\x8a\xb5\x18\x02\b\x01B<Z:go.temporal.io/server/api/historyservice/v1;historyserviceb\x06proto3"
+	"\x14CancelNexusOperation\x12B.temporal.server.api.historyservice.v1.CancelNexusOperationRequest\x1aC.temporal.server.api.historyservice.v1.CancelNexusOperationResponse\"\x06\x8a\xb5\x18\x02\b\x01BNZLgithub.com/superdurable/temporal-server/api/historyservice/v1;historyserviceb\x06proto3"
 
 var file_temporal_server_api_historyservice_v1_service_proto_goTypes = []any{
 	(*StartWorkflowExecutionRequest)(nil),                  // 0: temporal.server.api.historyservice.v1.StartWorkflowExecutionRequest

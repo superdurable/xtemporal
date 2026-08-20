@@ -5,11 +5,11 @@ import (
 	"log"
 	"time"
 
+	"github.com/superdurable/temporal-server/service/worker/workerdeployment/replaytester"
 	"go.temporal.io/api/workflowservice/v1"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
-	"go.temporal.io/server/service/worker/workerdeployment/replaytester"
 )
 
 func main() {

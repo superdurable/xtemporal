@@ -4,20 +4,20 @@
 
 package telemetry
 
-//go:generate gowrap gen -p go.temporal.io/server/common/persistence -i Queue -t gowrap_template -o queue_gen.go -l ""
+//go:generate gowrap gen -p github.com/superdurable/temporal-server/common/persistence -i Queue -t gowrap_template -o queue_gen.go -l ""
 
 import (
 	"context"
 	"encoding/json"
 	"time"
 
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	_sourcePersistence "github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/common/telemetry"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	_sourcePersistence "go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/common/telemetry"
 )
 
 // telemetryQueue implements Queue interface instrumented with OpenTelemetry.

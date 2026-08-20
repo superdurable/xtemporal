@@ -3,13 +3,13 @@ package api
 import (
 	"context"
 
+	"github.com/superdurable/temporal-server/api/historyservice/v1"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/service/history/events"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
 	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/server/api/historyservice/v1"
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/service/history/events"
-	historyi "go.temporal.io/server/service/history/interfaces"
 )
 
 func TrimHistoryNode(

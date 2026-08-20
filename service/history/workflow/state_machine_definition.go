@@ -1,8 +1,8 @@
 package workflow
 
 import (
+	"github.com/superdurable/temporal-server/service/history/hsm"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/service/history/hsm"
 )
 
 // TransactionPolicy indicates whether a mutable state transaction is happening for an active namespace or passive namespace.

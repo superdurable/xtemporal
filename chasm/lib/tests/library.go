@@ -2,7 +2,7 @@ package tests
 
 import (
 	"github.com/nexus-rpc/sdk-go/nexus"
-	"go.temporal.io/server/chasm"
+	"github.com/superdurable/temporal-server/chasm"
 )
 
 type (

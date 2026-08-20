@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/membership"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/membership"
 	"google.golang.org/grpc"
 )
 
@@ -32,7 +32,7 @@ type (
 		logger                 log.Logger
 	}
 
-	// RPCFactory is a subset of the [go.temporal.io/server/common/rpc.RPCFactory] interface to make testing easier.
+	// RPCFactory is a subset of the [github.com/superdurable/temporal-server/common/rpc.RPCFactory] interface to make testing easier.
 	RPCFactory interface {
 		CreateHistoryGRPCConnection(rpcAddress string) *grpc.ClientConn
 	}

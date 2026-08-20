@@ -12,8 +12,8 @@ package replication
 import (
 	reflect "reflect"
 
-	history "go.temporal.io/server/api/history/v1"
-	persistence "go.temporal.io/server/api/persistence/v1"
+	history "github.com/superdurable/temporal-server/api/history/v1"
+	persistence "github.com/superdurable/temporal-server/api/persistence/v1"
 	gomock "go.uber.org/mock/gomock"
 )
 

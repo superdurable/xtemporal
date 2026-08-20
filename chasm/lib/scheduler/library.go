@@ -1,8 +1,8 @@
 package scheduler
 
 import (
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/chasm/lib/scheduler/gen/schedulerpb/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/chasm/lib/scheduler/gen/schedulerpb/v1"
 	"google.golang.org/grpc"
 )
 

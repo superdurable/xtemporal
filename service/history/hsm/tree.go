@@ -8,12 +8,12 @@ import (
 	"slices"
 	"strings"
 
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	tokenspb "github.com/superdurable/temporal-server/api/token/v1"
+	"github.com/superdurable/temporal-server/service/history/consts"
 	enumspb "go.temporal.io/api/enums/v1"
 	historypb "go.temporal.io/api/history/v1"
 	"go.temporal.io/api/serviceerror"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	tokenspb "go.temporal.io/server/api/token/v1"
-	"go.temporal.io/server/service/history/consts"
 	"google.golang.org/protobuf/proto"
 )
 

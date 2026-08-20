@@ -317,7 +317,7 @@ const file_temporal_server_chasm_lib_nexusoperation_proto_v1_operation_proto_raw
 	"\x1dCANCELLATION_STATUS_SUCCEEDED\x10\x03\x12\x1e\n" +
 	"\x1aCANCELLATION_STATUS_FAILED\x10\x04\x12!\n" +
 	"\x1dCANCELLATION_STATUS_TIMED_OUT\x10\x05\x12\x1f\n" +
-	"\x1bCANCELLATION_STATUS_BLOCKED\x10\x06BVZTgo.temporal.io/server/chasm/lib/nexusoperation/gen/nexusoperationpb;nexusoperationpbb\x06proto3"
+	"\x1bCANCELLATION_STATUS_BLOCKED\x10\x06BhZfgithub.com/superdurable/temporal-server/chasm/lib/nexusoperation/gen/nexusoperationpb;nexusoperationpbb\x06proto3"
 
 var (
 	file_temporal_server_chasm_lib_nexusoperation_proto_v1_operation_proto_rawDescOnce sync.Once

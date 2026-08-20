@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/chasm"
-	callbackspb "go.temporal.io/server/chasm/lib/callback/gen/callbackpb/v1"
-	"go.temporal.io/server/common/backoff"
+	"github.com/superdurable/temporal-server/chasm"
+	callbackspb "github.com/superdurable/temporal-server/chasm/lib/callback/gen/callbackpb/v1"
+	"github.com/superdurable/temporal-server/common/backoff"
 	"google.golang.org/protobuf/proto"
 )
 

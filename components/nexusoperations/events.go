@@ -5,9 +5,9 @@ import (
 	"reflect"
 	"strconv"
 
+	"github.com/superdurable/temporal-server/service/history/hsm"
 	enumspb "go.temporal.io/api/enums/v1"
 	historypb "go.temporal.io/api/history/v1"
-	"go.temporal.io/server/service/history/hsm"
 )
 
 type ScheduledEventDefinition struct{}

@@ -3,7 +3,7 @@ package metrics
 import (
 	"strings"
 
-	"go.temporal.io/server/common/log"
+	"github.com/superdurable/temporal-server/common/log"
 )
 
 const dexEngineMetricPrefix = "dex_engine_"

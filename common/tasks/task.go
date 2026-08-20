@@ -3,7 +3,7 @@ package tasks
 import (
 	"context"
 
-	"go.temporal.io/server/common/backoff"
+	"github.com/superdurable/temporal-server/common/backoff"
 )
 
 //go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination task_mock.go

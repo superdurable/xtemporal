@@ -4,7 +4,7 @@ package temporal.server.api.common.v1;
 
 import "temporal/api/common/v1/message.proto";
 
-option go_package = "go.temporal.io/server/api/common/v1;commonspb";
+option go_package = "github.com/superdurable/temporal-server/api/common/v1;commonspb";
 
 message HistoryTask {
   // shard_id is included to avoid having to deserialize the task blob.

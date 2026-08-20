@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/metrics"
+	"github.com/superdurable/temporal-server/common/metrics"
 	"go.uber.org/mock/gomock"
 )
 

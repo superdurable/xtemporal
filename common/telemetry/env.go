@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/superdurable/temporal-server/common/primitives"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	otelsdktrace "go.opentelemetry.io/otel/sdk/trace"
-	"go.temporal.io/server/common/primitives"
 )
 
 var (

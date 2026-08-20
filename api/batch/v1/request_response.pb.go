@@ -11,9 +11,9 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	v12 "github.com/superdurable/temporal-server/api/adminservice/v1"
 	v1 "go.temporal.io/api/enums/v1"
 	v11 "go.temporal.io/api/workflowservice/v1"
-	v12 "go.temporal.io/server/api/adminservice/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
@@ -145,7 +145,7 @@ const file_temporal_server_api_batch_v1_request_response_proto_rawDesc = "" +
 	"\n" +
 	"batch_type\x18\x06 \x01(\x0e2).temporal.api.enums.v1.BatchOperationTypeR\tbatchType\x12U\n" +
 	"\arequest\x18\a \x01(\v2;.temporal.api.workflowservice.v1.StartBatchOperationRequestR\arequest\x12i\n" +
-	"\radmin_request\x18\b \x01(\v2D.temporal.server.api.adminservice.v1.StartAdminBatchOperationRequestR\fadminRequestB*Z(go.temporal.io/server/api/batch/v1;batchb\x06proto3"
+	"\radmin_request\x18\b \x01(\v2D.temporal.server.api.adminservice.v1.StartAdminBatchOperationRequestR\fadminRequestB<Z:github.com/superdurable/temporal-server/api/batch/v1;batchb\x06proto3"
 
 var (
 	file_temporal_server_api_batch_v1_request_response_proto_rawDescOnce sync.Once

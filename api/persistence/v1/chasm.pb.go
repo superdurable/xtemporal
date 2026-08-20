@@ -857,7 +857,7 @@ const file_temporal_server_api_persistence_v1_chasm_proto_rawDesc = "" +
 	"close_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tcloseTime\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x04 \x01(\tR\trequestIdB\t\n" +
-	"\aoutcomeB6Z4go.temporal.io/server/api/persistence/v1;persistenceb\x06proto3"
+	"\aoutcomeBHZFgithub.com/superdurable/temporal-server/api/persistence/v1;persistenceb\x06proto3"
 
 var (
 	file_temporal_server_api_persistence_v1_chasm_proto_rawDescOnce sync.Once

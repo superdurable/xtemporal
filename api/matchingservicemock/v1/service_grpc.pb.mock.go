@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	matchingservice "go.temporal.io/server/api/matchingservice/v1"
+	matchingservice "github.com/superdurable/temporal-server/api/matchingservice/v1"
 	gomock "go.uber.org/mock/gomock"
 	grpc "google.golang.org/grpc"
 )

@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/persistence/client"
-	"go.temporal.io/server/common/persistence/mock"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/persistence/client"
+	"github.com/superdurable/temporal-server/common/persistence/mock"
 	"go.uber.org/mock/gomock"
 )
 

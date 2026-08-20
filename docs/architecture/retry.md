@@ -1,6 +1,6 @@
 # Retry
 
-The `go.temporal.io/server/common/backoff` package contains the retry primitives used across Temporal.
+The `github.com/superdurable/temporal-server/common/backoff` package contains the retry primitives used across Temporal.
 
 `backoff.ThrottleRetry` or, when there is a `context.Context` available
 `backoff.ThrottleRetryContext`, can be used to retry any operation that returns an error.

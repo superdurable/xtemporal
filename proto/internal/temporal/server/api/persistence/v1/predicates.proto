@@ -5,7 +5,7 @@ package temporal.server.api.persistence.v1;
 import "temporal/server/api/enums/v1/predicate.proto";
 import "temporal/server/api/enums/v1/task.proto";
 
-option go_package = "go.temporal.io/server/api/persistence/v1;persistence";
+option go_package = "github.com/superdurable/temporal-server/api/persistence/v1;persistence";
 
 message Predicate {
   temporal.server.api.enums.v1.PredicateType predicate_type = 1;

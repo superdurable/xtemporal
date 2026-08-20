@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/common/definition"
-	"go.temporal.io/server/service/history/tasks"
-	"go.temporal.io/server/service/history/tests"
+	"github.com/superdurable/temporal-server/common/definition"
+	"github.com/superdurable/temporal-server/service/history/tasks"
+	"github.com/superdurable/temporal-server/service/history/tests"
 )
 
 func TestIsTaskAcked(t *testing.T) {

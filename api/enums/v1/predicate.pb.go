@@ -143,7 +143,7 @@ const file_temporal_server_api_enums_v1_predicate_proto_rawDesc = "" +
 	"\x1aPREDICATE_TYPE_DESTINATION\x10\b\x12&\n" +
 	"\"PREDICATE_TYPE_OUTBOUND_TASK_GROUP\x10\t\x12 \n" +
 	"\x1cPREDICATE_TYPE_OUTBOUND_TASK\x10\n" +
-	"B*Z(go.temporal.io/server/api/enums/v1;enumsb\x06proto3"
+	"B<Z:github.com/superdurable/temporal-server/api/enums/v1;enumsb\x06proto3"
 
 var (
 	file_temporal_server_api_enums_v1_predicate_proto_rawDescOnce sync.Once

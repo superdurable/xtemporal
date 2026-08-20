@@ -3,18 +3,18 @@ package addtasks
 import (
 	"context"
 
+	"github.com/superdurable/temporal-server/api/historyservice/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/service/history/api"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 	commonpb "go.temporal.io/api/common/v1"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/api/historyservice/v1"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/service/history/api"
-	historyi "go.temporal.io/server/service/history/interfaces"
-	"go.temporal.io/server/service/history/tasks"
 )
 
 type (
-	// TaskDeserializer is a trimmed version of [go.temporal.io/server/common/persistence/serialization.Serializer] that
+	// TaskDeserializer is a trimmed version of [github.com/superdurable/temporal-server/common/persistence/serialization.Serializer] that
 	// requires only the DeserializeTask method.
 	TaskDeserializer interface {
 		DeserializeTask(category tasks.Category, blob *commonpb.DataBlob) (tasks.Task, error)

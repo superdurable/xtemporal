@@ -88,8 +88,8 @@ func TestMergeReports_MultipleReports(t *testing.T) {
 	suites := report.Testsuites.Suites
 	require.Len(t, suites, 2)
 	require.Equal(t, 4, report.Testsuites.Failures)
-	require.Equal(t, "go.temporal.io/server/tests", suites[0].Name)
-	require.Equal(t, "go.temporal.io/server/tests (retry 1) (final)", suites[1].Name)
+	require.Equal(t, "github.com/superdurable/temporal-server/tests", suites[0].Name)
+	require.Equal(t, "github.com/superdurable/temporal-server/tests (retry 1) (final)", suites[1].Name)
 
 	testNames := collectTestNames(suites)
 	require.Len(t, testNames, 6)
@@ -145,7 +145,7 @@ func TestMergeReports_MissingRerun(t *testing.T) {
 func TestAppendAlertsSuite(t *testing.T) {
 	j := &junitReport{}
 	alerts := []alert{
-		{Kind: alertKindDataRace, Summary: "Data race detected", Details: "WARNING: DATA RACE\n...", Tests: []string{"go.temporal.io/server/tools/testrunner.TestShowPanic"}},
+		{Kind: alertKindDataRace, Summary: "Data race detected", Details: "WARNING: DATA RACE\n...", Tests: []string{"github.com/superdurable/temporal-server/tools/testrunner.TestShowPanic"}},
 		{Kind: alertKindPanic, Summary: "This is a panic", Details: "panic: This is a panic\n...", Tests: []string{"TestPanicExample"}},
 	}
 	j.appendAlertsSuite(alerts)

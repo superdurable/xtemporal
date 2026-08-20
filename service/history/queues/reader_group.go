@@ -7,7 +7,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"go.temporal.io/server/common"
+	"github.com/superdurable/temporal-server/common"
 )
 
 var (

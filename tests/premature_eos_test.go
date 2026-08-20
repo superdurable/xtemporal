@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/superdurable/temporal-server/common/testing/parallelsuite"
+	"github.com/superdurable/temporal-server/tests/testcore"
 	commonpb "go.temporal.io/api/common/v1"
 	historypb "go.temporal.io/api/history/v1"
 	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/server/common/testing/parallelsuite"
-	"go.temporal.io/server/tests/testcore"
 )
 
 type PrematureEosTestSuite struct {

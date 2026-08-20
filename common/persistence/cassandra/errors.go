@@ -7,11 +7,11 @@ import (
 	"reflect"
 	"sort"
 
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	p "go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/common/persistence/nosql/nosqlplugin/cassandra/gocql"
-	"go.temporal.io/server/common/persistence/serialization"
-	"go.temporal.io/server/common/primitives/timestamp"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	p "github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/common/persistence/nosql/nosqlplugin/cassandra/gocql"
+	"github.com/superdurable/temporal-server/common/persistence/serialization"
+	"github.com/superdurable/temporal-server/common/primitives/timestamp"
 )
 
 var (

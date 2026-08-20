@@ -13,9 +13,9 @@ import (
 	context "context"
 	reflect "reflect"
 
-	historyservice "go.temporal.io/server/api/historyservice/v1"
-	repication "go.temporal.io/server/api/replication/v1"
-	chasm "go.temporal.io/server/chasm"
+	historyservice "github.com/superdurable/temporal-server/api/historyservice/v1"
+	repication "github.com/superdurable/temporal-server/api/replication/v1"
+	chasm "github.com/superdurable/temporal-server/chasm"
 	gomock "go.uber.org/mock/gomock"
 )
 

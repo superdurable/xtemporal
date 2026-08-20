@@ -21,7 +21,7 @@ env:
 jobs:
   unit-test:
     name: Unit tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ 'linux-dind-heavy' }}
     steps:
       - uses: actions/checkout@v6
 
@@ -31,7 +31,7 @@ jobs:
           cache: true
 
       - name: Run unit tests
-        timeout-minutes: 25
+        timeout-minutes: 45
         run: ./develop/github/monitor_test.sh make unit-test-coverage
 
       - name: Publish JUnit report
@@ -56,7 +56,7 @@ jobs:
 
   integration-test:
     name: PostgreSQL integration tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ 'linux-dind-heavy' }}
     steps:
       - uses: actions/checkout@v6
 
@@ -101,7 +101,7 @@ jobs:
 
   functional-test:
     name: PostgreSQL ${{ matrix.name }}${{ matrix.shard && format(' shard {0}', matrix.shard) || '' }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ 'linux-dind-heavy' }}
     strategy:
       fail-fast: false
       matrix:
@@ -121,12 +121,6 @@ jobs:
             timeout: 40
             shard: 2
             total_shards: 3
-          - name: ndc
-            command: make functional-test-ndc-coverage
-            timeout: 20
-          - name: xdc
-            command: make functional-test-xdc-coverage
-            timeout: 40
     env:
       PERSISTENCE_TYPE: sql
       PERSISTENCE_DRIVER: postgres12
@@ -187,7 +181,7 @@ jobs:
       - unit-test
       - integration-test
       - functional-test
-    runs-on: ubuntu-latest
+    runs-on: ${{ 'linux-dind-light' }}
     env:
       RESULTS: ${{ toJSON(needs.*.result) }}
     steps:

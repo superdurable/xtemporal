@@ -6,14 +6,14 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/server/common/convert"
-	"go.temporal.io/server/common/membership"
-	"go.temporal.io/server/common/primitives"
-	"go.temporal.io/server/common/resourcetest"
-	serviceerrors "go.temporal.io/server/common/serviceerror"
-	"go.temporal.io/server/service/history/configs"
-	historyi "go.temporal.io/server/service/history/interfaces"
-	"go.temporal.io/server/service/history/tests"
+	"github.com/superdurable/temporal-server/common/convert"
+	"github.com/superdurable/temporal-server/common/membership"
+	"github.com/superdurable/temporal-server/common/primitives"
+	"github.com/superdurable/temporal-server/common/resourcetest"
+	serviceerrors "github.com/superdurable/temporal-server/common/serviceerror"
+	"github.com/superdurable/temporal-server/service/history/configs"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
+	"github.com/superdurable/temporal-server/service/history/tests"
 	"go.uber.org/mock/gomock"
 )
 

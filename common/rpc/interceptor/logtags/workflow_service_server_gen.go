@@ -4,7 +4,7 @@ package logtags
 
 import (
 	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/log/tag"
 )
 
 func (wt *WorkflowTags) extractFromWorkflowServiceServerMessage(message any) []tag.Tag {

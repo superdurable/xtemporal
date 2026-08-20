@@ -3,8 +3,8 @@ package tests
 import (
 	"context"
 
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/chasm/lib/tests/gen/testspb/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/chasm/lib/tests/gen/testspb/v1"
 )
 
 type PayloadTTLPureTaskHandler struct{ chasm.PureTaskHandlerBase }

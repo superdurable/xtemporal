@@ -6,11 +6,11 @@ import (
 	"sync"
 	"time"
 
-	replicationspb "go.temporal.io/server/api/replication/v1"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/metrics"
-	ctasks "go.temporal.io/server/common/tasks"
+	replicationspb "github.com/superdurable/temporal-server/api/replication/v1"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/metrics"
+	ctasks "github.com/superdurable/temporal-server/common/tasks"
 )
 
 //go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination executable_task_tracker_mock.go

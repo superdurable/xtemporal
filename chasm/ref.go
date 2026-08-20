@@ -3,8 +3,8 @@ package chasm
 import (
 	"reflect"
 
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
 	"go.temporal.io/api/serviceerror"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
 )
 
 // ErrMalformedComponentRef is returned when component ref bytes cannot be deserialized.

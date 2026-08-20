@@ -3,7 +3,7 @@ package cluster
 import (
 	"context"
 
-	"go.temporal.io/server/common/pingable"
+	"github.com/superdurable/temporal-server/common/pingable"
 	"go.uber.org/fx"
 )
 

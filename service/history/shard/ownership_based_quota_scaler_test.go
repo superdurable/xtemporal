@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/service/history/shard"
+	"github.com/superdurable/temporal-server/service/history/shard"
 )
 
 // shardCounter adapts a channel of shard count updates to the ShardCounter interface.

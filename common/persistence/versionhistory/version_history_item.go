@@ -3,7 +3,7 @@ package versionhistory
 import (
 	"fmt"
 
-	historyspb "go.temporal.io/server/api/history/v1"
+	historyspb "github.com/superdurable/temporal-server/api/history/v1"
 )
 
 // NewVersionHistoryItem create a new instance of VersionHistoryItem.

@@ -3,10 +3,10 @@ package cassandra
 import (
 	"time"
 
-	"go.temporal.io/server/common/convert"
-	"go.temporal.io/server/common/log"
-	p "go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/common/persistence/nosql/nosqlplugin/cassandra/gocql"
+	"github.com/superdurable/temporal-server/common/convert"
+	"github.com/superdurable/temporal-server/common/log"
+	p "github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/common/persistence/nosql/nosqlplugin/cassandra/gocql"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

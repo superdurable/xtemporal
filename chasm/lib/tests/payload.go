@@ -1,12 +1,12 @@
 package tests
 
 import (
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/chasm/lib/tests/gen/testspb/v1"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/softassert"
 	commonpb "go.temporal.io/api/common/v1"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/chasm/lib/tests/gen/testspb/v1"
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/softassert"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

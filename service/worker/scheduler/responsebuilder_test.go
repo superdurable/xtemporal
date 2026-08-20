@@ -5,12 +5,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	schedulespb "github.com/superdurable/temporal-server/api/schedule/v1"
+	"github.com/superdurable/temporal-server/common/log"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	failurepb "go.temporal.io/api/failure/v1"
 	historypb "go.temporal.io/api/history/v1"
-	schedulespb "go.temporal.io/server/api/schedule/v1"
-	"go.temporal.io/server/common/log"
 	"google.golang.org/protobuf/proto"
 )
 

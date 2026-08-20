@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/testing/testlogger"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/testing/testlogger"
 )
 
 // mockT wraps a testing.T such that we can know if a test is failed.

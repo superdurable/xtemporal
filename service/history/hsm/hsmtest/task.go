@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/service/history/hsm"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/service/history/hsm"
 )
 
 const TaskType = "test-task-type-name"

@@ -4,12 +4,12 @@ import (
 	"strings"
 	"time"
 
-	chasmnexus "go.temporal.io/server/chasm/lib/nexusoperation"
-	"go.temporal.io/server/common/backoff"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/headers"
-	"go.temporal.io/server/common/rpc/interceptor"
+	chasmnexus "github.com/superdurable/temporal-server/chasm/lib/nexusoperation"
+	"github.com/superdurable/temporal-server/common/backoff"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/headers"
+	"github.com/superdurable/temporal-server/common/rpc/interceptor"
 )
 
 var RequestTimeout = dynamicconfig.NewDestinationDurationSetting(

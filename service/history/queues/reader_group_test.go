@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/server/common"
+	"github.com/superdurable/temporal-server/common"
 )
 
 type (

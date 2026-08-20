@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/namespace"
+	"github.com/superdurable/temporal-server/common/namespace"
 )
 
 func TestGet(t *testing.T) {

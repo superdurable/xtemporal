@@ -11,7 +11,7 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
-	v1 "go.temporal.io/server/api/enums/v1"
+	v1 "github.com/superdurable/temporal-server/api/enums/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -265,7 +265,7 @@ const file_temporal_server_api_health_v1_message_proto_rawDesc = "" +
 	"\aservice\x18\x01 \x01(\tR\aservice\x12?\n" +
 	"\x05state\x18\x02 \x01(\x0e2).temporal.server.api.enums.v1.HealthStateR\x05state\x12E\n" +
 	"\x05hosts\x18\x03 \x03(\v2/.temporal.server.api.health.v1.HostHealthDetailR\x05hosts\x12\x18\n" +
-	"\amessage\x18\x04 \x01(\tR\amessageB,Z*go.temporal.io/server/api/health/v1;healthb\x06proto3"
+	"\amessage\x18\x04 \x01(\tR\amessageB>Z<github.com/superdurable/temporal-server/api/health/v1;healthb\x06proto3"
 
 var (
 	file_temporal_server_api_health_v1_message_proto_rawDescOnce sync.Once

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/collection"
+	"github.com/superdurable/temporal-server/common/collection"
 )
 
 func TestIndexedTakeList(t *testing.T) {

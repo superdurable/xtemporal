@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/temporal-server/common/searchattribute/sadefs"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/common/searchattribute/sadefs"
 )
 
 func Test_Encode_Success(t *testing.T) {

@@ -3,9 +3,9 @@ package clitest
 import (
 	"path/filepath"
 
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/tools/common/schema/test"
-	"go.temporal.io/server/tools/sql"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/tools/common/schema/test"
+	"github.com/superdurable/temporal-server/tools/sql"
 )
 
 // UpdateSchemaTestSuite defines a test suite

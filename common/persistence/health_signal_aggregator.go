@@ -5,10 +5,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/aggregate"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/metrics"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/aggregate"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/metrics"
 )
 
 const (
