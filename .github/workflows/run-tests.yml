@@ -31,6 +31,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
+          cache: false
 
       - name: Run unit tests
         timeout-minutes: 45
@@ -68,6 +69,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
+          cache: false
 
       - name: Run PostgreSQL persistence and schema tests
         timeout-minutes: 25
@@ -142,6 +144,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
+          cache: false
 
       - name: Run functional test
         timeout-minutes: ${{ matrix.timeout }}
