@@ -6,8 +6,8 @@ import (
 
 	"github.com/emirpasic/gods/maps/treemap"
 	godsutils "github.com/emirpasic/gods/utils"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
 )
 
 // Used to convert out of order acks into ackLevel movement.

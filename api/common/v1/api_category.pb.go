@@ -171,7 +171,7 @@ const file_temporal_server_api_common_v1_api_category_proto_rawDesc = "" +
 	"\x15API_CATEGORY_STANDARD\x10\x01\x12\x1a\n" +
 	"\x16API_CATEGORY_LONG_POLL\x10\x02\x12\x17\n" +
 	"\x13API_CATEGORY_SYSTEM\x10\x03:y\n" +
-	"\fapi_category\x12\x1e.google.protobuf.MethodOptions\x18ц\x03 \x01(\v21.temporal.server.api.common.v1.ApiCategoryOptionsR\vapiCategory\x88\x01\x01B/Z-go.temporal.io/server/api/common/v1;commonspbb\x06proto3"
+	"\fapi_category\x12\x1e.google.protobuf.MethodOptions\x18ц\x03 \x01(\v21.temporal.server.api.common.v1.ApiCategoryOptionsR\vapiCategory\x88\x01\x01BAZ?github.com/superdurable/temporal-server/api/common/v1;commonspbb\x06proto3"
 
 var (
 	file_temporal_server_api_common_v1_api_category_proto_rawDescOnce sync.Once

@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	chasm "go.temporal.io/server/chasm"
+	chasm "github.com/superdurable/temporal-server/chasm"
 	gomock "go.uber.org/mock/gomock"
 )
 

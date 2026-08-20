@@ -3,9 +3,9 @@ package testcore
 import (
 	"time"
 
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/persistence/visibility"
-	"go.temporal.io/server/components/nexusoperations"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/persistence/visibility"
+	"github.com/superdurable/temporal-server/components/nexusoperations"
 )
 
 var (

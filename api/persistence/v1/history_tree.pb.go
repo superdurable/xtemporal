@@ -241,7 +241,7 @@ const file_temporal_server_api_persistence_v1_history_tree_proto_rawDesc = "" +
 	"\x12HistoryBranchRange\x12\x1b\n" +
 	"\tbranch_id\x18\x01 \x01(\tR\bbranchId\x12\"\n" +
 	"\rbegin_node_id\x18\x02 \x01(\x03R\vbeginNodeId\x12\x1e\n" +
-	"\vend_node_id\x18\x03 \x01(\x03R\tendNodeIdB6Z4go.temporal.io/server/api/persistence/v1;persistenceb\x06proto3"
+	"\vend_node_id\x18\x03 \x01(\x03R\tendNodeIdBHZFgithub.com/superdurable/temporal-server/api/persistence/v1;persistenceb\x06proto3"
 
 var (
 	file_temporal_server_api_persistence_v1_history_tree_proto_rawDescOnce sync.Once

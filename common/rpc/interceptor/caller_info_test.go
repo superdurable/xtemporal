@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/common/headers"
+	"github.com/superdurable/temporal-server/common/namespace"
 	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/server/common/headers"
-	"go.temporal.io/server/common/namespace"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc"
 )

@@ -6,12 +6,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/temporal-server/common/payloads"
+	"github.com/superdurable/temporal-server/common/testing/testvars"
+	"github.com/superdurable/temporal-server/tests/testcore"
 	enumspb "go.temporal.io/api/enums/v1"
 	updatepb "go.temporal.io/api/update/v1"
 	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/server/common/payloads"
-	"go.temporal.io/server/common/testing/testvars"
-	"go.temporal.io/server/tests/testcore"
 )
 
 type updateResponseErr struct {

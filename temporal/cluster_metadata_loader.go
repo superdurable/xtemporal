@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"go.temporal.io/server/common/cluster"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/persistence"
+	"github.com/superdurable/temporal-server/common/cluster"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/persistence"
 )
 
 // ClusterMetadataLoader loads cluster metadata from the database and merges it with the static config.

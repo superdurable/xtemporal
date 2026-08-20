@@ -3,7 +3,7 @@
 package namespace
 
 import (
-	"go.temporal.io/server/common/pingable"
+	"github.com/superdurable/temporal-server/common/pingable"
 )
 
 type (

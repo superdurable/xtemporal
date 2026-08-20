@@ -5,8 +5,8 @@ import (
 	"crypto/x509"
 	"time"
 
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/log"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/log"
 )
 
 type TestDynamicTLSConfigProvider struct {

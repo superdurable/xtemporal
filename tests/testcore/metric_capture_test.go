@@ -3,9 +3,9 @@ package testcore
 import (
 	"testing"
 
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/metrics/metricstest"
-	"go.temporal.io/server/common/testing/parallelsuite"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/metrics/metricstest"
+	"github.com/superdurable/temporal-server/common/testing/parallelsuite"
 )
 
 type MetricCaptureSuite struct {

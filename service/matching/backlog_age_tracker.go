@@ -5,7 +5,7 @@ import (
 
 	"github.com/emirpasic/gods/maps/treemap"
 	godsutils "github.com/emirpasic/gods/utils"
-	"go.temporal.io/server/common/util"
+	"github.com/superdurable/temporal-server/common/util"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

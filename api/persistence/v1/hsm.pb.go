@@ -839,7 +839,7 @@ const file_temporal_server_api_persistence_v1_hsm_proto_rawDesc = "" +
 	"\x0fchasm_node_path\x18\b \x01(\tH\x00R\rchasmNodePathB\x13\n" +
 	"\x11state_machine_key\"[\n" +
 	"\x10StateMachinePath\x12G\n" +
-	"\x04path\x18\x01 \x03(\v23.temporal.server.api.persistence.v1.StateMachineKeyR\x04pathB6Z4go.temporal.io/server/api/persistence/v1;persistenceb\x06proto3"
+	"\x04path\x18\x01 \x03(\v23.temporal.server.api.persistence.v1.StateMachineKeyR\x04pathBHZFgithub.com/superdurable/temporal-server/api/persistence/v1;persistenceb\x06proto3"
 
 var (
 	file_temporal_server_api_persistence_v1_hsm_proto_rawDescOnce sync.Once

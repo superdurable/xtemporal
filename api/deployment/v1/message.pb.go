@@ -4337,7 +4337,7 @@ const file_temporal_server_api_deployment_v1_message_proto_rawDesc = "" +
 	"\x1cForceCANDeploymentSignalArgs\x12d\n" +
 	"\x0eoverride_state\x18\x01 \x01(\v2=.temporal.server.api.deployment.v1.WorkerDeploymentLocalStateR\roverrideState\"x\n" +
 	"\x19ForceCANVersionSignalArgs\x12[\n" +
-	"\x0eoverride_state\x18\x01 \x01(\v24.temporal.server.api.deployment.v1.VersionLocalStateR\roverrideStateB4Z2go.temporal.io/server/api/deployment/v1;deploymentb\x06proto3"
+	"\x0eoverride_state\x18\x01 \x01(\v24.temporal.server.api.deployment.v1.VersionLocalStateR\roverrideStateBFZDgithub.com/superdurable/temporal-server/api/deployment/v1;deploymentb\x06proto3"
 
 var (
 	file_temporal_server_api_deployment_v1_message_proto_rawDescOnce sync.Once

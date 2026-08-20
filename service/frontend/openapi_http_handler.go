@@ -7,11 +7,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/rpc/interceptor"
+	"github.com/superdurable/temporal-server/service/frontend/configs"
 	"go.temporal.io/api/temporalproto/openapi"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/rpc/interceptor"
-	"go.temporal.io/server/service/frontend/configs"
 )
 
 // Small wrapper that does some pre-processing before handing requests over to the OpenAPI SDK's HTTP handler.

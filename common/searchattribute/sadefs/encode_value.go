@@ -5,9 +5,9 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/superdurable/temporal-server/common/payload"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/common/payload"
 )
 
 // EncodeValue encodes search attribute value and IndexedValueType to Payload.

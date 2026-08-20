@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"go.temporal.io/server/common/persistence"
+	"github.com/superdurable/temporal-server/common/persistence"
 )
 
 type (

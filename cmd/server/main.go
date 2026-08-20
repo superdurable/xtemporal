@@ -9,19 +9,19 @@ import (
 	"text/template"
 	_ "time/tzdata" // embed tzdata as a fallback
 
+	"github.com/superdurable/temporal-server/common/authorization"
+	"github.com/superdurable/temporal-server/common/build"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/debug"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/headers"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	_ "github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/mysql"      // needed to load mysql plugin
+	_ "github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/postgresql" // needed to load postgresql plugin
+	_ "github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/sqlite"     // needed to load sqlite plugin
+	"github.com/superdurable/temporal-server/temporal"
 	"github.com/urfave/cli/v2"
-	"go.temporal.io/server/common/authorization"
-	"go.temporal.io/server/common/build"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/debug"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/headers"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	_ "go.temporal.io/server/common/persistence/sql/sqlplugin/mysql"      // needed to load mysql plugin
-	_ "go.temporal.io/server/common/persistence/sql/sqlplugin/postgresql" // needed to load postgresql plugin
-	_ "go.temporal.io/server/common/persistence/sql/sqlplugin/sqlite"     // needed to load sqlite plugin
-	"go.temporal.io/server/temporal"
 )
 
 // main entry point for the temporal server

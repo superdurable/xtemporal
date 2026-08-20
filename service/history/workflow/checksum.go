@@ -3,11 +3,11 @@ package workflow
 import (
 	"fmt"
 
-	checksumspb "go.temporal.io/server/api/checksum/v1"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/checksum"
-	"go.temporal.io/server/common/util"
-	historyi "go.temporal.io/server/service/history/interfaces"
+	checksumspb "github.com/superdurable/temporal-server/api/checksum/v1"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/checksum"
+	"github.com/superdurable/temporal-server/common/util"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
 	expmaps "golang.org/x/exp/maps"
 )
 

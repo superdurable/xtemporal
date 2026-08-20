@@ -5,13 +5,13 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/persistence/visibility/store/query"
-	"go.temporal.io/server/common/primitives"
-	"go.temporal.io/server/common/searchattribute"
-	"go.temporal.io/server/common/searchattribute/sadefs"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/store/query"
+	"github.com/superdurable/temporal-server/common/primitives"
+	"github.com/superdurable/temporal-server/common/searchattribute"
+	"github.com/superdurable/temporal-server/common/searchattribute/sadefs"
 	"go.uber.org/mock/gomock"
 )
 

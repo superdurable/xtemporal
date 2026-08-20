@@ -6,7 +6,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"go.temporal.io/server/common/namespace"
+	"github.com/superdurable/temporal-server/common/namespace"
 	"go.uber.org/fx"
 )
 

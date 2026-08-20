@@ -14,12 +14,12 @@ import (
 	reflect "reflect"
 	time "time"
 
-	enums "go.temporal.io/server/api/enums/v1"
-	repication "go.temporal.io/server/api/replication/v1"
-	backoff "go.temporal.io/server/common/backoff"
-	definition "go.temporal.io/server/common/definition"
-	serviceerror "go.temporal.io/server/common/serviceerror"
-	tasks "go.temporal.io/server/common/tasks"
+	enums "github.com/superdurable/temporal-server/api/enums/v1"
+	repication "github.com/superdurable/temporal-server/api/replication/v1"
+	backoff "github.com/superdurable/temporal-server/common/backoff"
+	definition "github.com/superdurable/temporal-server/common/definition"
+	serviceerror "github.com/superdurable/temporal-server/common/serviceerror"
+	tasks "github.com/superdurable/temporal-server/common/tasks"
 	gomock "go.uber.org/mock/gomock"
 )
 

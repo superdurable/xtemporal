@@ -1,8 +1,8 @@
 package vclock
 
 import (
+	clockspb "github.com/superdurable/temporal-server/api/clock/v1"
 	"go.temporal.io/api/serviceerror"
-	clockspb "go.temporal.io/server/api/clock/v1"
 )
 
 func NewVectorClock(

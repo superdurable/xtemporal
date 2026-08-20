@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	enumsspb "github.com/superdurable/temporal-server/api/enums/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	enumsspb "go.temporal.io/server/api/enums/v1"
 	"gopkg.in/yaml.v3"
 )
 

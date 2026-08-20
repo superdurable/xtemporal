@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/superdurable/temporal-server/common/persistence/serialization"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/server/common/persistence/serialization"
-	"go.temporal.io/server/service/history/tasks"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )

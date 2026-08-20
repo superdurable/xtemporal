@@ -11,6 +11,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/util"
+	"github.com/superdurable/temporal-server/tests/testcore"
 	commonpb "go.temporal.io/api/common/v1"
 	rulespb "go.temporal.io/api/rules/v1"
 	"go.temporal.io/api/serviceerror"
@@ -18,10 +22,6 @@ import (
 	sdkclient "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/util"
-	"go.temporal.io/server/tests/testcore"
 )
 
 type ActivityApiRulesClientTestSuite struct {

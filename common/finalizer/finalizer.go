@@ -6,11 +6,11 @@ import (
 	"sync"
 	"time"
 
-	cclock "go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/goro"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/metrics"
+	cclock "github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/goro"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/metrics"
 )
 
 var (

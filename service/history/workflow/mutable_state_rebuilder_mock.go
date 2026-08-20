@@ -13,10 +13,10 @@ import (
 	context "context"
 	reflect "reflect"
 
+	namespace "github.com/superdurable/temporal-server/common/namespace"
+	interfaces "github.com/superdurable/temporal-server/service/history/interfaces"
 	common "go.temporal.io/api/common/v1"
 	history "go.temporal.io/api/history/v1"
-	namespace "go.temporal.io/server/common/namespace"
-	interfaces "go.temporal.io/server/service/history/interfaces"
 	gomock "go.uber.org/mock/gomock"
 )
 

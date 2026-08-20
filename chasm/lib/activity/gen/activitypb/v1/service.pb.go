@@ -10,8 +10,8 @@ import (
 	reflect "reflect"
 	unsafe "unsafe"
 
-	_ "go.temporal.io/server/api/common/v1"
-	_ "go.temporal.io/server/api/routing/v1"
+	_ "github.com/superdurable/temporal-server/api/common/v1"
+	_ "github.com/superdurable/temporal-server/api/routing/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -35,7 +35,7 @@ const file_temporal_server_chasm_lib_activity_proto_v1_service_proto_rawDesc = "
 	"\x15PollActivityExecution\x12I.temporal.server.chasm.lib.activity.proto.v1.PollActivityExecutionRequest\x1aJ.temporal.server.chasm.lib.activity.proto.v1.PollActivityExecutionResponse\"(\x8a\xb5\x18\x02\b\x02\xd2\xc3\x18\x1e\x1a\x1cfrontend_request.activity_id\x12\xe7\x01\n" +
 	"\x1aTerminateActivityExecution\x12N.temporal.server.chasm.lib.activity.proto.v1.TerminateActivityExecutionRequest\x1aO.temporal.server.chasm.lib.activity.proto.v1.TerminateActivityExecutionResponse\"(\x8a\xb5\x18\x02\b\x01\xd2\xc3\x18\x1e\x1a\x1cfrontend_request.activity_id\x12\xf3\x01\n" +
 	"\x1eRequestCancelActivityExecution\x12R.temporal.server.chasm.lib.activity.proto.v1.RequestCancelActivityExecutionRequest\x1aS.temporal.server.chasm.lib.activity.proto.v1.RequestCancelActivityExecutionResponse\"(\x8a\xb5\x18\x02\b\x01\xd2\xc3\x18\x1e\x1a\x1cfrontend_request.activity_id\x12\xde\x01\n" +
-	"\x17DeleteActivityExecution\x12K.temporal.server.chasm.lib.activity.proto.v1.DeleteActivityExecutionRequest\x1aL.temporal.server.chasm.lib.activity.proto.v1.DeleteActivityExecutionResponse\"(\x8a\xb5\x18\x02\b\x01\xd2\xc3\x18\x1e\x1a\x1cfrontend_request.activity_idBDZBgo.temporal.io/server/chasm/lib/activity/gen/activitypb;activitypbb\x06proto3"
+	"\x17DeleteActivityExecution\x12K.temporal.server.chasm.lib.activity.proto.v1.DeleteActivityExecutionRequest\x1aL.temporal.server.chasm.lib.activity.proto.v1.DeleteActivityExecutionResponse\"(\x8a\xb5\x18\x02\b\x01\xd2\xc3\x18\x1e\x1a\x1cfrontend_request.activity_idBVZTgithub.com/superdurable/temporal-server/chasm/lib/activity/gen/activitypb;activitypbb\x06proto3"
 
 var file_temporal_server_chasm_lib_activity_proto_v1_service_proto_goTypes = []any{
 	(*StartActivityExecutionRequest)(nil),          // 0: temporal.server.chasm.lib.activity.proto.v1.StartActivityExecutionRequest

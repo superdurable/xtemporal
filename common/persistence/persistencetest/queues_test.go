@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/common/persistence/persistencetest"
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/common/persistence/persistencetest"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 func TestGetQueueKey_Default(t *testing.T) {

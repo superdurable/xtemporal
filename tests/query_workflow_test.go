@@ -13,6 +13,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/testing/testvars"
+	"github.com/superdurable/temporal-server/common/util"
+	"github.com/superdurable/temporal-server/service/history/consts"
+	"github.com/superdurable/temporal-server/tests/testcore"
 	commandpb "go.temporal.io/api/command/v1"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
@@ -25,11 +30,6 @@ import (
 	sdkclient "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/testing/testvars"
-	"go.temporal.io/server/common/util"
-	"go.temporal.io/server/service/history/consts"
-	"go.temporal.io/server/tests/testcore"
 )
 
 type QueryWorkflowSuite struct {

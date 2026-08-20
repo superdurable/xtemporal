@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/common/log"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/common/log"
 )
 
 type serviceErrorWithDPanicSuite struct {

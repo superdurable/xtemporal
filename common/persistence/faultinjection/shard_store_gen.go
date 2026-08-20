@@ -4,12 +4,12 @@
 
 package faultinjection
 
-//go:generate gowrap gen -p go.temporal.io/server/common/persistence -i ShardStore -t gowrap_template -o shard_store_gen.go -l ""
+//go:generate gowrap gen -p github.com/superdurable/temporal-server/common/persistence -i ShardStore -t gowrap_template -o shard_store_gen.go -l ""
 
 import (
 	"context"
 
-	_sourcePersistence "go.temporal.io/server/common/persistence"
+	_sourcePersistence "github.com/superdurable/temporal-server/common/persistence"
 )
 
 type (

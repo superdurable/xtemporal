@@ -3,10 +3,10 @@ package interfaces
 import (
 	"time"
 
+	enumsspb "github.com/superdurable/temporal-server/api/enums/v1"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 	enumspb "go.temporal.io/api/enums/v1"
 	taskqueuepb "go.temporal.io/api/taskqueue/v1"
-	enumsspb "go.temporal.io/server/api/enums/v1"
-	"go.temporal.io/server/service/history/tasks"
 )
 
 // TODO: This should be part of persistence layer

@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/common/authorization"
+	"github.com/superdurable/temporal-server/common/rpc"
+	"github.com/superdurable/temporal-server/tests/testcore"
 	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/server/common/authorization"
-	"go.temporal.io/server/common/rpc"
-	"go.temporal.io/server/tests/testcore"
 )
 
 type TLSFunctionalSuite struct {

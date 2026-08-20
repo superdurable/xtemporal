@@ -1,8 +1,8 @@
 package serviceerror
 
 import (
+	"github.com/superdurable/temporal-server/common/log"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/common/log"
 )
 
 // NewInternalErrorWithDPanic is a wrapper for service error that will panic if it's in dev environment

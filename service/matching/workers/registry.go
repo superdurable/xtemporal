@@ -1,8 +1,8 @@
 package workers
 
 import (
+	"github.com/superdurable/temporal-server/common/namespace"
 	workerpb "go.temporal.io/api/worker/v1"
-	"go.temporal.io/server/common/namespace"
 )
 
 type (

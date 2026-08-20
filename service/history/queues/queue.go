@@ -1,7 +1,7 @@
 package queues
 
 import (
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 //go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination queue_mock.go

@@ -3,9 +3,9 @@ package cassandra
 import (
 	"fmt"
 
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/persistence/nosql/nosqlplugin/cassandra/gocql"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/persistence/nosql/nosqlplugin/cassandra/gocql"
 )
 
 const cassandraPersistenceName = "cassandra"

@@ -5,10 +5,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/metrics"
+	"github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/metrics"
 )
 
 type (

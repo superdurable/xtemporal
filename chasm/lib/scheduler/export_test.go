@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	schedulespb "go.temporal.io/server/api/schedule/v1"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/chasm/lib/scheduler/gen/schedulerpb/v1"
-	"go.temporal.io/server/common/log"
-	legacyscheduler "go.temporal.io/server/service/worker/scheduler"
+	schedulespb "github.com/superdurable/temporal-server/api/schedule/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/chasm/lib/scheduler/gen/schedulerpb/v1"
+	"github.com/superdurable/temporal-server/common/log"
+	legacyscheduler "github.com/superdurable/temporal-server/service/worker/scheduler"
 )
 
 // Export unexported methods for testing.

@@ -3,8 +3,8 @@ package tasks
 import (
 	"maps"
 
-	enumsspb "go.temporal.io/server/api/enums/v1"
-	"go.temporal.io/server/common/predicates"
+	enumsspb "github.com/superdurable/temporal-server/api/enums/v1"
+	"github.com/superdurable/temporal-server/common/predicates"
 )
 
 type (

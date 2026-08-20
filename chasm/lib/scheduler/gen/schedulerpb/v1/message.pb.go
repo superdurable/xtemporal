@@ -11,10 +11,10 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	v11 "github.com/superdurable/temporal-server/api/schedule/v1"
 	v12 "go.temporal.io/api/common/v1"
 	v13 "go.temporal.io/api/failure/v1"
 	v1 "go.temporal.io/api/schedule/v1"
-	v11 "go.temporal.io/server/api/schedule/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -652,7 +652,7 @@ const file_temporal_server_chasm_lib_scheduler_proto_v1_message_proto_rawDesc = 
 	"\x05value\x18\x02 \x01(\v2\x1f.temporal.api.common.v1.PayloadR\x05value:\x028\x01\x1aX\n" +
 	"\tMemoEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x125\n" +
-	"\x05value\x18\x02 \x01(\v2\x1f.temporal.api.common.v1.PayloadR\x05value:\x028\x01BGZEgo.temporal.io/server/chasm/lib/scheduler/gen/schedulerpb;schedulerpbb\x06proto3"
+	"\x05value\x18\x02 \x01(\v2\x1f.temporal.api.common.v1.PayloadR\x05value:\x028\x01BYZWgithub.com/superdurable/temporal-server/chasm/lib/scheduler/gen/schedulerpb;schedulerpbb\x06proto3"
 
 var (
 	file_temporal_server_chasm_lib_scheduler_proto_v1_message_proto_rawDescOnce sync.Once

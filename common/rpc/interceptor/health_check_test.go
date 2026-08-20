@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	// Blank imports register chasm/lib service file descriptors into protoregistry.GlobalFiles.
-	_ "go.temporal.io/server/chasm/lib/activity/gen/activitypb/v1"
-	_ "go.temporal.io/server/chasm/lib/scheduler/gen/schedulerpb/v1"
+	_ "github.com/superdurable/temporal-server/chasm/lib/activity/gen/activitypb/v1"
+	_ "github.com/superdurable/temporal-server/chasm/lib/scheduler/gen/schedulerpb/v1"
 )
 
 // resetExcludedAPIs resets the package-level sync.Once and map so each test starts fresh.

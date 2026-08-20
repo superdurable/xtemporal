@@ -6,10 +6,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
 )
 
 // otelMetricsHandler is an adapter around an OpenTelemetry [metric.Meter] that implements the [Handler] interface.

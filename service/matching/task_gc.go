@@ -5,7 +5,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/server/common/persistence"
+	"github.com/superdurable/temporal-server/common/persistence"
 )
 
 type taskGC struct {

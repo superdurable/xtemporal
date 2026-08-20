@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/primitives"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/primitives"
 )
 
 const (

@@ -1,20 +1,20 @@
 package visibility
 
 import (
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/persistence/serialization"
-	"go.temporal.io/server/common/persistence/visibility/manager"
-	"go.temporal.io/server/common/persistence/visibility/store"
-	"go.temporal.io/server/common/persistence/visibility/store/elasticsearch"
-	"go.temporal.io/server/common/persistence/visibility/store/sql"
-	"go.temporal.io/server/common/resolver"
-	"go.temporal.io/server/common/searchattribute"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/persistence/serialization"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/manager"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/store"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/store/elasticsearch"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/store/sql"
+	"github.com/superdurable/temporal-server/common/resolver"
+	"github.com/superdurable/temporal-server/common/searchattribute"
 )
 
 type VisibilityStoreFactory interface {

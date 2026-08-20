@@ -31,15 +31,15 @@ created by go.opencensus.io/stats/view.init.0 in goroutine 1
         /golang/1.23.2/packages/pkg/mod/go.opencensus.io@v0.24.0/stats/view/worker.go:34 +0xf4
 
 goroutine 8 [chan receive]:
-go.temporal.io/server/tests/testcore.init.1.func1()
+github.com/superdurable/temporal-server/tests/testcore.init.1.func1()
         /temporal/tests/testcore/timeout.go:66 +0x48
-created by go.temporal.io/server/tests/testcore.init.1 in goroutine 1
+created by github.com/superdurable/temporal-server/tests/testcore.init.1 in goroutine 1
         /temporal/tests/testcore/timeout.go:62 +0x2c
 
 goroutine 9 [chan receive]:
 testing.(*T).Parallel(0xc0003584e0)
         /golang/1.23.2/packages/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.4.darwin-arm64/src/testing/testing.go:1484 +0x364
-go.temporal.io/server/tests.TestWorkflowVisibilityTestSuite(0xc0003584e0)
+github.com/superdurable/temporal-server/tests.TestWorkflowVisibilityTestSuite(0xc0003584e0)
         /temporal/tests/workflow_visibility_test.go:50 +0x2c
 testing.tRunner(0xc0003584e0, 0x106838360)
         /golang/1.23.2/packages/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.4.darwin-arm64/src/testing/testing.go:1690 +0x188
@@ -49,7 +49,7 @@ created by testing.(*T).Run in goroutine 1
 goroutine 10 [chan receive]:
 testing.(*T).Parallel(0xc000358680)
         /golang/1.23.2/packages/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.4.darwin-arm64/src/testing/testing.go:1484 +0x364
-go.temporal.io/server/tests.TestNexusWorkflowTestSuite(0xc000358680)
+github.com/superdurable/temporal-server/tests.TestNexusWorkflowTestSuite(0xc000358680)
         /temporal/tests/nexus_workflow_test.go:74 +0x2c
 testing.tRunner(0xc000358680, 0x106838288)
         /golang/1.23.2/packages/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.4.darwin-arm64/src/testing/testing.go:1690 +0x188
@@ -57,33 +57,33 @@ created by testing.(*T).Run in goroutine 1
         /golang/1.23.2/packages/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.4.darwin-arm64/src/testing/testing.go:1743 +0x5e4
 
 goroutine 11 [select]:
-go.temporal.io/server/common/backoff.ThrottleRetryContext({0x10687a7a0, 0x1088989a0}, 0xc000064cb0, {0x10684ffe0, 0xc000f214d0}, 0x0)
+github.com/superdurable/temporal-server/common/backoff.ThrottleRetryContext({0x10687a7a0, 0x1088989a0}, 0xc000064cb0, {0x10684ffe0, 0xc000f214d0}, 0x0)
         /temporal/common/backoff/retry.go:110 +0x354
-go.temporal.io/server/common/backoff.ThrottleRetry(0xc000064e48, {0x10684ffe0, 0xc000f214d0}, 0x0)
+github.com/superdurable/temporal-server/common/backoff.ThrottleRetry(0xc000064e48, {0x10684ffe0, 0xc000f214d0}, 0x0)
         /temporal/common/backoff/retry.go:63 +0x7c
-go.temporal.io/server/common/persistence/cassandra.(*TestCluster).CreateSession(0xc00011ce00, {0x1056e6869, 0x6})
+github.com/superdurable/temporal-server/common/persistence/cassandra.(*TestCluster).CreateSession(0xc00011ce00, {0x1056e6869, 0x6})
         /temporal/common/persistence/cassandra/test.go:165 +0x174
-go.temporal.io/server/common/persistence/cassandra.(*TestCluster).SetupTestDatabase(0xc00011ce00)
+github.com/superdurable/temporal-server/common/persistence/cassandra.(*TestCluster).SetupTestDatabase(0xc00011ce00)
         /temporal/common/persistence/cassandra/test.go:109 +0x3c
-go.temporal.io/server/common/persistence/persistence-tests.(*TestBase).Setup(0xc000b98480, 0xc000763a80)
+github.com/superdurable/temporal-server/common/persistence/persistence-tests.(*TestBase).Setup(0xc000b98480, 0xc000763a80)
         /temporal/common/persistence/persistence-tests/persistence_test_base.go:214 +0x1bc
-go.temporal.io/server/tests/testcore.newClusterWithPersistenceTestBaseFactory(0xc000358820, 0xc0002ec580, {0x106887830, 0xc000b00f30}, {0x106850020, 0x1088989a0})
+github.com/superdurable/temporal-server/tests/testcore.newClusterWithPersistenceTestBaseFactory(0xc000358820, 0xc0002ec580, {0x106887830, 0xc000b00f30}, {0x106850020, 0x1088989a0})
         /temporal/tests/testcore/test_cluster.go:251 +0xd80
-go.temporal.io/server/tests/testcore.(*defaultTestClusterFactory).NewCluster(0xc000b01960, 0xc000358820, 0xc0002ec580, {0x106887830, 0xc000b00f30})
+github.com/superdurable/temporal-server/tests/testcore.(*defaultTestClusterFactory).NewCluster(0xc000b01960, 0xc000358820, 0xc0002ec580, {0x106887830, 0xc000b00f30})
         /temporal/tests/testcore/test_cluster.go:148 +0x60
-go.temporal.io/server/tests/testcore.(*FunctionalTestBase).SetupSuiteWithCluster(0xc000b98180, {0x1057245de, 0x1c}, {0xc000065be0, 0x1, 0x105fd808c?})
+github.com/superdurable/temporal-server/tests/testcore.(*FunctionalTestBase).SetupSuiteWithCluster(0xc000b98180, {0x1057245de, 0x1c}, {0xc000065be0, 0x1, 0x105fd808c?})
         /temporal/tests/testcore/functional_test_base.go:224 +0x750
-go.temporal.io/server/tests/testcore.(*FunctionalTestSdkSuite).SetupSuite(0xc000b98180)
+github.com/superdurable/temporal-server/tests/testcore.(*FunctionalTestSdkSuite).SetupSuite(0xc000b98180)
         /temporal/tests/testcore/functional_test_sdk_suite.go:84 +0x7ac
 github.com/stretchr/testify/suite.Run(0xc000358820, {0x106873688, 0xc000b98180})
         /golang/1.23.2/packages/pkg/mod/github.com/stretchr/testify@v1.10.0/suite/suite.go:157 +0x4a8
-go.temporal.io/server/tests.TestActivityApiResetClientTestSuite(0xc000358820)
+github.com/superdurable/temporal-server/tests.TestActivityApiResetClientTestSuite(0xc000358820)
         /temporal/tests/activity_api_reset_test.go:58 +0x44
 testing.tRunner(0xc000358820, 0x1068381a0)
         /golang/1.23.2/packages/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.4.darwin-arm64/src/testing/testing.go:1690 +0x188
 created by testing.(*T).Run in goroutine 1
         /golang/1.23.2/packages/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.4.darwin-arm64/src/testing/testing.go:1743 +0x5e4
-FAIL    go.temporal.io/server/tests     6.390s
+FAIL    github.com/superdurable/temporal-server/tests     6.390s
 FAIL
 -test.shuffle 1737591386906516000
 2025/01/22 16:16:26 gocql: unable to dial control conn 127.0.0.1:9042: dial tcp 127.0.0.1:9042: connect: connection refused
@@ -120,35 +120,35 @@ created by go.opencensus.io/stats/view.init.0 in goroutine 1
         /golang/1.23.2/packages/pkg/mod/go.opencensus.io@v0.24.0/stats/view/worker.go:34 +0xf4
 
 goroutine 13 [chan receive]:
-go.temporal.io/server/tests/testcore.init.1.func1()
+github.com/superdurable/temporal-server/tests/testcore.init.1.func1()
         /temporal/tests/testcore/timeout.go:66 +0x48
-created by go.temporal.io/server/tests/testcore.init.1 in goroutine 1
+created by github.com/superdurable/temporal-server/tests/testcore.init.1 in goroutine 1
         /temporal/tests/testcore/timeout.go:62 +0x2c
 
 goroutine 14 [select]:
-go.temporal.io/server/common/backoff.ThrottleRetryContext({0x1062dcf60, 0x107dd8da0}, 0xc000064cc0, {0x1062b1060, 0xc0011a28a0}, 0x0)
+github.com/superdurable/temporal-server/common/backoff.ThrottleRetryContext({0x1062dcf60, 0x107dd8da0}, 0xc000064cc0, {0x1062b1060, 0xc0011a28a0}, 0x0)
         /temporal/common/backoff/retry.go:110 +0x354
-go.temporal.io/server/common/backoff.ThrottleRetry(0xc000064e58, {0x1062b1060, 0xc0011a28a0}, 0x0)
+github.com/superdurable/temporal-server/common/backoff.ThrottleRetry(0xc000064e58, {0x1062b1060, 0xc0011a28a0}, 0x0)
         /temporal/common/backoff/retry.go:63 +0x7c
-go.temporal.io/server/common/persistence/cassandra.(*TestCluster).CreateSession(0xc0001b8c00, {0x1052a9f10, 0x6})
+github.com/superdurable/temporal-server/common/persistence/cassandra.(*TestCluster).CreateSession(0xc0001b8c00, {0x1052a9f10, 0x6})
         /temporal/common/persistence/cassandra/test.go:165 +0x174
-go.temporal.io/server/common/persistence/cassandra.(*TestCluster).SetupTestDatabase(0xc0001b8c00)
+github.com/superdurable/temporal-server/common/persistence/cassandra.(*TestCluster).SetupTestDatabase(0xc0001b8c00)
         /temporal/common/persistence/cassandra/test.go:109 +0x3c
-go.temporal.io/server/common/persistence/persistence-tests.(*TestBase).Setup(0xc000bd4780, 0xc000d99a00)
+github.com/superdurable/temporal-server/common/persistence/persistence-tests.(*TestBase).Setup(0xc000bd4780, 0xc000d99a00)
         /temporal/common/persistence/persistence-tests/persistence_test_base.go:214 +0x1bc
-go.temporal.io/server/tests/testcore.newClusterWithPersistenceTestBaseFactory(0xc000bbe4e0, 0xc000a04160, {0x1062e9850, 0xc0009b1310}, {0x1062b1000, 0x107dd8da0})
+github.com/superdurable/temporal-server/tests/testcore.newClusterWithPersistenceTestBaseFactory(0xc000bbe4e0, 0xc000a04160, {0x1062e9850, 0xc0009b1310}, {0x1062b1000, 0x107dd8da0})
         /temporal/tests/testcore/test_cluster.go:251 +0xd80
-go.temporal.io/server/tests/testcore.(*defaultTestClusterFactory).NewCluster(0xc000a03f30, 0xc000bbe4e0, 0xc000a04160, {0x1062e9850, 0xc0009b1310})
+github.com/superdurable/temporal-server/tests/testcore.(*defaultTestClusterFactory).NewCluster(0xc000a03f30, 0xc000bbe4e0, 0xc000a04160, {0x1062e9850, 0xc0009b1310})
         /temporal/tests/testcore/test_cluster.go:148 +0x60
-go.temporal.io/server/tests/ndc.(*NDCFunctionalTestSuite).SetupSuite(0xc0011832c0)
+github.com/superdurable/temporal-server/tests/ndc.(*NDCFunctionalTestSuite).SetupSuite(0xc0011832c0)
         /temporal/tests/ndc/ndc_test.go:160 +0x1528
 github.com/stretchr/testify/suite.Run(0xc000bbe4e0, {0x1062d6090, 0xc0011832c0})
         /golang/1.23.2/packages/pkg/mod/github.com/stretchr/testify@v1.10.0/suite/suite.go:157 +0x4a8
-go.temporal.io/server/tests/ndc.TestNDCFuncTestSuite(0xc000bbe4e0)
+github.com/superdurable/temporal-server/tests/ndc.TestNDCFuncTestSuite(0xc000bbe4e0)
         /temporal/tests/ndc/ndc_test.go:105 +0x44
 testing.tRunner(0xc000bbe4e0, 0x10629e300)
         /golang/1.23.2/packages/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.4.darwin-arm64/src/testing/testing.go:1690 +0x188
 created by testing.(*T).Run in goroutine 1
         /golang/1.23.2/packages/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.4.darwin-arm64/src/testing/testing.go:1743 +0x5e4
-FAIL    go.temporal.io/server/tests/ndc 6.311s
+FAIL    github.com/superdurable/temporal-server/tests/ndc 6.311s
 FAIL

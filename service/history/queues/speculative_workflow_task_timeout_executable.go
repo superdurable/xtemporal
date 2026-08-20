@@ -1,8 +1,8 @@
 package queues
 
 import (
-	ctasks "go.temporal.io/server/common/tasks"
-	"go.temporal.io/server/service/history/tasks"
+	ctasks "github.com/superdurable/temporal-server/common/tasks"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 var _ Executable = (*speculativeWorkflowTaskTimeoutExecutable)(nil)

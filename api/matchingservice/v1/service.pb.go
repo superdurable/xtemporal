@@ -10,7 +10,7 @@ import (
 	reflect "reflect"
 	unsafe "unsafe"
 
-	_ "go.temporal.io/server/api/common/v1"
+	_ "github.com/superdurable/temporal-server/api/common/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -67,7 +67,7 @@ const file_temporal_server_api_matchingservice_v1_service_proto_rawDesc = "" +
 	"\x15UpdateTaskQueueConfig\x12D.temporal.server.api.matchingservice.v1.UpdateTaskQueueConfigRequest\x1aE.temporal.server.api.matchingservice.v1.UpdateTaskQueueConfigResponse\"\x06\x8a\xb5\x18\x02\b\x01\x12\x97\x01\n" +
 	"\x0eDescribeWorker\x12=.temporal.server.api.matchingservice.v1.DescribeWorkerRequest\x1a>.temporal.server.api.matchingservice.v1.DescribeWorkerResponse\"\x06\x8a\xb5\x18\x02\b\x01\x12\xa6\x01\n" +
 	"\x13UpdateFairnessState\x12B.temporal.server.api.matchingservice.v1.UpdateFairnessStateRequest\x1aC.temporal.server.api.matchingservice.v1.UpdateFairnessStateResponse\"\x06\x8a\xb5\x18\x02\b\x01\x12\xca\x01\n" +
-	"\x1fCheckTaskQueueVersionMembership\x12N.temporal.server.api.matchingservice.v1.CheckTaskQueueVersionMembershipRequest\x1aO.temporal.server.api.matchingservice.v1.CheckTaskQueueVersionMembershipResponse\"\x06\x8a\xb5\x18\x02\b\x01B>Z<go.temporal.io/server/api/matchingservice/v1;matchingserviceb\x06proto3"
+	"\x1fCheckTaskQueueVersionMembership\x12N.temporal.server.api.matchingservice.v1.CheckTaskQueueVersionMembershipRequest\x1aO.temporal.server.api.matchingservice.v1.CheckTaskQueueVersionMembershipResponse\"\x06\x8a\xb5\x18\x02\b\x01BPZNgithub.com/superdurable/temporal-server/api/matchingservice/v1;matchingserviceb\x06proto3"
 
 var file_temporal_server_api_matchingservice_v1_service_proto_goTypes = []any{
 	(*PollWorkflowTaskQueueRequest)(nil),                   // 0: temporal.server.api.matchingservice.v1.PollWorkflowTaskQueueRequest

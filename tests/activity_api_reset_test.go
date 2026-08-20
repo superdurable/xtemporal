@@ -33,6 +33,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/temporal-server/common/payloads"
+	"github.com/superdurable/temporal-server/common/testing/parallelsuite"
+	"github.com/superdurable/temporal-server/common/util"
+	"github.com/superdurable/temporal-server/tests/testcore"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/workflowservice/v1"
@@ -40,10 +44,6 @@ import (
 	sdkclient "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
-	"go.temporal.io/server/common/payloads"
-	"go.temporal.io/server/common/testing/parallelsuite"
-	"go.temporal.io/server/common/util"
-	"go.temporal.io/server/tests/testcore"
 )
 
 type ActivityApiResetClientTestSuite struct {

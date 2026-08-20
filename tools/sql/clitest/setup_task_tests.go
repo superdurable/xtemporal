@@ -1,9 +1,9 @@
 package clitest
 
 import (
-	"go.temporal.io/server/common/shuffle"
-	"go.temporal.io/server/tools/common/schema/test"
-	"go.temporal.io/server/tools/sql"
+	"github.com/superdurable/temporal-server/common/shuffle"
+	"github.com/superdurable/temporal-server/tools/common/schema/test"
+	"github.com/superdurable/temporal-server/tools/sql"
 )
 
 type (

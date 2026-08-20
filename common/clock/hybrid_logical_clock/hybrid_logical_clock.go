@@ -3,8 +3,8 @@ package hybrid_logical_clock
 import (
 	"time"
 
-	clockspb "go.temporal.io/server/api/clock/v1"
-	commonclock "go.temporal.io/server/common/clock"
+	clockspb "github.com/superdurable/temporal-server/api/clock/v1"
+	commonclock "github.com/superdurable/temporal-server/common/clock"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

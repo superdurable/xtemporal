@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
 )
 
 var _ CertProvider = (*localStoreCertProvider)(nil)

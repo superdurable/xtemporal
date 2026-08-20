@@ -8,11 +8,11 @@ import (
 	"sync"
 
 	"github.com/cactus/go-statsd-client/v5/statsd"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
 )
 
 var _ metric.Exporter = (*statsdExporter)(nil)

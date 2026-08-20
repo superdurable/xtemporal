@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/store/query"
+	"github.com/superdurable/temporal-server/common/searchattribute"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/common/persistence/visibility/store/query"
-	"go.temporal.io/server/common/searchattribute"
 )
 
 var errorCases = map[string]string{

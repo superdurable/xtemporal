@@ -12,9 +12,9 @@ package interceptor
 import (
 	reflect "reflect"
 
-	tag "go.temporal.io/server/common/log/tag"
-	metrics "go.temporal.io/server/common/metrics"
-	namespace "go.temporal.io/server/common/namespace"
+	tag "github.com/superdurable/temporal-server/common/log/tag"
+	metrics "github.com/superdurable/temporal-server/common/metrics"
+	namespace "github.com/superdurable/temporal-server/common/namespace"
 	gomock "go.uber.org/mock/gomock"
 )
 

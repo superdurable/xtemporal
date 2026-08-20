@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/tqid"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/tqid"
 )
 
 type RateLimitManagerSuite struct {

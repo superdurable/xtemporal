@@ -7,6 +7,9 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/testing/testvars"
+	"github.com/superdurable/temporal-server/tests/testcore"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/serviceerror"
 	updatepb "go.temporal.io/api/update/v1"
@@ -14,9 +17,6 @@ import (
 	sdkclient "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/testing/testvars"
-	"go.temporal.io/server/tests/testcore"
 )
 
 var (

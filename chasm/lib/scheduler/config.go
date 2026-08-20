@@ -3,8 +3,8 @@ package scheduler
 import (
 	"time"
 
-	"go.temporal.io/server/common/backoff"
-	"go.temporal.io/server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/backoff"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
 )
 
 type (

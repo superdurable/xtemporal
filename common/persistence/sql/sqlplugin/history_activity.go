@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"go.temporal.io/server/common/primitives"
+	"github.com/superdurable/temporal-server/common/primitives"
 )
 
 type (

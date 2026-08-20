@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/temporal-server/chasm/lib/scheduler"
+	schedulerpb "github.com/superdurable/temporal-server/chasm/lib/scheduler/gen/schedulerpb/v1"
 	schedulepb "go.temporal.io/api/schedule/v1"
 	"go.temporal.io/api/serviceerror"
 	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/server/chasm/lib/scheduler"
-	schedulerpb "go.temporal.io/server/chasm/lib/scheduler/gen/schedulerpb/v1"
 )
 
 func TestMigrateToWorkflow_PausesSchedule(t *testing.T) {

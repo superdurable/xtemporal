@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/superdurable/temporal-server/common/headers"
 	"github.com/urfave/cli/v2"
-	"go.temporal.io/server/common/headers"
 	"go.uber.org/zap"
 )
 

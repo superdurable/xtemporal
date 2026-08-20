@@ -6,12 +6,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/cluster"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/temporal"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/cluster"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/temporal"
 	"go.uber.org/mock/gomock"
 )
 

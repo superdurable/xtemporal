@@ -9,12 +9,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/rpc"
-	"go.temporal.io/server/common/rpc/encryption"
-	"go.temporal.io/server/tests/testutils"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/rpc"
+	"github.com/superdurable/temporal-server/common/rpc/encryption"
+	"github.com/superdurable/temporal-server/tests/testutils"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc/credentials"
 )

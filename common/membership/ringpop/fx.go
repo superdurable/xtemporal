@@ -1,7 +1,7 @@
 package ringpop
 
 import (
-	"go.temporal.io/server/common/membership"
+	"github.com/superdurable/temporal-server/common/membership"
 	"go.uber.org/fx"
 )
 

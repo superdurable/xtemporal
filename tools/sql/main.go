@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/superdurable/temporal-server/common/headers"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/mysql"
+	dbschemas "github.com/superdurable/temporal-server/schema"
+	"github.com/superdurable/temporal-server/temporal/environment"
+	"github.com/superdurable/temporal-server/tools/common/schema"
 	"github.com/urfave/cli"
-	"go.temporal.io/server/common/headers"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin/mysql"
-	dbschemas "go.temporal.io/server/schema"
-	"go.temporal.io/server/temporal/environment"
-	"go.temporal.io/server/tools/common/schema"
 )
 
 // RunTool runs the temporal-sql-tool command line tool

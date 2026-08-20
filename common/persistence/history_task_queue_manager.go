@@ -9,10 +9,10 @@ import (
 	"strconv"
 	"strings"
 
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/persistence/serialization"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/persistence/serialization"
 )
 
 const (
@@ -105,9 +105,9 @@ func (m *HistoryTaskQueueManagerImpl) EnqueueTask(
 // ReadRawTasks returns a page of "raw" tasks from the queue. Here's a quick disambiguation of the different types of
 // tasks:
 //
-//   - [go.temporal.io/server/api/history/v1.Task]: the proto that is serialized and stored in the database which
+//   - [github.com/superdurable/temporal-server/api/history/v1.Task]: the proto that is serialized and stored in the database which
 //     contains a shard ID and a blob of the serialized history task. This is also called a "raw" task.
-//   - [go.temporal.io/server/service/history/tasks.Task]: the interface that is implemented by all history tasks.
+//   - [github.com/superdurable/temporal-server/service/history/tasks.Task]: the interface that is implemented by all history tasks.
 //     This is the primary type used in code to represent a history task since it is the most structured.
 func (m *HistoryTaskQueueManagerImpl) ReadRawTasks(
 	ctx context.Context,

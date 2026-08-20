@@ -3,10 +3,10 @@ package circuitbreakerpool
 import (
 	"fmt"
 
-	"go.temporal.io/server/common/circuitbreaker"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/service/history/configs"
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/common/circuitbreaker"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/service/history/configs"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 	"go.uber.org/fx"
 )
 

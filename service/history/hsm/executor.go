@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/definition"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/definition"
 )
 
 // Ref is a reference to a statemachine on a specific workflow.

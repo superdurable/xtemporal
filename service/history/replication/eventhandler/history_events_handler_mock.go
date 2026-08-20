@@ -13,10 +13,10 @@ import (
 	context "context"
 	reflect "reflect"
 
+	history0 "github.com/superdurable/temporal-server/api/history/v1"
+	workflow "github.com/superdurable/temporal-server/api/workflow/v1"
+	definition "github.com/superdurable/temporal-server/common/definition"
 	history "go.temporal.io/api/history/v1"
-	history0 "go.temporal.io/server/api/history/v1"
-	workflow "go.temporal.io/server/api/workflow/v1"
-	definition "go.temporal.io/server/common/definition"
 	gomock "go.uber.org/mock/gomock"
 )
 

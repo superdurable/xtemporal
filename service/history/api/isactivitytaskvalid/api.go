@@ -3,12 +3,12 @@ package isactivitytaskvalid
 import (
 	"context"
 
-	"go.temporal.io/server/api/historyservice/v1"
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/definition"
-	"go.temporal.io/server/service/history/api"
-	"go.temporal.io/server/service/history/consts"
-	historyi "go.temporal.io/server/service/history/interfaces"
+	"github.com/superdurable/temporal-server/api/historyservice/v1"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/definition"
+	"github.com/superdurable/temporal-server/service/history/api"
+	"github.com/superdurable/temporal-server/service/history/consts"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
 )
 
 func Invoke(

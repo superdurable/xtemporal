@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"go.temporal.io/server/common/clock"
+	"github.com/superdurable/temporal-server/common/clock"
 )
 
 // DelayedRequestRateLimiter is a rate limiter that allows all requests without any delay for a given duration. After

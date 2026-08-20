@@ -13,11 +13,11 @@ import (
 	context "context"
 	reflect "reflect"
 
+	chasm "github.com/superdurable/temporal-server/chasm"
+	locks "github.com/superdurable/temporal-server/common/locks"
+	namespace "github.com/superdurable/temporal-server/common/namespace"
+	interfaces "github.com/superdurable/temporal-server/service/history/interfaces"
 	common "go.temporal.io/api/common/v1"
-	chasm "go.temporal.io/server/chasm"
-	locks "go.temporal.io/server/common/locks"
-	namespace "go.temporal.io/server/common/namespace"
-	interfaces "go.temporal.io/server/service/history/interfaces"
 	gomock "go.uber.org/mock/gomock"
 )
 

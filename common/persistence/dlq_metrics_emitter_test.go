@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/membership"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/metrics/metricstest"
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/membership"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/metrics/metricstest"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 	"go.uber.org/mock/gomock"
 )
 

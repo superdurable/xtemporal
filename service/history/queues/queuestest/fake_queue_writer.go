@@ -4,8 +4,8 @@ import (
 	"context"
 	"sync"
 
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/service/history/queues"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/service/history/queues"
 )
 
 // EnqueueTaskFunc is a function type for custom EnqueueTask behavior in tests

@@ -3,11 +3,11 @@ package workflow
 import (
 	"context"
 
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/manager"
+	"github.com/superdurable/temporal-server/service/history/configs"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
 	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/persistence/visibility/manager"
-	"go.temporal.io/server/service/history/configs"
-	historyi "go.temporal.io/server/service/history/interfaces"
 )
 
 // RelocatableAttributesFetcher is used to fetch the relocatable attributes from the mutable state.

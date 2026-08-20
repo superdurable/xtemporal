@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"go.temporal.io/server/common/log/tag"
-	serviceerrors "go.temporal.io/server/common/serviceerror"
-	historyi "go.temporal.io/server/service/history/interfaces"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	serviceerrors "github.com/superdurable/temporal-server/common/serviceerror"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
 )
 
 type (

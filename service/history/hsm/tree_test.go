@@ -8,12 +8,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/testing/protorequire"
+	"github.com/superdurable/temporal-server/service/history/hsm"
+	"github.com/superdurable/temporal-server/service/history/hsm/hsmtest"
 	enumspb "go.temporal.io/api/enums/v1"
 	historypb "go.temporal.io/api/history/v1"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/testing/protorequire"
-	"go.temporal.io/server/service/history/hsm"
-	"go.temporal.io/server/service/history/hsm/hsmtest"
 )
 
 var def1 = hsmtest.NewDefinition("type1")

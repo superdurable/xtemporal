@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"go.temporal.io/server/common/debug"
-	"go.temporal.io/server/common/headers"
-	"go.temporal.io/server/common/rpc"
+	"github.com/superdurable/temporal-server/common/debug"
+	"github.com/superdurable/temporal-server/common/headers"
+	"github.com/superdurable/temporal-server/common/rpc"
 )
 
 // NewContext creates a context with default 90-second timeout and RPC headers.

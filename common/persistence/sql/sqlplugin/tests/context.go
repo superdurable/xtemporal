@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"go.temporal.io/server/common/debug"
+	"github.com/superdurable/temporal-server/common/debug"
 )
 
 const (

@@ -7,10 +7,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/primitives/timestamp"
 	namespacepb "go.temporal.io/api/namespace/v1"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/primitives/timestamp"
 )
 
 func base(t *testing.T) *namespace.Namespace {

@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 
 	"github.com/blang/semver/v4"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/persistence"
-	dbschemas "go.temporal.io/server/schema"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/persistence"
+	dbschemas "github.com/superdurable/temporal-server/schema"
 )
 
 // SetupTask represents a task

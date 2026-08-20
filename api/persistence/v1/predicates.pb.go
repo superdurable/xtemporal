@@ -11,7 +11,7 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
-	v1 "go.temporal.io/server/api/enums/v1"
+	v1 "github.com/superdurable/temporal-server/api/enums/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -772,7 +772,7 @@ const file_temporal_server_api_persistence_v1_predicates_proto_rawDesc = "" +
 	"\n" +
 	"task_group\x18\x01 \x01(\tR\ttaskGroup\x12!\n" +
 	"\fnamespace_id\x18\x02 \x01(\tR\vnamespaceId\x12 \n" +
-	"\vdestination\x18\x03 \x01(\tR\vdestinationB6Z4go.temporal.io/server/api/persistence/v1;persistenceb\x06proto3"
+	"\vdestination\x18\x03 \x01(\tR\vdestinationBHZFgithub.com/superdurable/temporal-server/api/persistence/v1;persistenceb\x06proto3"
 
 var (
 	file_temporal_server_api_persistence_v1_predicates_proto_rawDescOnce sync.Once

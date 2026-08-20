@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	adminservice "go.temporal.io/server/api/adminservice/v1"
+	adminservice "github.com/superdurable/temporal-server/api/adminservice/v1"
 	gomock "go.uber.org/mock/gomock"
 	grpc "google.golang.org/grpc"
 	metadata "google.golang.org/grpc/metadata"

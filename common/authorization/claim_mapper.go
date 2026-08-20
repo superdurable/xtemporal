@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"strings"
 
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/log"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/log"
 	"google.golang.org/grpc/credentials"
 )
 

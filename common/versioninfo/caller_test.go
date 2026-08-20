@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"go.temporal.io/server/common/versioninfo"
+	"github.com/superdurable/temporal-server/common/versioninfo"
 )
 
 func TestPostInfo(t *testing.T) {

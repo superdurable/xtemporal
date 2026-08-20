@@ -1,8 +1,8 @@
 package store
 
 import (
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/searchattribute"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/searchattribute"
 )
 
 func CombineTypeMaps(

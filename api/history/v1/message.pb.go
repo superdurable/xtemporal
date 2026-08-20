@@ -455,7 +455,7 @@ const file_temporal_server_api_history_v1_message_proto_rawDesc = "" +
 	"\bevent_id\x18\x01 \x01(\x03R\aeventId\x12\x18\n" +
 	"\aversion\x18\x04 \x01(\x03R\aversion\"e\n" +
 	"\x15StrippedHistoryEvents\x12L\n" +
-	"\x06events\x18\x01 \x03(\v24.temporal.server.api.history.v1.StrippedHistoryEventR\x06eventsB.Z,go.temporal.io/server/api/history/v1;historyb\x06proto3"
+	"\x06events\x18\x01 \x03(\v24.temporal.server.api.history.v1.StrippedHistoryEventR\x06eventsB@Z>github.com/superdurable/temporal-server/api/history/v1;historyb\x06proto3"
 
 var (
 	file_temporal_server_api_history_v1_message_proto_rawDescOnce sync.Once

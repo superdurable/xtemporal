@@ -10,16 +10,16 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/superdurable/temporal-server/cmd/tools/codegen"
 	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/server/cmd/tools/codegen"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
 
-	"go.temporal.io/server/api/adminservice/v1"
-	"go.temporal.io/server/api/historyservice/v1"
-	"go.temporal.io/server/api/matchingservice/v1"
+	"github.com/superdurable/temporal-server/api/adminservice/v1"
+	"github.com/superdurable/temporal-server/api/historyservice/v1"
+	"github.com/superdurable/temporal-server/api/matchingservice/v1"
 )
 
 type (
@@ -533,7 +533,7 @@ import (
 
 	enumspb "go.temporal.io/api/enums/v1"
 	"{{.ServicePackagePath}}"
-	"go.temporal.io/server/common/tqid"
+	"github.com/superdurable/temporal-server/common/tqid"
 	"google.golang.org/grpc"
 )
 `)
@@ -599,7 +599,7 @@ import (
 	"{{.ServicePackagePath}}"
 	"google.golang.org/grpc"
 
-	"go.temporal.io/server/common/backoff"
+	"github.com/superdurable/temporal-server/common/backoff"
 )
 `)
 

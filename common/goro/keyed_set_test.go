@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/goro"
+	"github.com/superdurable/temporal-server/common/goro"
 )
 
 func TestKeyedSet_Starts(t *testing.T) {

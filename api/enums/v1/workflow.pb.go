@@ -246,7 +246,7 @@ const file_temporal_server_api_enums_v1_workflow_proto_rawDesc = "" +
 	"\x18PausedWorkflowEntityType\x12+\n" +
 	"'PAUSED_WORKFLOW_ENTITY_TYPE_UNSPECIFIED\x10\x00\x12(\n" +
 	"$PAUSED_WORKFLOW_ENTITY_TYPE_ACTIVITY\x10\x01\x12(\n" +
-	"$PAUSED_WORKFLOW_ENTITY_TYPE_WORKFLOW\x10\x02B*Z(go.temporal.io/server/api/enums/v1;enumsb\x06proto3"
+	"$PAUSED_WORKFLOW_ENTITY_TYPE_WORKFLOW\x10\x02B<Z:github.com/superdurable/temporal-server/api/enums/v1;enumsb\x06proto3"
 
 var (
 	file_temporal_server_api_enums_v1_workflow_proto_rawDescOnce sync.Once

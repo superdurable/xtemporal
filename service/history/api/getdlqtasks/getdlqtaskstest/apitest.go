@@ -6,12 +6,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	commonspb "go.temporal.io/server/api/common/v1"
-	"go.temporal.io/server/api/historyservice/v1"
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/common/persistence/serialization"
-	"go.temporal.io/server/service/history/api/getdlqtasks"
-	"go.temporal.io/server/service/history/tasks"
+	commonspb "github.com/superdurable/temporal-server/api/common/v1"
+	"github.com/superdurable/temporal-server/api/historyservice/v1"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/common/persistence/serialization"
+	"github.com/superdurable/temporal-server/service/history/api/getdlqtasks"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 // TestInvoke is a library test function intended to be invoked from a persistence test suite. It works by

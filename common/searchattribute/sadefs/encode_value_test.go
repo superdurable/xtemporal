@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/superdurable/temporal-server/common/payload"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/converter"
-	"go.temporal.io/server/common/payload"
 )
 
 func Test_DecodeValue_AllowList_FromMetadata_Success(t *testing.T) {

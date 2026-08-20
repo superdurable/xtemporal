@@ -7,16 +7,16 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/backoff"
-	"go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/collection"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/metrics"
-	ctasks "go.temporal.io/server/common/tasks"
-	"go.temporal.io/server/common/timer"
-	"go.temporal.io/server/common/util"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/backoff"
+	"github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/collection"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/metrics"
+	ctasks "github.com/superdurable/temporal-server/common/tasks"
+	"github.com/superdurable/temporal-server/common/timer"
+	"github.com/superdurable/temporal-server/common/util"
 )
 
 const (

@@ -55,7 +55,7 @@ FAIL
 		stdout := `
 === RUN   TestPass
 --- PASS: TestPass (0.01s)
-ok  	go.temporal.io/server/tests
+ok  	github.com/superdurable/temporal-server/tests
 `
 		got := parseFailedTestsFromOutput(stdout)
 		require.Empty(t, got)

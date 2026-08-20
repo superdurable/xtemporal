@@ -75,7 +75,7 @@ const file_temporal_server_api_metrics_v1_message_proto_rawDesc = "" +
 	"\fcounters_int\x18\x01 \x03(\v28.temporal.server.api.metrics.v1.Baggage.CountersIntEntryR\vcountersInt\x1a>\n" +
 	"\x10CountersIntEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01B.Z,go.temporal.io/server/api/metrics/v1;metricsb\x06proto3"
+	"\x05value\x18\x02 \x01(\x03R\x05value:\x028\x01B@Z>github.com/superdurable/temporal-server/api/metrics/v1;metricsb\x06proto3"
 
 var (
 	file_temporal_server_api_metrics_v1_message_proto_rawDescOnce sync.Once

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/superdurable/temporal-server/common/softassert"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/common/softassert"
 )
 
 const (

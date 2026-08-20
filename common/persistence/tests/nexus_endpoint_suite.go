@@ -8,10 +8,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/common/persistence/sql"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/common/persistence/sql"
 )
 
 func RunNexusEndpointTestSuite(t *testing.T, store persistence.NexusEndpointStore, tableVersion *atomic.Int64) {

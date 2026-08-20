@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/superdurable/temporal-server/common/tqid"
 	deploymentpb "go.temporal.io/api/deployment/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/common/tqid"
 )
 
 func TestVersionSetQueueKey(t *testing.T) {

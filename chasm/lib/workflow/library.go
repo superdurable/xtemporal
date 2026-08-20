@@ -1,6 +1,6 @@
 package workflow
 
-import "go.temporal.io/server/chasm"
+import "github.com/superdurable/temporal-server/chasm"
 
 type (
 	Library struct {

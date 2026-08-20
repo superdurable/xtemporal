@@ -11,8 +11,8 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	v11 "github.com/superdurable/temporal-server/api/clock/v1"
 	v1 "go.temporal.io/api/common/v1"
-	v11 "go.temporal.io/server/api/clock/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -244,7 +244,7 @@ const file_temporal_server_api_workflow_v1_message_proto_rawDesc = "" +
 	"\x11BaseExecutionInfo\x12\x15\n" +
 	"\x06run_id\x18\x01 \x01(\tR\x05runId\x12D\n" +
 	"\x1flowest_common_ancestor_event_id\x18\x02 \x01(\x03R\x1blowestCommonAncestorEventId\x12N\n" +
-	"$lowest_common_ancestor_event_version\x18\x03 \x01(\x03R lowestCommonAncestorEventVersionB0Z.go.temporal.io/server/api/workflow/v1;workflowb\x06proto3"
+	"$lowest_common_ancestor_event_version\x18\x03 \x01(\x03R lowestCommonAncestorEventVersionBBZ@github.com/superdurable/temporal-server/api/workflow/v1;workflowb\x06proto3"
 
 var (
 	file_temporal_server_api_workflow_v1_message_proto_rawDescOnce sync.Once

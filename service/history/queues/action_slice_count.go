@@ -3,7 +3,7 @@ package queues
 import (
 	"slices"
 
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 var _ Action = (*actionSliceCount)(nil)

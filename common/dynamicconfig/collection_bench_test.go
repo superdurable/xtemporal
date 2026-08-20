@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/log"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/log"
 )
 
 func BenchmarkCollection(b *testing.B) {

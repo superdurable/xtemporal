@@ -12,8 +12,8 @@ package common
 import (
 	reflect "reflect"
 
+	namespace "github.com/superdurable/temporal-server/common/namespace"
 	worker "go.temporal.io/sdk/worker"
-	namespace "go.temporal.io/server/common/namespace"
 	gomock "go.uber.org/mock/gomock"
 )
 

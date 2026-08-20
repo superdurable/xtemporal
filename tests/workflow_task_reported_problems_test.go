@@ -9,13 +9,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/searchattribute/sadefs"
+	"github.com/superdurable/temporal-server/tests/testcore"
 	historypb "go.temporal.io/api/history/v1"
 	sdkclient "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/searchattribute/sadefs"
-	"go.temporal.io/server/tests/testcore"
 )
 
 type WFTFailureReportedProblemsTestSuite struct {

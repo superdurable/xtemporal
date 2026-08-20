@@ -4,8 +4,8 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
 )
 
 var (

@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/superdurable/temporal-server/common/codec"
 	"github.com/urfave/cli/v2"
-	"go.temporal.io/server/common/codec"
 	"google.golang.org/protobuf/encoding/prototext"
 )
 

@@ -1,8 +1,8 @@
 package queues
 
 import (
-	"go.temporal.io/server/common/quotas"
-	"go.temporal.io/server/common/tasks"
+	"github.com/superdurable/temporal-server/common/quotas"
+	"github.com/superdurable/temporal-server/common/tasks"
 )
 
 type SchedulerRateLimiter quotas.RequestRateLimiter

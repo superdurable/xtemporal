@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/searchattribute"
+	"github.com/superdurable/temporal-server/common/searchattribute"
 )
 
 func TestNilStoreQueryConverter_GetDatetimeFormat(t *testing.T) {

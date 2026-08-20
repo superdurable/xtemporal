@@ -5,14 +5,14 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/log"
-	persistencetests "go.temporal.io/server/common/persistence/persistence-tests"
-	persistencesql "go.temporal.io/server/common/persistence/sql"
-	"go.temporal.io/server/common/primitives"
-	"go.temporal.io/server/common/resolver"
-	"go.temporal.io/server/tools/sql"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/log"
+	persistencetests "github.com/superdurable/temporal-server/common/persistence/persistence-tests"
+	persistencesql "github.com/superdurable/temporal-server/common/persistence/sql"
+	"github.com/superdurable/temporal-server/common/primitives"
+	"github.com/superdurable/temporal-server/common/resolver"
+	"github.com/superdurable/temporal-server/tools/sql"
 )
 
 type (

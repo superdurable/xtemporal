@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/superdurable/temporal-server/common/definition"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/common/persistence/serialization"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/common/definition"
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/common/persistence/serialization"
-	"go.temporal.io/server/service/history/tasks"
 )
 
 // TestQueueKey_Determinism tests that the queue name generated from a QueueKey is deterministic. This is important to

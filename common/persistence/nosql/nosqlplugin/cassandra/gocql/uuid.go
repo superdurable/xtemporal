@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 
 	"github.com/gocql/gocql"
-	"go.temporal.io/server/chasm"
+	"github.com/superdurable/temporal-server/chasm"
 )
 
 func UUIDToString(

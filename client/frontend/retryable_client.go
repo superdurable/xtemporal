@@ -1,8 +1,8 @@
 package frontend
 
 import (
+	"github.com/superdurable/temporal-server/common/backoff"
 	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/server/common/backoff"
 )
 
 var _ workflowservice.WorkflowServiceClient = (*retryableClient)(nil)

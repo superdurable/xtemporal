@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/service/history/hsm"
-	"go.temporal.io/server/service/history/hsm/hsmtest"
+	"github.com/superdurable/temporal-server/service/history/hsm"
+	"github.com/superdurable/temporal-server/service/history/hsm/hsmtest"
 )
 
 type event struct{ fail bool }

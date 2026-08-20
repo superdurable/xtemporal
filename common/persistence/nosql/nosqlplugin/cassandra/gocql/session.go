@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/metrics"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/metrics"
 )
 
 var _ Session = (*session)(nil)

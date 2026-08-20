@@ -3,11 +3,11 @@ package query
 import (
 	"strings"
 
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/searchattribute"
+	"github.com/superdurable/temporal-server/common/searchattribute/sadefs"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/searchattribute"
-	"go.temporal.io/server/common/searchattribute/sadefs"
 )
 
 // ResolveSearchAttributeAlias resolves the search attribute alias for the given name. The process is:

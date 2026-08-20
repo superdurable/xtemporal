@@ -9,9 +9,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	enumsspb "go.temporal.io/server/api/enums/v1"
-	"go.temporal.io/server/common/predicates"
-	"go.temporal.io/server/service/history/tasks"
+	enumsspb "github.com/superdurable/temporal-server/api/enums/v1"
+	"github.com/superdurable/temporal-server/common/predicates"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 	"go.uber.org/mock/gomock"
 )
 

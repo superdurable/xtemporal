@@ -3,7 +3,7 @@ package history
 import (
 	"context"
 
-	"go.temporal.io/server/chasm"
+	"github.com/superdurable/temporal-server/chasm"
 )
 
 // discardableTaskTestLibrary is a minimal CHASM library that registers a side-effect task whose handler has a custom

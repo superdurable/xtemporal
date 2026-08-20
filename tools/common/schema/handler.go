@@ -5,9 +5,9 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/superdurable/temporal-server/common/log"
+	dbschemas "github.com/superdurable/temporal-server/schema"
 	"github.com/urfave/cli"
-	"go.temporal.io/server/common/log"
-	dbschemas "go.temporal.io/server/schema"
 )
 
 // Setup sets up schema tables

@@ -8,12 +8,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/cluster"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/primitives"
-	"go.temporal.io/server/common/testing/freeport"
+	"github.com/superdurable/temporal-server/common/cluster"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/primitives"
+	"github.com/superdurable/temporal-server/common/testing/freeport"
 	"gopkg.in/yaml.v3"
 )
 

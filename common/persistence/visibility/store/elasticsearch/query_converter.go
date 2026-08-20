@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/olivere/elastic/v7"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/store/query"
 	"github.com/temporalio/sqlparser"
-	"go.temporal.io/server/common/persistence/visibility/store/query"
 )
 
 type queryConverter struct{}

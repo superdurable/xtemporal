@@ -4,13 +4,13 @@
 
 package faultinjection
 
-//go:generate gowrap gen -p go.temporal.io/server/common/persistence -i Queue -t gowrap_template -o queue_gen.go -l ""
+//go:generate gowrap gen -p github.com/superdurable/temporal-server/common/persistence -i Queue -t gowrap_template -o queue_gen.go -l ""
 
 import (
 	"context"
 
+	_sourcePersistence "github.com/superdurable/temporal-server/common/persistence"
 	commonpb "go.temporal.io/api/common/v1"
-	_sourcePersistence "go.temporal.io/server/common/persistence"
 )
 
 type (

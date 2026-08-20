@@ -7,7 +7,7 @@ import "temporal/server/api/clock/v1/message.proto";
 import "temporal/server/api/history/v1/message.proto";
 import "temporal/server/api/persistence/v1/hsm.proto";
 
-option go_package = "go.temporal.io/server/api/token/v1;token";
+option go_package = "github.com/superdurable/temporal-server/api/token/v1;token";
 
 message HistoryContinuation {
   string run_id = 1;

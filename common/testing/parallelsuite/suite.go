@@ -8,8 +8,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 	testifysuite "github.com/stretchr/testify/suite"
-	"go.temporal.io/server/common/testing/historyrequire"
-	"go.temporal.io/server/common/testing/protorequire"
+	"github.com/superdurable/temporal-server/common/testing/historyrequire"
+	"github.com/superdurable/temporal-server/common/testing/protorequire"
 )
 
 // testingSuite is the constraint for suite types.

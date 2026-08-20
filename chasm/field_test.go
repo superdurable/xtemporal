@@ -7,14 +7,14 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/definition"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/primitives"
-	"go.temporal.io/server/common/testing/protorequire"
-	"go.temporal.io/server/common/testing/testlogger"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/definition"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/primitives"
+	"github.com/superdurable/temporal-server/common/testing/protorequire"
+	"github.com/superdurable/temporal-server/common/testing/testlogger"
 	"go.uber.org/mock/gomock"
 )
 

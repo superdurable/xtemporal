@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/rpc/interceptor"
 	commonpb "go.temporal.io/api/common/v1"
 	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/rpc/interceptor"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc"
 )

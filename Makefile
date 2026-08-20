@@ -273,11 +273,9 @@ $(STAMPDIR)/protoc-gen-go-grpc-$(PROTOC_GEN_GO_GRPC_VER): | $(STAMPDIR) $(LOCALB
 	@touch $@
 $(PROTOC_GEN_GO_GRPC): $(STAMPDIR)/protoc-gen-go-grpc-$(PROTOC_GEN_GO_GRPC_VER)
 
-PROTOC_GEN_GO_HELPERS := $(LOCALBIN)/protoc-gen-go-helpers-$(GO_API_VER)
-$(STAMPDIR)/protoc-gen-go-helpers-$(GO_API_VER): | $(STAMPDIR) $(LOCALBIN)
-	$(call go-install-tool,$(PROTOC_GEN_GO_HELPERS),go.temporal.io/api/cmd/protoc-gen-go-helpers,$(GO_API_VER))
-	@touch $@
-$(PROTOC_GEN_GO_HELPERS): $(STAMPDIR)/protoc-gen-go-helpers-$(GO_API_VER)
+PROTOC_GEN_GO_HELPERS := $(LOCALBIN)/protoc-gen-go-helpers
+$(PROTOC_GEN_GO_HELPERS): $(LOCALBIN) cmd/tools/protoc-gen-go-helpers/main.go go.mod go.sum
+	@go build -o $@ ./cmd/tools/protoc-gen-go-helpers
 
 $(LOCALBIN)/protoc-gen-go-chasm: $(LOCALBIN) cmd/tools/protoc-gen-go-chasm/main.go go.mod go.sum
 	@go build -o $@ ./cmd/tools/protoc-gen-go-chasm

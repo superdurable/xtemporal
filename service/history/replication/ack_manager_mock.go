@@ -14,9 +14,9 @@ import (
 	reflect "reflect"
 	time "time"
 
-	repication "go.temporal.io/server/api/replication/v1"
-	collection "go.temporal.io/server/common/collection"
-	tasks "go.temporal.io/server/service/history/tasks"
+	repication "github.com/superdurable/temporal-server/api/replication/v1"
+	collection "github.com/superdurable/temporal-server/common/collection"
+	tasks "github.com/superdurable/temporal-server/service/history/tasks"
 	gomock "go.uber.org/mock/gomock"
 )
 

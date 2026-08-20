@@ -3,7 +3,7 @@ package history
 import (
 	"sync"
 
-	"go.temporal.io/server/chasm"
+	"github.com/superdurable/temporal-server/chasm"
 )
 
 type subscriptionTracker struct {

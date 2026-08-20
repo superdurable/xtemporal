@@ -12,7 +12,7 @@ package queues
 import (
 	reflect "reflect"
 
-	tasks "go.temporal.io/server/service/history/tasks"
+	tasks "github.com/superdurable/temporal-server/service/history/tasks"
 	gomock "go.uber.org/mock/gomock"
 )
 

@@ -120,7 +120,7 @@ const file_temporal_server_chasm_lib_callback_proto_v1_tasks_proto_rawDesc = "" 
 	"\x0eInvocationTask\x12\x18\n" +
 	"\aattempt\x18\x01 \x01(\x05R\aattempt\"'\n" +
 	"\vBackoffTask\x12\x18\n" +
-	"\aattempt\x18\x01 \x01(\x05R\aattemptBGZEgo.temporal.io/server/chasm/lib/callbacks/gen/callbackspb;callbackspbb\x06proto3"
+	"\aattempt\x18\x01 \x01(\x05R\aattemptBYZWgithub.com/superdurable/temporal-server/chasm/lib/callbacks/gen/callbackspb;callbackspbb\x06proto3"
 
 var (
 	file_temporal_server_chasm_lib_callback_proto_v1_tasks_proto_rawDescOnce sync.Once

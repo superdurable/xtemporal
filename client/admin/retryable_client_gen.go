@@ -5,10 +5,10 @@ package admin
 import (
 	"context"
 
-	"go.temporal.io/server/api/adminservice/v1"
+	"github.com/superdurable/temporal-server/api/adminservice/v1"
 	"google.golang.org/grpc"
 
-	"go.temporal.io/server/common/backoff"
+	"github.com/superdurable/temporal-server/common/backoff"
 )
 
 func (c *retryableClient) AddOrUpdateRemoteCluster(

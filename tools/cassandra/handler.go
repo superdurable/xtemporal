@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/superdurable/temporal-server/common/auth"
+	c "github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/temporal/environment"
+	"github.com/superdurable/temporal-server/tools/common/schema"
 	"github.com/urfave/cli"
-	"go.temporal.io/server/common/auth"
-	c "go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/temporal/environment"
-	"go.temporal.io/server/tools/common/schema"
 )
 
 const defaultNumReplicas = 1

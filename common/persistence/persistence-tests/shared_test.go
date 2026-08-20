@@ -3,7 +3,7 @@ package persistencetests
 import (
 	"testing"
 
-	"go.temporal.io/server/common/persistence"
+	"github.com/superdurable/temporal-server/common/persistence"
 )
 
 func TestGarbageCleanupInfo(t *testing.T) {

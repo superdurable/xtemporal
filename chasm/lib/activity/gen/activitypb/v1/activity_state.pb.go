@@ -954,7 +954,7 @@ const file_temporal_server_chasm_lib_activity_proto_v1_activity_state_proto_rawD
 	" ACTIVITY_EXECUTION_STATUS_FAILED\x10\x05\x12&\n" +
 	"\"ACTIVITY_EXECUTION_STATUS_CANCELED\x10\x06\x12(\n" +
 	"$ACTIVITY_EXECUTION_STATUS_TERMINATED\x10\a\x12'\n" +
-	"#ACTIVITY_EXECUTION_STATUS_TIMED_OUT\x10\bBDZBgo.temporal.io/server/chasm/lib/activity/gen/activitypb;activitypbb\x06proto3"
+	"#ACTIVITY_EXECUTION_STATUS_TIMED_OUT\x10\bBVZTgithub.com/superdurable/temporal-server/chasm/lib/activity/gen/activitypb;activitypbb\x06proto3"
 
 var (
 	file_temporal_server_chasm_lib_activity_proto_v1_activity_state_proto_rawDescOnce sync.Once

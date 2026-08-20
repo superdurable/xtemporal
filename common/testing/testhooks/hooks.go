@@ -3,7 +3,7 @@ package testhooks
 import (
 	"time"
 
-	"go.temporal.io/server/common/namespace"
+	"github.com/superdurable/temporal-server/common/namespace"
 )
 
 // Test hook keys with their return type and scope.

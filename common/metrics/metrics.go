@@ -6,7 +6,7 @@ import (
 	"io"
 	"time"
 
-	"go.temporal.io/server/common/log"
+	"github.com/superdurable/temporal-server/common/log"
 )
 
 // Mostly cribbed from

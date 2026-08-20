@@ -4,10 +4,10 @@ import (
 	"sync/atomic"
 
 	"github.com/google/uuid"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
 	enumspb "go.temporal.io/api/enums/v1"
 	querypb "go.temporal.io/api/query/v1"
 	"go.temporal.io/api/serviceerror"
-	historyi "go.temporal.io/server/service/history/interfaces"
 )
 
 const (

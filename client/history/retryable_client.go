@@ -3,8 +3,8 @@ package history
 import (
 	"context"
 
-	"go.temporal.io/server/api/historyservice/v1"
-	"go.temporal.io/server/common/backoff"
+	"github.com/superdurable/temporal-server/api/historyservice/v1"
+	"github.com/superdurable/temporal-server/common/backoff"
 	"google.golang.org/grpc"
 )
 

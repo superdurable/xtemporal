@@ -7,8 +7,8 @@ import (
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/log"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/log"
 	"go.uber.org/mock/gomock"
 )
 

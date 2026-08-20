@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	historyspb "github.com/superdurable/temporal-server/api/history/v1"
+	"github.com/superdurable/temporal-server/common/headers"
 	enumspb "go.temporal.io/api/enums/v1"
 	historypb "go.temporal.io/api/history/v1"
-	historyspb "go.temporal.io/server/api/history/v1"
-	"go.temporal.io/server/common/headers"
 )
 
 func TestShouldIncludeTransientOrSpeculativeTasks(t *testing.T) {

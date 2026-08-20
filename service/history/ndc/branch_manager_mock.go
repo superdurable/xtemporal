@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	history "go.temporal.io/server/api/history/v1"
+	history "github.com/superdurable/temporal-server/api/history/v1"
 	gomock "go.uber.org/mock/gomock"
 )
 

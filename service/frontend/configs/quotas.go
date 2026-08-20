@@ -4,11 +4,11 @@ import (
 	"math"
 	"time"
 
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/headers"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/quotas"
-	"go.temporal.io/server/common/quotas/calculator"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/headers"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/quotas"
+	"github.com/superdurable/temporal-server/common/quotas/calculator"
 )
 
 const (

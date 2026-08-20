@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"math"
 
-	enumsspb "go.temporal.io/server/api/enums/v1"
-	healthspb "go.temporal.io/server/api/health/v1"
-	"go.temporal.io/server/api/historyservice/v1"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/health"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/membership"
-	"go.temporal.io/server/common/primitives"
+	enumsspb "github.com/superdurable/temporal-server/api/enums/v1"
+	healthspb "github.com/superdurable/temporal-server/api/health/v1"
+	"github.com/superdurable/temporal-server/api/historyservice/v1"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/health"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/membership"
+	"github.com/superdurable/temporal-server/common/primitives"
 )
 
 type (

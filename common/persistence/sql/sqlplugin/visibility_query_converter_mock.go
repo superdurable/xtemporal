@@ -12,8 +12,8 @@ package sqlplugin
 import (
 	reflect "reflect"
 
+	query "github.com/superdurable/temporal-server/common/persistence/visibility/store/query"
 	sqlparser "github.com/temporalio/sqlparser"
-	query "go.temporal.io/server/common/persistence/visibility/store/query"
 	gomock "go.uber.org/mock/gomock"
 )
 

@@ -4,7 +4,7 @@ package temporal.server.api.common.v1;
 
 import "google/protobuf/descriptor.proto";
 
-option go_package = "go.temporal.io/server/api/common/v1;commonspb";
+option go_package = "github.com/superdurable/temporal-server/api/common/v1;commonspb";
 
 extend google.protobuf.MethodOptions {
   optional ApiCategoryOptions api_category = 50001;

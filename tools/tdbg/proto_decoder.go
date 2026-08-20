@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"go.temporal.io/server/common/codec"
+	"github.com/superdurable/temporal-server/common/codec"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"

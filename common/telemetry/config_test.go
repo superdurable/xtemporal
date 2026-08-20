@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/telemetry"
+	"github.com/superdurable/temporal-server/common/telemetry"
 	"gopkg.in/yaml.v3"
 )
 

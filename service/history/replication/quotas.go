@@ -1,7 +1,7 @@
 package replication
 
 import (
-	"go.temporal.io/server/common/quotas"
+	"github.com/superdurable/temporal-server/common/quotas"
 )
 
 const (

@@ -7,9 +7,9 @@ import (
 	"runtime/debug"
 
 	"github.com/fatih/color"
+	"github.com/superdurable/temporal-server/common/headers"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 	"github.com/urfave/cli/v2"
-	"go.temporal.io/server/common/headers"
-	"go.temporal.io/server/service/history/tasks"
 )
 
 type (

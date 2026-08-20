@@ -14,9 +14,9 @@ import (
 	reflect "reflect"
 	time "time"
 
-	persistence "go.temporal.io/server/api/persistence/v1"
-	chasm "go.temporal.io/server/chasm"
-	tasks "go.temporal.io/server/service/history/tasks"
+	persistence "github.com/superdurable/temporal-server/api/persistence/v1"
+	chasm "github.com/superdurable/temporal-server/chasm"
+	tasks "github.com/superdurable/temporal-server/service/history/tasks"
 	gomock "go.uber.org/mock/gomock"
 )
 

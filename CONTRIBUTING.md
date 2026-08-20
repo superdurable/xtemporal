@@ -185,7 +185,7 @@ For general instructions, see [GoLand Debugging](https://www.jetbrains.com/help/
 
 First, start the optional [runtime dependencies](#runtime-server-and-tests-prerequisites) if needed for the desired persistence option.
 
-To run the server, ensure the Run Type is package. In "Package path", enter `go.temporal.io/server/cmd/server`. 
+To run the server, ensure the Run Type is package. In "Package path", enter `github.com/superdurable/temporal-server/cmd/server`.
 In the "Program arguments" field, add the following:
 
 ```

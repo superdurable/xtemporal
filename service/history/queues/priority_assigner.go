@@ -1,9 +1,9 @@
 package queues
 
 import (
-	enumsspb "go.temporal.io/server/api/enums/v1"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/tasks"
+	enumsspb "github.com/superdurable/temporal-server/api/enums/v1"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/tasks"
 )
 
 type (

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/common/clock"
+	"github.com/superdurable/temporal-server/common/clock"
 )
 
 func TestContextWithTimeout_Canceled(t *testing.T) {

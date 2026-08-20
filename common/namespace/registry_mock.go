@@ -12,7 +12,7 @@ package namespace
 import (
 	reflect "reflect"
 
-	pingable "go.temporal.io/server/common/pingable"
+	pingable "github.com/superdurable/temporal-server/common/pingable"
 	gomock "go.uber.org/mock/gomock"
 )
 

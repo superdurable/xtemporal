@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	enumsspb "go.temporal.io/server/api/enums/v1"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
+	enumsspb "github.com/superdurable/temporal-server/api/enums/v1"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
 )
 
 type (

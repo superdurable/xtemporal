@@ -13,11 +13,11 @@ import (
 	reflect "reflect"
 	time "time"
 
+	persistence "github.com/superdurable/temporal-server/api/persistence/v1"
+	hsm "github.com/superdurable/temporal-server/service/history/hsm"
+	interfaces "github.com/superdurable/temporal-server/service/history/interfaces"
+	tasks "github.com/superdurable/temporal-server/service/history/tasks"
 	history "go.temporal.io/api/history/v1"
-	persistence "go.temporal.io/server/api/persistence/v1"
-	hsm "go.temporal.io/server/service/history/hsm"
-	interfaces "go.temporal.io/server/service/history/interfaces"
-	tasks "go.temporal.io/server/service/history/tasks"
 	gomock "go.uber.org/mock/gomock"
 )
 

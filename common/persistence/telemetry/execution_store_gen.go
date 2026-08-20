@@ -4,19 +4,19 @@
 
 package telemetry
 
-//go:generate gowrap gen -p go.temporal.io/server/common/persistence -i ExecutionStore -t gowrap_template -o execution_store_gen.go -l ""
+//go:generate gowrap gen -p github.com/superdurable/temporal-server/common/persistence -i ExecutionStore -t gowrap_template -o execution_store_gen.go -l ""
 
 import (
 	"context"
 	"encoding/json"
 	"time"
 
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	_sourcePersistence "github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/common/telemetry"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	_sourcePersistence "go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/common/telemetry"
 )
 
 // telemetryExecutionStore implements ExecutionStore interface instrumented with OpenTelemetry.

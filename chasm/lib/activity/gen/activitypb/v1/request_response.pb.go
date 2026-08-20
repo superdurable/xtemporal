@@ -606,7 +606,7 @@ const file_temporal_server_chasm_lib_activity_proto_v1_request_response_proto_ra
 	"\x1eDeleteActivityExecutionRequest\x12!\n" +
 	"\fnamespace_id\x18\x01 \x01(\tR\vnamespaceId\x12j\n" +
 	"\x10frontend_request\x18\x02 \x01(\v2?.temporal.api.workflowservice.v1.DeleteActivityExecutionRequestR\x0ffrontendRequest\"!\n" +
-	"\x1fDeleteActivityExecutionResponseBDZBgo.temporal.io/server/chasm/lib/activity/gen/activitypb;activitypbb\x06proto3"
+	"\x1fDeleteActivityExecutionResponseBVZTgithub.com/superdurable/temporal-server/chasm/lib/activity/gen/activitypb;activitypbb\x06proto3"
 
 var (
 	file_temporal_server_chasm_lib_activity_proto_v1_request_response_proto_rawDescOnce sync.Once

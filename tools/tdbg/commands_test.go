@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 func TestGetCategory(t *testing.T) {

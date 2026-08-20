@@ -3,13 +3,13 @@ package verifyfirstworkflowtaskscheduled
 import (
 	"context"
 
-	enumsspb "go.temporal.io/server/api/enums/v1"
-	"go.temporal.io/server/api/historyservice/v1"
-	"go.temporal.io/server/common/definition"
-	"go.temporal.io/server/common/locks"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/service/history/api"
-	"go.temporal.io/server/service/history/consts"
+	enumsspb "github.com/superdurable/temporal-server/api/enums/v1"
+	"github.com/superdurable/temporal-server/api/historyservice/v1"
+	"github.com/superdurable/temporal-server/common/definition"
+	"github.com/superdurable/temporal-server/common/locks"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/service/history/api"
+	"github.com/superdurable/temporal-server/service/history/consts"
 )
 
 func Invoke(

@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/temporal/environment"
-	"go.temporal.io/server/tools/sql"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/temporal/environment"
+	"github.com/superdurable/temporal-server/tools/sql"
 )
 
 type (

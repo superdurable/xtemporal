@@ -412,7 +412,7 @@ const file_temporal_server_api_enums_v1_task_proto_rawDesc = "" +
 	"\x19TASK_PRIORITY_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12TASK_PRIORITY_HIGH\x10\x01\x12\x15\n" +
 	"\x11TASK_PRIORITY_LOW\x10\n" +
-	"B*Z(go.temporal.io/server/api/enums/v1;enumsb\x06proto3"
+	"B<Z:github.com/superdurable/temporal-server/api/enums/v1;enumsb\x06proto3"
 
 var (
 	file_temporal_server_api_enums_v1_task_proto_rawDescOnce sync.Once

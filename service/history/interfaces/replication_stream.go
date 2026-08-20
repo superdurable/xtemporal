@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	replicationspb "go.temporal.io/server/api/replication/v1"
-	"go.temporal.io/server/common/collection"
-	"go.temporal.io/server/service/history/tasks"
+	replicationspb "github.com/superdurable/temporal-server/api/replication/v1"
+	"github.com/superdurable/temporal-server/common/collection"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 type (

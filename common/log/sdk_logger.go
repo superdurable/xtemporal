@@ -3,8 +3,8 @@ package log
 import (
 	"fmt"
 
+	"github.com/superdurable/temporal-server/common/log/tag"
 	"go.temporal.io/sdk/log"
-	"go.temporal.io/server/common/log/tag"
 )
 
 const (

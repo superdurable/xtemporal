@@ -6,8 +6,8 @@ import (
 	"math/bits"
 
 	"github.com/dgryski/go-farm"
+	"github.com/superdurable/temporal-server/common/membership"
 	rpmembership "github.com/temporalio/ringpop-go/membership"
-	"go.temporal.io/server/common/membership"
 )
 
 // hostInfo represents a host in a ring.

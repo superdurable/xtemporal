@@ -4,7 +4,7 @@ package temporal.server.api.persistence.v1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "go.temporal.io/server/api/persistence/v1;persistence";
+option go_package = "github.com/superdurable/temporal-server/api/persistence/v1;persistence";
 
 // branch column
 message HistoryTreeInfo {

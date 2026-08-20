@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 type (

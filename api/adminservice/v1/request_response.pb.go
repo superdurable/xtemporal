@@ -12,6 +12,15 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	v18 "github.com/superdurable/temporal-server/api/cluster/v1"
+	v112 "github.com/superdurable/temporal-server/api/common/v1"
+	v14 "github.com/superdurable/temporal-server/api/enums/v1"
+	v113 "github.com/superdurable/temporal-server/api/health/v1"
+	v11 "github.com/superdurable/temporal-server/api/history/v1"
+	v13 "github.com/superdurable/temporal-server/api/namespace/v1"
+	v12 "github.com/superdurable/temporal-server/api/persistence/v1"
+	v15 "github.com/superdurable/temporal-server/api/replication/v1"
+	v114 "github.com/superdurable/temporal-server/api/taskqueue/v1"
 	v1 "go.temporal.io/api/common/v1"
 	v16 "go.temporal.io/api/enums/v1"
 	v110 "go.temporal.io/api/namespace/v1"
@@ -19,15 +28,6 @@ import (
 	v115 "go.temporal.io/api/taskqueue/v1"
 	v19 "go.temporal.io/api/version/v1"
 	v17 "go.temporal.io/api/workflow/v1"
-	v18 "go.temporal.io/server/api/cluster/v1"
-	v112 "go.temporal.io/server/api/common/v1"
-	v14 "go.temporal.io/server/api/enums/v1"
-	v113 "go.temporal.io/server/api/health/v1"
-	v11 "go.temporal.io/server/api/history/v1"
-	v13 "go.temporal.io/server/api/namespace/v1"
-	v12 "go.temporal.io/server/api/persistence/v1"
-	v15 "go.temporal.io/server/api/replication/v1"
-	v114 "go.temporal.io/server/api/taskqueue/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
@@ -6211,7 +6211,7 @@ const file_temporal_server_api_adminservice_v1_request_response_proto_rawDesc = 
 	"\x1cSCHEDULER_TARGET_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16SCHEDULER_TARGET_CHASM\x10\x01\x12\x1d\n" +
 	"\x19SCHEDULER_TARGET_WORKFLOW\x10\x02\"\x19\n" +
-	"\x17MigrateScheduleResponseB8Z6go.temporal.io/server/api/adminservice/v1;adminserviceb\x06proto3"
+	"\x17MigrateScheduleResponseBJZHgithub.com/superdurable/temporal-server/api/adminservice/v1;adminserviceb\x06proto3"
 
 var (
 	file_temporal_server_api_adminservice_v1_request_response_proto_rawDescOnce sync.Once

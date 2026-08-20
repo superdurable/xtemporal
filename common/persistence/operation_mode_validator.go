@@ -1,8 +1,8 @@
 package persistence
 
 import (
+	enumsspb "github.com/superdurable/temporal-server/api/enums/v1"
 	"go.temporal.io/api/serviceerror"
-	enumsspb "go.temporal.io/server/api/enums/v1"
 )
 
 // NOTE: when modifying this file, plz make each case clear,

@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/server/common/primitives"
-	"go.temporal.io/server/service/worker"
+	"github.com/superdurable/temporal-server/common/primitives"
+	"github.com/superdurable/temporal-server/service/worker"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

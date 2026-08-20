@@ -7,9 +7,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/service/history/tasks"
+	"github.com/superdurable/temporal-server/service/history/tests"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/service/history/tasks"
-	"go.temporal.io/server/service/history/tests"
 )
 
 type (

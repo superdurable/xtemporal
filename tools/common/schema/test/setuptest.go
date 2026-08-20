@@ -7,11 +7,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/common/convert"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/tests/testutils"
 	"github.com/urfave/cli"
-	"go.temporal.io/server/common/convert"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/tests/testutils"
 )
 
 // SetupSchemaTestBase is the base test suite for all tests

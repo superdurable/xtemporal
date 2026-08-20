@@ -3,17 +3,17 @@ package replication
 import (
 	"context"
 
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/service/history/configs"
-	"go.temporal.io/server/service/history/queues"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/service/history/configs"
+	"github.com/superdurable/temporal-server/service/history/queues"
 	"go.uber.org/fx"
 )
 
 type (
 	// DLQWriter is an interface that can be implemented easily by the two different queue solutions that we have.
 	// - Queue V1 implements this interface via [persistence.ExecutionManager].
-	// - Queue V2 will implement this interface via [go.temporal.io/server/service/history/queues.DLQWriter].
+	// - Queue V2 will implement this interface via [github.com/superdurable/temporal-server/service/history/queues.DLQWriter].
 	//
 	// We want this interface to make the migration referenced by [persistence.QueueV2] easier.
 	DLQWriter interface {
@@ -26,7 +26,7 @@ type (
 		TargetShardID       int32
 		ReplicationTaskInfo *persistencespb.ReplicationTaskInfo
 	}
-	// ExecutionManager is a trimmed version of [go.temporal.io/server/common/persistence.ExecutionManager] that only
+	// ExecutionManager is a trimmed version of [github.com/superdurable/temporal-server/common/persistence.ExecutionManager] that only
 	// provides the methods we need.
 	ExecutionManager interface {
 		PutReplicationTaskToDLQ(

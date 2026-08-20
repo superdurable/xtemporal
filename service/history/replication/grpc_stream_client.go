@@ -3,10 +3,10 @@ package replication
 import (
 	"context"
 
-	"go.temporal.io/server/api/adminservice/v1"
-	"go.temporal.io/server/client"
-	"go.temporal.io/server/client/history"
-	"go.temporal.io/server/common/cluster"
+	"github.com/superdurable/temporal-server/api/adminservice/v1"
+	"github.com/superdurable/temporal-server/client"
+	"github.com/superdurable/temporal-server/client/history"
+	"github.com/superdurable/temporal-server/common/cluster"
 	"google.golang.org/grpc/metadata"
 )
 

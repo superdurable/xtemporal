@@ -11,7 +11,7 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
-	v1 "go.temporal.io/server/api/enums/v1"
+	v1 "github.com/superdurable/temporal-server/api/enums/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -303,7 +303,7 @@ const file_temporal_server_api_cluster_v1_message_proto_rawDesc = "" +
 	"\brpc_port\x18\x04 \x01(\x05R\arpcPort\x12H\n" +
 	"\x12session_start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x10sessionStartTime\x12H\n" +
 	"\x12last_heartbit_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x10lastHeartbitTime\x12H\n" +
-	"\x12record_expiry_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\x10recordExpiryTimeB.Z,go.temporal.io/server/api/cluster/v1;clusterb\x06proto3"
+	"\x12record_expiry_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\x10recordExpiryTimeB@Z>github.com/superdurable/temporal-server/api/cluster/v1;clusterb\x06proto3"
 
 var (
 	file_temporal_server_api_cluster_v1_message_proto_rawDescOnce sync.Once

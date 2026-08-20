@@ -118,7 +118,7 @@ const file_temporal_server_api_persistence_v1_chasm_visibility_proto_rawDesc = "
 	"\x13ChasmVisibilityData\x12)\n" +
 	"\x10transition_count\x18\x01 \x01(\x03R\x0ftransitionCount\"D\n" +
 	"\x17ChasmVisibilityTaskData\x12)\n" +
-	"\x10transition_count\x18\x01 \x01(\x03R\x0ftransitionCountB6Z4go.temporal.io/server/api/persistence/v1;persistenceb\x06proto3"
+	"\x10transition_count\x18\x01 \x01(\x03R\x0ftransitionCountBHZFgithub.com/superdurable/temporal-server/api/persistence/v1;persistenceb\x06proto3"
 
 var (
 	file_temporal_server_api_persistence_v1_chasm_visibility_proto_rawDescOnce sync.Once

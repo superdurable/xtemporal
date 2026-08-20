@@ -7,11 +7,11 @@ import (
 	"sync"
 	"time"
 
-	enumsspb "go.temporal.io/server/api/enums/v1"
-	"go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/softassert"
-	"go.temporal.io/server/common/util"
+	enumsspb "github.com/superdurable/temporal-server/api/enums/v1"
+	"github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/softassert"
+	"github.com/superdurable/temporal-server/common/util"
 )
 
 const (

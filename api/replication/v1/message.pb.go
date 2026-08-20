@@ -11,14 +11,14 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	v1 "github.com/superdurable/temporal-server/api/enums/v1"
+	v16 "github.com/superdurable/temporal-server/api/history/v1"
+	v12 "github.com/superdurable/temporal-server/api/persistence/v1"
+	v17 "github.com/superdurable/temporal-server/api/workflow/v1"
 	v11 "go.temporal.io/api/common/v1"
 	v15 "go.temporal.io/api/failure/v1"
 	v13 "go.temporal.io/api/namespace/v1"
 	v14 "go.temporal.io/api/replication/v1"
-	v1 "go.temporal.io/server/api/enums/v1"
-	v16 "go.temporal.io/server/api/history/v1"
-	v12 "go.temporal.io/server/api/persistence/v1"
-	v17 "go.temporal.io/server/api/workflow/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
@@ -2300,7 +2300,7 @@ const file_temporal_server_api_replication_v1_message_proto_rawDesc = "" +
 	"\vbusiness_id\x18\x01 \x01(\tR\n" +
 	"workflowId\x12\x15\n" +
 	"\x06run_id\x18\x02 \x01(\tR\x05runId\x12!\n" +
-	"\farchetype_id\x18\x03 \x01(\rR\varchetypeIdB5Z3go.temporal.io/server/api/replication/v1;repicationb\x06proto3"
+	"\farchetype_id\x18\x03 \x01(\rR\varchetypeIdBGZEgithub.com/superdurable/temporal-server/api/replication/v1;repicationb\x06proto3"
 
 var (
 	file_temporal_server_api_replication_v1_message_proto_rawDescOnce sync.Once

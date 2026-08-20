@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	archiver "go.temporal.io/server/common/archiver"
+	archiver "github.com/superdurable/temporal-server/common/archiver"
 	gomock "go.uber.org/mock/gomock"
 )
 

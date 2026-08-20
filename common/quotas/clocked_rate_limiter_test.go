@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/quotas"
+	"github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/quotas"
 	"golang.org/x/time/rate"
 )
 

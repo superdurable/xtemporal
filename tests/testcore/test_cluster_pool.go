@@ -8,7 +8,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"go.temporal.io/server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
 )
 
 var testClusterPool *clusterPool

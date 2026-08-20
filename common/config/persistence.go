@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
-	"go.temporal.io/server/common/persistence/visibility/store/elasticsearch/client"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/store/elasticsearch/client"
 )
 
 const (

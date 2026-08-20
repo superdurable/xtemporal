@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/searchattribute"
+	"github.com/superdurable/temporal-server/common/searchattribute"
 )
 
 type testSearchAttributeInterceptor struct {

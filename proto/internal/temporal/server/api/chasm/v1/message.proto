@@ -5,7 +5,7 @@ package temporal.server.api.chasm.v1;
 import "google/protobuf/timestamp.proto";
 import "temporal/api/common/v1/message.proto";
 
-option go_package = "go.temporal.io/server/api/chasm/v1;chasm";
+option go_package = "github.com/superdurable/temporal-server/api/chasm/v1;chasm";
 
 message VisibilityExecutionInfo {
   string business_id = 1;

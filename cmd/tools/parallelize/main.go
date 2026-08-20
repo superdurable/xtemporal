@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"go.temporal.io/server/tools/parallelize"
+	"github.com/superdurable/temporal-server/tools/parallelize"
 )
 
 func main() {

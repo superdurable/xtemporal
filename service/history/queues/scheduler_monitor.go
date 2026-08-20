@@ -5,10 +5,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/namespace"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/namespace"
 )
 
 var noopScheduleMonitor = &noopSchedulerMonitor{}

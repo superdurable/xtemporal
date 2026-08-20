@@ -4,14 +4,14 @@ import (
 	"sync"
 
 	"github.com/gocql/gocql"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/metrics"
-	p "go.temporal.io/server/common/persistence"
-	commongocql "go.temporal.io/server/common/persistence/nosql/nosqlplugin/cassandra/gocql"
-	"go.temporal.io/server/common/persistence/serialization"
-	"go.temporal.io/server/common/resolver"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/metrics"
+	p "github.com/superdurable/temporal-server/common/persistence"
+	commongocql "github.com/superdurable/temporal-server/common/persistence/nosql/nosqlplugin/cassandra/gocql"
+	"github.com/superdurable/temporal-server/common/persistence/serialization"
+	"github.com/superdurable/temporal-server/common/resolver"
 )
 
 type (

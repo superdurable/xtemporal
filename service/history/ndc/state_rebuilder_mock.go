@@ -14,9 +14,9 @@ import (
 	reflect "reflect"
 	time "time"
 
-	persistence "go.temporal.io/server/api/persistence/v1"
-	definition "go.temporal.io/server/common/definition"
-	interfaces "go.temporal.io/server/service/history/interfaces"
+	persistence "github.com/superdurable/temporal-server/api/persistence/v1"
+	definition "github.com/superdurable/temporal-server/common/definition"
+	interfaces "github.com/superdurable/temporal-server/service/history/interfaces"
 	gomock "go.uber.org/mock/gomock"
 )
 

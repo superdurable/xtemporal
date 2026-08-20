@@ -10,7 +10,7 @@ import "temporal/api/failure/v1/message.proto";
 import "temporal/api/schedule/v1/message.proto";
 import "temporal/api/workflowservice/v1/request_response.proto";
 
-option go_package = "go.temporal.io/server/api/schedule/v1;schedule";
+option go_package = "github.com/superdurable/temporal-server/api/schedule/v1;schedule";
 
 message BufferedStart {
   // Nominal (pre-jitter) and Actual (post-jitter) time of action

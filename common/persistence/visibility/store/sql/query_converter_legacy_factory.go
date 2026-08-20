@@ -1,12 +1,12 @@
 package sql
 
 import (
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin/mysql"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin/postgresql"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin/sqlite"
-	"go.temporal.io/server/common/searchattribute"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/mysql"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/postgresql"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/sqlite"
+	"github.com/superdurable/temporal-server/common/searchattribute"
 )
 
 func NewQueryConverterLegacy(

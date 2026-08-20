@@ -15,12 +15,12 @@ import (
 	"weak"
 
 	"github.com/mitchellh/mapstructure"
-	"go.temporal.io/server/common/goro"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/pingable"
-	"go.temporal.io/server/common/primitives/timestamp"
-	"go.temporal.io/server/common/util"
+	"github.com/superdurable/temporal-server/common/goro"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/pingable"
+	"github.com/superdurable/temporal-server/common/primitives/timestamp"
+	"github.com/superdurable/temporal-server/common/util"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 

@@ -3,8 +3,8 @@ package dummy
 import (
 	"encoding/json"
 
+	"github.com/superdurable/temporal-server/service/history/hsm"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/service/history/hsm"
 )
 
 type State int

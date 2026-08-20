@@ -3,7 +3,7 @@ package authorization
 import (
 	"context"
 
-	"go.temporal.io/server/common/config"
+	"github.com/superdurable/temporal-server/common/config"
 	"google.golang.org/grpc"
 )
 

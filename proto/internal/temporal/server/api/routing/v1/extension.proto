@@ -4,7 +4,7 @@ package temporal.server.api.routing.v1;
 
 import "google/protobuf/descriptor.proto";
 
-option go_package = "go.temporal.io/server/api/routing/v1;routing";
+option go_package = "github.com/superdurable/temporal-server/api/routing/v1;routing";
 
 extend google.protobuf.MethodOptions {
   optional RoutingOptions routing = 50234;

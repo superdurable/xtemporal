@@ -113,7 +113,7 @@ const file_temporal_server_api_routing_v1_extension_proto_rawDesc = "" +
 	"\fnamespace_id\x18\x02 \x01(\tR\vnamespaceId\x12\x1f\n" +
 	"\vbusiness_id\x18\x03 \x01(\tR\n" +
 	"businessId:m\n" +
-	"\arouting\x12\x1e.google.protobuf.MethodOptions\x18\xba\x88\x03 \x01(\v2..temporal.server.api.routing.v1.RoutingOptionsR\arouting\x88\x01\x01B.Z,go.temporal.io/server/api/routing/v1;routingb\x06proto3"
+	"\arouting\x12\x1e.google.protobuf.MethodOptions\x18\xba\x88\x03 \x01(\v2..temporal.server.api.routing.v1.RoutingOptionsR\arouting\x88\x01\x01B@Z>github.com/superdurable/temporal-server/api/routing/v1;routingb\x06proto3"
 
 var (
 	file_temporal_server_api_routing_v1_extension_proto_rawDescOnce sync.Once

@@ -1,8 +1,8 @@
 package nexusoperation
 
 import (
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/chasm/lib/nexusoperation/gen/nexusoperationpb/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/chasm/lib/nexusoperation/gen/nexusoperationpb/v1"
 )
 
 var _ chasm.Component = (*Cancellation)(nil)

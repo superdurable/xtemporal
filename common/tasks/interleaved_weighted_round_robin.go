@@ -6,10 +6,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/log"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/log"
 )
 
 const (

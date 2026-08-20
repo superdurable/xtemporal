@@ -66,10 +66,12 @@ linters:
         # no pb services (or their mocks) are aliased - must be at the top!
         - pkg: go.temporal.io(/server)?/api/(\w+)service(mock)?/v1
           alias: "" # ie no alias - this can only be specified once! public API pbs have a suffix
+        - pkg: github.com/superdurable/temporal-server/api/(\w+)service(mock)?/v1
+          alias: ""
         - pkg: go.temporal.io/api/(\w+)/v1
           alias: ${1}pb
         # internal server pbs have their own suffix to avoid naming conflicts
-        - pkg: go.temporal.io/server/api/(\w+)/v1
+        - pkg: github.com/superdurable/temporal-server/api/(\w+)/v1
           alias: ${1}spb
     testifylint:
       disable:
@@ -110,6 +112,8 @@ linters:
         - name: function-length
           disabled: true
         - name: imports-blocklist
+          disabled: true
+        - name: import-alias-naming
           disabled: true
         - name: increment-decrement
           disabled: true
@@ -167,6 +171,8 @@ linters:
       - ^api
       - ^proto
       - ^.git
+      # This is a pinned in-tree dependency whose source is maintained upstream.
+      - (^|.*/)components/autoscaledworkers/
     rules:
       - path-except: _test\.go|tests/.+\.go
         text: "time.Sleep"

@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/definition"
-	"go.temporal.io/server/common/testing/protorequire"
-	historyi "go.temporal.io/server/service/history/interfaces"
-	"go.temporal.io/server/service/history/tasks"
-	"go.temporal.io/server/service/history/workflow"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/definition"
+	"github.com/superdurable/temporal-server/common/testing/protorequire"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
+	"github.com/superdurable/temporal-server/service/history/tasks"
+	"github.com/superdurable/temporal-server/service/history/workflow"
 	"go.uber.org/mock/gomock"
 )
 

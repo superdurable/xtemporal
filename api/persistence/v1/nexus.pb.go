@@ -11,8 +11,8 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	v11 "github.com/superdurable/temporal-server/api/clock/v1"
 	v1 "go.temporal.io/api/common/v1"
-	v11 "go.temporal.io/server/api/clock/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -438,7 +438,7 @@ const file_temporal_server_api_persistence_v1_nexus_proto_rawDesc = "" +
 	"\x12NexusEndpointEntry\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\x03R\aversion\x12\x0e\n" +
 	"\x02id\x18\x02 \x01(\tR\x02id\x12M\n" +
-	"\bendpoint\x18\x03 \x01(\v21.temporal.server.api.persistence.v1.NexusEndpointR\bendpointB6Z4go.temporal.io/server/api/persistence/v1;persistenceb\x06proto3"
+	"\bendpoint\x18\x03 \x01(\v21.temporal.server.api.persistence.v1.NexusEndpointR\bendpointBHZFgithub.com/superdurable/temporal-server/api/persistence/v1;persistenceb\x06proto3"
 
 var (
 	file_temporal_server_api_persistence_v1_nexus_proto_rawDescOnce sync.Once

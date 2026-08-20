@@ -2,13 +2,13 @@ package cassandra
 
 import (
 	"github.com/gocql/gocql"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/metrics"
-	commongocql "go.temporal.io/server/common/persistence/nosql/nosqlplugin/cassandra/gocql"
-	"go.temporal.io/server/common/persistence/schema"
-	"go.temporal.io/server/common/resolver"
-	cassandraschema "go.temporal.io/server/schema/cassandra"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/metrics"
+	commongocql "github.com/superdurable/temporal-server/common/persistence/nosql/nosqlplugin/cassandra/gocql"
+	"github.com/superdurable/temporal-server/common/persistence/schema"
+	"github.com/superdurable/temporal-server/common/resolver"
+	cassandraschema "github.com/superdurable/temporal-server/schema/cassandra"
 )
 
 // VerifyCompatibleVersion ensures that the installed version of temporal and visibility keyspaces

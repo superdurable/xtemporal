@@ -250,7 +250,7 @@ const file_temporal_server_api_persistence_v1_cluster_metadata_proto_rawDesc = "
 	"\x18custom_search_attributes\x18\x01 \x03(\v2U.temporal.server.api.persistence.v1.IndexSearchAttributes.CustomSearchAttributesEntryR\x16customSearchAttributes\x1ar\n" +
 	"\x1bCustomSearchAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
-	"\x05value\x18\x02 \x01(\x0e2'.temporal.api.enums.v1.IndexedValueTypeR\x05value:\x028\x01B6Z4go.temporal.io/server/api/persistence/v1;persistenceb\x06proto3"
+	"\x05value\x18\x02 \x01(\x0e2'.temporal.api.enums.v1.IndexedValueTypeR\x05value:\x028\x01BHZFgithub.com/superdurable/temporal-server/api/persistence/v1;persistenceb\x06proto3"
 
 var (
 	file_temporal_server_api_persistence_v1_cluster_metadata_proto_rawDescOnce sync.Once

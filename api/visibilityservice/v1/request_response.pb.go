@@ -11,8 +11,8 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	v1 "github.com/superdurable/temporal-server/api/chasm/v1"
 	v11 "go.temporal.io/api/common/v1"
-	v1 "go.temporal.io/server/api/chasm/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -366,7 +366,7 @@ const file_temporal_server_api_visibilityservice_v1_request_response_proto_rawDe
 	"\x06groups\x18\x02 \x03(\v2W.temporal.server.api.visibilityservice.v1.CountChasmExecutionsResponse.AggregationGroupR\x06groups\x1al\n" +
 	"\x10AggregationGroup\x12B\n" +
 	"\fgroup_values\x18\x01 \x03(\v2\x1f.temporal.api.common.v1.PayloadR\vgroupValues\x12\x14\n" +
-	"\x05count\x18\x02 \x01(\x03R\x05countBBZ@go.temporal.io/server/api/visibilityservice/v1;visibilityserviceb\x06proto3"
+	"\x05count\x18\x02 \x01(\x03R\x05countBTZRgithub.com/superdurable/temporal-server/api/visibilityservice/v1;visibilityserviceb\x06proto3"
 
 var (
 	file_temporal_server_api_visibilityservice_v1_request_response_proto_rawDescOnce sync.Once

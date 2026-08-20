@@ -5,10 +5,10 @@ package ndc
 import (
 	"context"
 
-	"go.temporal.io/server/common/cluster"
-	"go.temporal.io/server/common/log"
-	historyi "go.temporal.io/server/service/history/interfaces"
-	wcache "go.temporal.io/server/service/history/workflow/cache"
+	"github.com/superdurable/temporal-server/common/cluster"
+	"github.com/superdurable/temporal-server/common/log"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
+	wcache "github.com/superdurable/temporal-server/service/history/workflow/cache"
 )
 
 type (

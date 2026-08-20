@@ -6,7 +6,7 @@ import "temporal/api/enums/v1/workflow.proto";
 import "temporal/server/api/enums/v1/workflow.proto";
 import "temporal/server/api/history/v1/message.proto";
 
-option go_package = "go.temporal.io/server/api/checksum/v1;checksum";
+option go_package = "github.com/superdurable/temporal-server/api/checksum/v1;checksum";
 
 message MutableStateChecksumPayload {
   bool cancel_requested = 1;

@@ -7,10 +7,10 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/persistence/schema"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin"
-	mysqlschemaV8 "go.temporal.io/server/schema/mysql/v8"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/persistence/schema"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin"
+	mysqlschemaV8 "github.com/superdurable/temporal-server/schema/mysql/v8"
 )
 
 // MySQL error codes

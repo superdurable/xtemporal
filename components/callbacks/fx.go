@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/cluster"
-	"go.temporal.io/server/common/collection"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/namespace"
-	commonnexus "go.temporal.io/server/common/nexus"
-	queuescommon "go.temporal.io/server/service/history/queues/common"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/cluster"
+	"github.com/superdurable/temporal-server/common/collection"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/namespace"
+	commonnexus "github.com/superdurable/temporal-server/common/nexus"
+	queuescommon "github.com/superdurable/temporal-server/service/history/queues/common"
 	"go.uber.org/fx"
 )
 

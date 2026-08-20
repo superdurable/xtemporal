@@ -8,12 +8,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/temporal-server/api/historyservice/v1"
+	"github.com/superdurable/temporal-server/api/historyservicemock/v1"
+	"github.com/superdurable/temporal-server/common/convert"
+	"github.com/superdurable/temporal-server/common/membership"
+	serviceerrors "github.com/superdurable/temporal-server/common/serviceerror"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/api/historyservice/v1"
-	"go.temporal.io/server/api/historyservicemock/v1"
-	"go.temporal.io/server/common/convert"
-	"go.temporal.io/server/common/membership"
-	serviceerrors "go.temporal.io/server/common/serviceerror"
 	"go.uber.org/mock/gomock"
 )
 

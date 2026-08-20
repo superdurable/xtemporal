@@ -3,10 +3,10 @@ package visibility
 //go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination manager_selector_mock.go
 
 import (
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/namespace"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/manager"
 	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/namespace"
-	"go.temporal.io/server/common/persistence/visibility/manager"
 )
 
 type (

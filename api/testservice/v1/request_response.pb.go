@@ -118,7 +118,7 @@ const file_temporal_server_api_testservice_v1_request_response_proto_rawDesc = "
 	"\x10SendHelloRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"-\n" +
 	"\x11SendHelloResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessageB6Z4go.temporal.io/server/api/testservice/v1;testserviceb\x06proto3"
+	"\amessage\x18\x01 \x01(\tR\amessageBHZFgithub.com/superdurable/temporal-server/api/testservice/v1;testserviceb\x06proto3"
 
 var (
 	file_temporal_server_api_testservice_v1_request_response_proto_rawDescOnce sync.Once

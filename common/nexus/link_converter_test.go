@@ -30,9 +30,9 @@ import (
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	commonnexus "github.com/superdurable/temporal-server/common/nexus"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	commonnexus "go.temporal.io/server/common/nexus"
 	"google.golang.org/protobuf/testing/protocmp"
 )
 

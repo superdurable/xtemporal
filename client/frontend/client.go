@@ -7,8 +7,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/superdurable/temporal-server/common/debug"
 	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/server/common/debug"
 )
 
 const (

@@ -1,10 +1,10 @@
 package elasticsearch
 
 import (
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/store/query"
+	"github.com/superdurable/temporal-server/common/searchattribute"
 	"github.com/temporalio/sqlparser"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/persistence/visibility/store/query"
-	"go.temporal.io/server/common/searchattribute"
 )
 
 var allowedComparisonOperators = map[string]struct{}{

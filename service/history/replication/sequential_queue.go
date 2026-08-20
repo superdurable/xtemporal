@@ -4,9 +4,9 @@ import (
 	"sync"
 
 	"github.com/dgryski/go-farm"
-	"go.temporal.io/server/common/collection"
-	"go.temporal.io/server/common/definition"
-	ctasks "go.temporal.io/server/common/tasks"
+	"github.com/superdurable/temporal-server/common/collection"
+	"github.com/superdurable/temporal-server/common/definition"
+	ctasks "github.com/superdurable/temporal-server/common/tasks"
 )
 
 type (

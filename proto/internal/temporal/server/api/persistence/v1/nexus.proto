@@ -6,7 +6,7 @@ import "google/protobuf/timestamp.proto";
 import "temporal/api/common/v1/message.proto";
 import "temporal/server/api/clock/v1/message.proto";
 
-option go_package = "go.temporal.io/server/api/persistence/v1;persistence";
+option go_package = "github.com/superdurable/temporal-server/api/persistence/v1;persistence";
 
 // Contains mutable fields for an Endpoint. Duplicated from the public API's temporal.api.nexus.v1.EndpointSpec where
 // the worker target has a namespace name.

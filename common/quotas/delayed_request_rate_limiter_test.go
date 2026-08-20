@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/quotas"
+	"github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/quotas"
 )
 
 // disallowingRateLimiter is a rate limiter whose Allow method always returns false.

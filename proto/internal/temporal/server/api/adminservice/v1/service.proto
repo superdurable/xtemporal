@@ -5,7 +5,7 @@ package temporal.server.api.adminservice.v1;
 import "temporal/server/api/adminservice/v1/request_response.proto";
 import "temporal/server/api/common/v1/api_category.proto";
 
-option go_package = "go.temporal.io/server/api/adminservice/v1;adminservice";
+option go_package = "github.com/superdurable/temporal-server/api/adminservice/v1;adminservice";
 
 // AdminService provides advanced APIs for debugging and analysis with admin privilege
 service AdminService {

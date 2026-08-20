@@ -4,7 +4,7 @@ package temporal.server.api.testservice.v1;
 
 import "temporal/server/api/testservice/v1/request_response.proto";
 
-option go_package = "go.temporal.io/server/api/testservice/v1;testservice";
+option go_package = "github.com/superdurable/temporal-server/api/testservice/v1;testservice";
 
 // The greeting service definition.
 service TestService {

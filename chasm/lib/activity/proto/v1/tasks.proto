@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package temporal.server.chasm.lib.activity.proto.v1;
 
-option go_package = "go.temporal.io/server/chasm/lib/activity/gen/activitypb;activitypb";
+option go_package = "github.com/superdurable/temporal-server/chasm/lib/activity/gen/activitypb;activitypb";
 
 message ActivityDispatchTask {
   // The current stamp for this activity execution. Used for task validation. See also [ActivityAttemptState].

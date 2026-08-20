@@ -3,7 +3,7 @@ package nexus_test
 import (
 	"fmt"
 
-	"go.temporal.io/server/common/nexus"
+	"github.com/superdurable/temporal-server/common/nexus"
 )
 
 func ExampleRouteDispatchNexusTaskByNamespaceAndTaskQueue() {

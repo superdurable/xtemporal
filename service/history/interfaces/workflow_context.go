@@ -5,11 +5,11 @@ package interfaces
 import (
 	"context"
 
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/definition"
-	"go.temporal.io/server/common/locks"
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/service/history/workflow/update"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/definition"
+	"github.com/superdurable/temporal-server/common/locks"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/service/history/workflow/update"
 )
 
 type (

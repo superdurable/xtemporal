@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go.temporal.io/server/tools/testrunner"
+	"github.com/superdurable/temporal-server/tools/testrunner"
 )
 
 func main() {

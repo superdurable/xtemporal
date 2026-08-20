@@ -439,7 +439,7 @@ const file_temporal_server_api_persistence_v1_workflow_mutable_state_proto_rawDe
 	"\x03key\x18\x01 \x01(\tR\x03key\x12C\n" +
 	"\x05value\x18\x02 \x01(\v2-.temporal.server.api.persistence.v1.ChasmNodeR\x05value:\x028\x01J\x04\b\b\x10\tJ\x04\b\t\x10\n" +
 	"J\x04\b\n" +
-	"\x10\vJ\x04\b\v\x10\fJ\x04\b\f\x10\rJ\x04\b\r\x10\x0eJ\x04\b\x0e\x10\x0fB6Z4go.temporal.io/server/api/persistence/v1;persistenceb\x06proto3"
+	"\x10\vJ\x04\b\v\x10\fJ\x04\b\f\x10\rJ\x04\b\r\x10\x0eJ\x04\b\x0e\x10\x0fBHZFgithub.com/superdurable/temporal-server/api/persistence/v1;persistenceb\x06proto3"
 
 var (
 	file_temporal_server_api_persistence_v1_workflow_mutable_state_proto_rawDescOnce sync.Once

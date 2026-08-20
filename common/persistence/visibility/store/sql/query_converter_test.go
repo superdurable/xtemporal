@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin"
+	"github.com/superdurable/temporal-server/common/persistence/visibility/store/query"
 	"github.com/temporalio/sqlparser"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin"
-	"go.temporal.io/server/common/persistence/visibility/store/query"
 	"go.uber.org/mock/gomock"
 )
 

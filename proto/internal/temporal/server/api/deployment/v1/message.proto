@@ -9,7 +9,7 @@ import "temporal/api/deployment/v1/message.proto";
 import "temporal/api/enums/v1/deployment.proto";
 import "temporal/api/enums/v1/task_queue.proto";
 
-option go_package = "go.temporal.io/server/api/deployment/v1;deployment";
+option go_package = "github.com/superdurable/temporal-server/api/deployment/v1;deployment";
 
 // Identifies a Worker Deployment Version. The combination of `deployment_name` and `build_id`
 // serve as the identifier.

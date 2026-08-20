@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/chasm/lib/scheduler"
-	"go.temporal.io/server/chasm/lib/scheduler/gen/schedulerpb/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/chasm/lib/scheduler"
+	"github.com/superdurable/temporal-server/chasm/lib/scheduler/gen/schedulerpb/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

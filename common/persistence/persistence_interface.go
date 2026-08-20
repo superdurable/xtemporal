@@ -1,4 +1,4 @@
-//go:generate mockgen -package mock -source $GOFILE -destination mock/store_mock.go -aux_files go.temporal.io/server/common/persistence=data_interfaces.go
+//go:generate mockgen -package mock -source $GOFILE -destination mock/store_mock.go -aux_files github.com/superdurable/temporal-server/common/persistence=data_interfaces.go
 
 package persistence
 
@@ -7,11 +7,11 @@ import (
 	"math"
 	"time"
 
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/service/history/tasks"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

@@ -5,8 +5,8 @@ import (
 	"slices"
 	"time"
 
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/metrics/metricstest"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/metrics/metricstest"
 	expmaps "golang.org/x/exp/maps"
 )
 

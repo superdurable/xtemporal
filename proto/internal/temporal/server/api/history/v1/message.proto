@@ -5,7 +5,7 @@ package temporal.server.api.history.v1;
 import "google/protobuf/timestamp.proto";
 import "temporal/api/history/v1/message.proto";
 
-option go_package = "go.temporal.io/server/api/history/v1;history";
+option go_package = "github.com/superdurable/temporal-server/api/history/v1;history";
 
 message TransientWorkflowTaskInfo {
   reserved 1;

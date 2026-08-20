@@ -12,10 +12,10 @@ package client
 import (
 	reflect "reflect"
 
+	adminservice "github.com/superdurable/temporal-server/api/adminservice/v1"
+	historyservice "github.com/superdurable/temporal-server/api/historyservice/v1"
+	matchingservice "github.com/superdurable/temporal-server/api/matchingservice/v1"
 	workflowservice "go.temporal.io/api/workflowservice/v1"
-	adminservice "go.temporal.io/server/api/adminservice/v1"
-	historyservice "go.temporal.io/server/api/historyservice/v1"
-	matchingservice "go.temporal.io/server/api/matchingservice/v1"
 	gomock "go.uber.org/mock/gomock"
 	grpc "google.golang.org/grpc"
 )

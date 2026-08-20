@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	"github.com/dgryski/go-farm"
-	"go.temporal.io/server/common/membership"
+	"github.com/superdurable/temporal-server/common/membership"
 )
 
 // staticResolver is a service resolver that maintains static mapping between services and host info

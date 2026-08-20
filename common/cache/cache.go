@@ -3,8 +3,8 @@ package cache
 import (
 	"time"
 
-	"go.temporal.io/server/common/clock"
-	"go.temporal.io/server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/clock"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
 )
 
 // A Cache is a generalized interface to a cache.  See cache.LRU for a specific

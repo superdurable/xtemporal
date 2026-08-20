@@ -4,16 +4,16 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/backoff"
-	"go.temporal.io/server/common/collection"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
-	"go.temporal.io/server/common/metrics"
-	"go.temporal.io/server/common/persistence"
-	"go.temporal.io/server/common/quotas"
-	historyi "go.temporal.io/server/service/history/interfaces"
-	"go.temporal.io/server/service/history/tasks"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/backoff"
+	"github.com/superdurable/temporal-server/common/collection"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
+	"github.com/superdurable/temporal-server/common/metrics"
+	"github.com/superdurable/temporal-server/common/persistence"
+	"github.com/superdurable/temporal-server/common/quotas"
+	historyi "github.com/superdurable/temporal-server/service/history/interfaces"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 )
 
 var _ Queue = (*immediateQueue)(nil)

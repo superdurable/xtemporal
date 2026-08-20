@@ -8,7 +8,7 @@ import "temporal/api/common/v1/message.proto";
 import "temporal/api/enums/v1/workflow.proto";
 import "temporal/api/history/v1/message.proto";
 
-option go_package = "go.temporal.io/server/api/archiver/v1;archiver";
+option go_package = "github.com/superdurable/temporal-server/api/archiver/v1;archiver";
 
 message HistoryBlobHeader {
   string namespace = 1;

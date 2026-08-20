@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin/postgresql"
-	postgresqlversionV12 "go.temporal.io/server/schema/postgresql/v12"
-	"go.temporal.io/server/temporal/environment"
-	"go.temporal.io/server/tools/sql/clitest"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/postgresql"
+	postgresqlversionV12 "github.com/superdurable/temporal-server/schema/postgresql/v12"
+	"github.com/superdurable/temporal-server/temporal/environment"
+	"github.com/superdurable/temporal-server/tools/sql/clitest"
 )
 
 type PostgresqlSuite struct {

@@ -13,8 +13,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	collection "go.temporal.io/server/common/collection"
-	namespace "go.temporal.io/server/common/namespace"
+	collection "github.com/superdurable/temporal-server/common/collection"
+	namespace "github.com/superdurable/temporal-server/common/namespace"
 	gomock "go.uber.org/mock/gomock"
 )
 

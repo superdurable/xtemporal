@@ -5,8 +5,8 @@ import (
 	"reflect"
 
 	"github.com/dgryski/go-farm"
+	"github.com/superdurable/temporal-server/common/searchattribute/sadefs"
 	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/server/common/searchattribute/sadefs"
 )
 
 type (

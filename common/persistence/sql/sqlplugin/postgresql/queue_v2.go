@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"go.temporal.io/server/common/persistence/sql/sqlplugin"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin"
 )
 
 const (

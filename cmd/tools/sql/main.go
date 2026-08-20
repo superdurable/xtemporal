@@ -3,10 +3,10 @@ package main
 import (
 	"os"
 
-	_ "go.temporal.io/server/common/persistence/sql/sqlplugin/mysql"      // needed to load mysql plugin
-	_ "go.temporal.io/server/common/persistence/sql/sqlplugin/postgresql" // needed to load postgresql plugin
-	_ "go.temporal.io/server/common/persistence/sql/sqlplugin/sqlite"     // needed to load sqlite plugin
-	"go.temporal.io/server/tools/sql"
+	_ "github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/mysql"      // needed to load mysql plugin
+	_ "github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/postgresql" // needed to load postgresql plugin
+	_ "github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin/sqlite"     // needed to load sqlite plugin
+	"github.com/superdurable/temporal-server/tools/sql"
 )
 
 func main() {

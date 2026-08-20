@@ -387,7 +387,7 @@ const file_temporal_server_api_archiver_v1_message_proto_rawDesc = "" +
 	"\x12execution_duration\x18\x0e \x01(\v2\x19.google.protobuf.DurationR\x11executionDuration\x1aC\n" +
 	"\x15SearchAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B0Z.go.temporal.io/server/api/archiver/v1;archiverb\x06proto3"
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01BBZ@github.com/superdurable/temporal-server/api/archiver/v1;archiverb\x06proto3"
 
 var (
 	file_temporal_server_api_archiver_v1_message_proto_rawDescOnce sync.Once

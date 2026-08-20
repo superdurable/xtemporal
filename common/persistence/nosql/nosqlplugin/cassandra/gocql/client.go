@@ -11,11 +11,11 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
-	"go.temporal.io/server/common/auth"
-	"go.temporal.io/server/common/config"
-	"go.temporal.io/server/common/debug"
-	"go.temporal.io/server/common/persistence/nosql/nosqlplugin/cassandra/translator"
-	"go.temporal.io/server/common/resolver"
+	"github.com/superdurable/temporal-server/common/auth"
+	"github.com/superdurable/temporal-server/common/config"
+	"github.com/superdurable/temporal-server/common/debug"
+	"github.com/superdurable/temporal-server/common/persistence/nosql/nosqlplugin/cassandra/translator"
+	"github.com/superdurable/temporal-server/common/resolver"
 )
 
 func NewCassandraCluster(

@@ -3,8 +3,8 @@
 package logtags
 
 import (
-	"go.temporal.io/server/api/matchingservice/v1"
-	"go.temporal.io/server/common/log/tag"
+	"github.com/superdurable/temporal-server/api/matchingservice/v1"
+	"github.com/superdurable/temporal-server/common/log/tag"
 )
 
 func (wt *WorkflowTags) extractFromMatchingServiceServerMessage(message any) []tag.Tag {

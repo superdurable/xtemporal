@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/nexus"
+	"github.com/superdurable/temporal-server/common/nexus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

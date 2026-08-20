@@ -13,9 +13,9 @@ import (
 	context "context"
 	reflect "reflect"
 
+	interfaces "github.com/superdurable/temporal-server/service/history/interfaces"
+	update "github.com/superdurable/temporal-server/service/history/workflow/update"
 	history "go.temporal.io/api/history/v1"
-	interfaces "go.temporal.io/server/service/history/interfaces"
-	update "go.temporal.io/server/service/history/workflow/update"
 	gomock "go.uber.org/mock/gomock"
 )
 

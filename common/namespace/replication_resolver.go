@@ -1,8 +1,8 @@
 package namespace
 
 import (
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	persistencespb "go.temporal.io/server/api/persistence/v1"
 )
 
 type ReplicationResolver interface {

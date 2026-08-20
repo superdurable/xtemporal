@@ -5,9 +5,9 @@ package persistence
 import (
 	"time"
 
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/persistence/serialization"
-	"go.temporal.io/server/common/primitives"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/persistence/serialization"
+	"github.com/superdurable/temporal-server/common/primitives"
 )
 
 type (

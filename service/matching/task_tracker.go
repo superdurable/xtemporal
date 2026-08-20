@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"go.temporal.io/server/common/clock"
+	"github.com/superdurable/temporal-server/common/clock"
 )
 
 // a circular array of a fixed size for tracking tasks

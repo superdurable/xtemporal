@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"go.temporal.io/server/common/clock"
+	"github.com/superdurable/temporal-server/common/clock"
 )
 
 // this test uses time.Sleep to allow goroutines to get into a blocked state

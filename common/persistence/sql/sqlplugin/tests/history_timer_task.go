@@ -7,9 +7,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/server/common"
-	"go.temporal.io/server/common/persistence/sql/sqlplugin"
-	"go.temporal.io/server/common/shuffle"
+	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/persistence/sql/sqlplugin"
+	"github.com/superdurable/temporal-server/common/shuffle"
 )
 
 type (

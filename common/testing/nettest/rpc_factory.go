@@ -4,7 +4,7 @@ import (
 	"context"
 	"net"
 
-	"go.temporal.io/server/common"
+	"github.com/superdurable/temporal-server/common"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

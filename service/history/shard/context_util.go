@@ -1,9 +1,9 @@
 package shard
 
 import (
-	persistencespb "go.temporal.io/server/api/persistence/v1"
-	"go.temporal.io/server/common/primitives/timestamp"
-	"go.temporal.io/server/service/history/tasks"
+	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
+	"github.com/superdurable/temporal-server/common/primitives/timestamp"
+	"github.com/superdurable/temporal-server/service/history/tasks"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

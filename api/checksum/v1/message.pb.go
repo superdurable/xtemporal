@@ -11,9 +11,9 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	v1 "github.com/superdurable/temporal-server/api/enums/v1"
+	v12 "github.com/superdurable/temporal-server/api/history/v1"
 	v11 "go.temporal.io/api/enums/v1"
-	v1 "go.temporal.io/server/api/enums/v1"
-	v12 "go.temporal.io/server/api/history/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -301,7 +301,7 @@ const file_temporal_server_api_checksum_v1_message_proto_rawDesc = "" +
 	"!pending_child_initiated_event_ids\x18\x12 \x03(\x03R\x1dpendingChildInitiatedEventIds\x127\n" +
 	"\x18pending_chasm_node_paths\x18\x1a \x03(\tR\x15pendingChasmNodePaths\x123\n" +
 	"\x16sticky_task_queue_name\x18\x13 \x01(\tR\x13stickyTaskQueueName\x12]\n" +
-	"\x11version_histories\x18\x14 \x01(\v20.temporal.server.api.history.v1.VersionHistoriesR\x10versionHistoriesB0Z.go.temporal.io/server/api/checksum/v1;checksumb\x06proto3"
+	"\x11version_histories\x18\x14 \x01(\v20.temporal.server.api.history.v1.VersionHistoriesR\x10versionHistoriesBBZ@github.com/superdurable/temporal-server/api/checksum/v1;checksumb\x06proto3"
 
 var (
 	file_temporal_server_api_checksum_v1_message_proto_rawDescOnce sync.Once

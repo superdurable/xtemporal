@@ -159,7 +159,7 @@ const file_temporal_server_api_enums_v1_dlq_proto_rawDesc = "" +
 	"\x1fDLQ_OPERATION_STATE_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bDLQ_OPERATION_STATE_RUNNING\x10\x01\x12!\n" +
 	"\x1dDLQ_OPERATION_STATE_COMPLETED\x10\x02\x12\x1e\n" +
-	"\x1aDLQ_OPERATION_STATE_FAILED\x10\x03B*Z(go.temporal.io/server/api/enums/v1;enumsb\x06proto3"
+	"\x1aDLQ_OPERATION_STATE_FAILED\x10\x03B<Z:github.com/superdurable/temporal-server/api/enums/v1;enumsb\x06proto3"
 
 var (
 	file_temporal_server_api_enums_v1_dlq_proto_rawDescOnce sync.Once

@@ -1,8 +1,8 @@
 package chasm
 
 import (
-	"go.temporal.io/server/common/persistence/transitionhistory"
-	"go.temporal.io/server/service/history/consts"
+	"github.com/superdurable/temporal-server/common/persistence/transitionhistory"
+	"github.com/superdurable/temporal-server/service/history/consts"
 )
 
 // ExecutionStateChanged returns true if execution state has advanced beyond the state encoded in

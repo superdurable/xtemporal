@@ -3,7 +3,7 @@ package interceptor
 import (
 	"context"
 
-	"go.temporal.io/server/common/backoff"
+	"github.com/superdurable/temporal-server/common/backoff"
 	"google.golang.org/grpc"
 )
 

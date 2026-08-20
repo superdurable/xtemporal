@@ -1,7 +1,7 @@
 package callbacks
 
 import (
-	chasmcallbacks "go.temporal.io/server/chasm/lib/callback"
+	chasmcallbacks "github.com/superdurable/temporal-server/chasm/lib/callback"
 )
 
 var (

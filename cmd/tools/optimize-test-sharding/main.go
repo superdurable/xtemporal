@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	optimizetestsharding "go.temporal.io/server/tools/optimize-test-sharding"
+	optimizetestsharding "github.com/superdurable/temporal-server/tools/optimize-test-sharding"
 )
 
 func main() {

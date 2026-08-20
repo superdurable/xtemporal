@@ -11,7 +11,7 @@ import "temporal/api/taskqueue/v1/message.proto";
 import "temporal/server/api/deployment/v1/message.proto";
 import "temporal/server/api/enums/v1/task.proto";
 
-option go_package = "go.temporal.io/server/api/taskqueue/v1;taskqueue";
+option go_package = "github.com/superdurable/temporal-server/api/taskqueue/v1;taskqueue";
 
 // TaskVersionDirective controls how matching should direct a task.
 message TaskVersionDirective {

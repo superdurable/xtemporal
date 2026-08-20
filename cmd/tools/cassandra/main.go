@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"go.temporal.io/server/tools/cassandra"
+	"github.com/superdurable/temporal-server/tools/cassandra"
 )
 
 func main() {

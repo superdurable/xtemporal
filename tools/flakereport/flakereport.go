@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/superdurable/temporal-server/common/headers"
 	"github.com/urfave/cli/v2"
-	"go.temporal.io/server/common/headers"
 )
 
 const (

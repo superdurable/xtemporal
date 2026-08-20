@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"go.temporal.io/server/chasm"
-	"go.temporal.io/server/common/backoff"
-	"go.temporal.io/server/common/dynamicconfig"
-	"go.temporal.io/server/common/nexus"
+	"github.com/superdurable/temporal-server/chasm"
+	"github.com/superdurable/temporal-server/common/backoff"
+	"github.com/superdurable/temporal-server/common/dynamicconfig"
+	"github.com/superdurable/temporal-server/common/nexus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

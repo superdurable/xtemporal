@@ -10,8 +10,8 @@ import (
 	"os"
 
 	"cloud.google.com/go/storage"
-	"go.temporal.io/server/common/archiver"
-	"go.temporal.io/server/common/config"
+	"github.com/superdurable/temporal-server/common/archiver"
+	"github.com/superdurable/temporal-server/common/config"
 	"go.uber.org/multierr"
 	"google.golang.org/api/iterator"
 )

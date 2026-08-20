@@ -3,9 +3,9 @@ package archiver
 import (
 	"errors"
 
-	archiverspb "go.temporal.io/server/api/archiver/v1"
-	"go.temporal.io/server/common/log"
-	"go.temporal.io/server/common/log/tag"
+	archiverspb "github.com/superdurable/temporal-server/api/archiver/v1"
+	"github.com/superdurable/temporal-server/common/log"
+	"github.com/superdurable/temporal-server/common/log/tag"
 )
 
 var (

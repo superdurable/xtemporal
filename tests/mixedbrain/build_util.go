@@ -12,7 +12,7 @@ import (
 	"github.com/blang/semver/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/server/common/headers"
+	"github.com/superdurable/temporal-server/common/headers"
 )
 
 const (

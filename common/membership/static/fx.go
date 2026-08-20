@@ -3,8 +3,8 @@ package static
 import (
 	"fmt"
 
-	"go.temporal.io/server/common/membership"
-	"go.temporal.io/server/common/primitives"
+	"github.com/superdurable/temporal-server/common/membership"
+	"github.com/superdurable/temporal-server/common/primitives"
 	"go.uber.org/fx"
 )
 
