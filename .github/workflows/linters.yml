@@ -6,6 +6,11 @@ on:
       - main
 permissions:
   contents: read
+
+concurrency:
+  group: linters-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint-actions:
     runs-on: ${{ 'linux-dind-light' }}
