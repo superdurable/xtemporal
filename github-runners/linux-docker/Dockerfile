@@ -32,6 +32,7 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         containerd.io \
+        docker-buildx-plugin \
         docker-ce \
         docker-ce-cli \
         docker-compose-plugin \
@@ -51,17 +52,17 @@ RUN curl --fail --location \
     && rm actions-runner.tar.gz \
     && ./bin/installdependencies.sh
 
-COPY entrypoint.sh /usr/local/bin/dex-engine-runner-entrypoint
-COPY job-cleanup.sh /usr/local/bin/dex-engine-runner-cleanup
-COPY job-started.sh /usr/local/bin/dex-engine-runner-job-started
-COPY job-completed.sh /usr/local/bin/dex-engine-runner-job-completed
-RUN chmod 0755 /usr/local/bin/dex-engine-runner-* \
+COPY entrypoint.sh /usr/local/bin/dex-engine-runner-entrypoint.sh
+COPY job-cleanup.sh /usr/local/bin/dex-engine-runner-cleanup.sh
+COPY job-started.sh /usr/local/bin/dex-engine-runner-job-started.sh
+COPY job-completed.sh /usr/local/bin/dex-engine-runner-job-completed.sh
+RUN chmod 0755 /usr/local/bin/dex-engine-runner-*.sh \
     && chown -R runner:runner /opt/actions-runner
 
-ENV ACTIONS_RUNNER_HOOK_JOB_STARTED=/usr/local/bin/dex-engine-runner-job-started
-ENV ACTIONS_RUNNER_HOOK_JOB_COMPLETED=/usr/local/bin/dex-engine-runner-job-completed
+ENV ACTIONS_RUNNER_HOOK_JOB_STARTED=/usr/local/bin/dex-engine-runner-job-started.sh
+ENV ACTIONS_RUNNER_HOOK_JOB_COMPLETED=/usr/local/bin/dex-engine-runner-job-completed.sh
 
 HEALTHCHECK --interval=10s --timeout=5s --start-period=60s --retries=6 \
     CMD docker info >/dev/null 2>&1 && pgrep -f Runner.Listener >/dev/null || exit 1
 
-ENTRYPOINT ["/usr/local/bin/dex-engine-runner-entrypoint"]
+ENTRYPOINT ["/usr/local/bin/dex-engine-runner-entrypoint.sh"]

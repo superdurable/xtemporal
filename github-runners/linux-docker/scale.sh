@@ -7,7 +7,7 @@ image="dex-engine-actions-runner:2.336.0"
 container_prefix="dex-engine-linux-dind-runner"
 runner_prefix="dex-engine-linux-dind"
 repository="superdurable/temporal-server"
-runner_count=3
+runner_count=6
 
 require_orbstack() {
   if [[ "$(docker context show)" != orbstack ]]; then

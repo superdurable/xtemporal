@@ -2,7 +2,7 @@
 
 This directory provisions a repository-scoped Linux/amd64 GitHub Actions runner pool for `superdurable/temporal-server`. Each runner has its own Docker daemon, Docker data volume, and Actions work volume.
 
-The pool contains two `linux-dind-heavy` runners for PostgreSQL and unit-test jobs, plus one `linux-dind-light` runner for the test gate. These are the labels used by `.github/workflows/run-tests.yml`.
+The pool contains two `linux-dind-heavy` runners for PostgreSQL, unit-test, and image jobs, plus four `linux-dind-light` runners for linters and CI gates. These are the labels used by the CI workflows.
 
 ## Start the pool
 
@@ -13,7 +13,7 @@ cd github-runners
 ./start-linux-runners.sh
 ```
 
-The script starts OrbStack, selects its Docker context, builds the runner image if necessary, and registers three runners. Containers restart automatically with OrbStack.
+The script starts OrbStack, selects its Docker context, builds the runner image if necessary, and registers six runners. Containers restart automatically with OrbStack.
 
 ## Operations
 
