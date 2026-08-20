@@ -63,7 +63,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.43.0
 	go.opentelemetry.io/otel/sdk/metric v1.43.0
 	go.opentelemetry.io/otel/trace v1.43.0
-	go.temporal.io/api v1.62.8
+	go.temporal.io/api v1.63.4
 	go.temporal.io/sdk v1.41.1
 	go.uber.org/fx v1.24.0
 	go.uber.org/mock v0.6.0
@@ -81,6 +81,8 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 	modernc.org/sqlite v1.44.3
 )
+
+require github.com/nexus-rpc/nexus-proto-annotations v0.1.0 // indirect
 
 require (
 	cel.dev/expr v0.25.1 // indirect
