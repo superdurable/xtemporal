@@ -151,7 +151,7 @@ jobs:
       - parallelize-tests
     runs-on: ${{ 'linux-dind-light' }}
     env:
-      GOMAXPROCS: 2
+      GOMAXPROCS: 1
     steps:
       - uses: actions/checkout@v6
         with:
@@ -165,7 +165,7 @@ jobs:
 
       - name: lint code
         run: |
-          make GOLANGCI_LINT_CONCURRENCY=2 GOLANGCI_LINT_FIX=false GOLANGCI_LINT_BASE_REV=HEAD~ lint-code
+          make GOLANGCI_LINT_CONCURRENCY=1 GOLANGCI_LINT_FIX=false GOLANGCI_LINT_BASE_REV=HEAD~ lint-code
 
       - name: check-is-dirty
         run: |

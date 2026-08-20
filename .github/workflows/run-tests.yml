@@ -14,6 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  GOMAXPROCS: 2
   MAX_TEST_ATTEMPTS: 3
   DOCKER_COMPOSE_FILE: ./develop/github/docker-compose.yml
   TEMPORAL_VERSION_CHECK_DISABLED: 1
@@ -21,6 +22,8 @@ env:
 jobs:
   unit-test:
     name: Unit tests
+    needs:
+      - integration-test
     runs-on: ${{ 'linux-dind-heavy' }}
     steps:
       - uses: actions/checkout@v6
@@ -101,9 +104,12 @@ jobs:
 
   functional-test:
     name: PostgreSQL ${{ matrix.name }}${{ matrix.shard && format(' shard {0}', matrix.shard) || '' }}
+    needs:
+      - unit-test
     runs-on: ${{ 'linux-dind-heavy' }}
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         include:
           - name: functional
