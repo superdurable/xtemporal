@@ -1,99 +1,53 @@
-name: Build Docker Images
-description: |
-  Build Temporal Docker images from binaries.
-
-  Prerequisites:
-    - The build-binaries action must run before this action to produce the binaries.
+name: Build Dex Engine Image
+description: Build and optionally publish the Dex Engine Server image.
 
 inputs:
   push:
-    description: "Push images to Docker Hub"
-    required: false
-    default: "false"
-  tag-latest:
-    description: "Tag images as latest"
+    description: Push the image to Docker Hub
     required: false
     default: "false"
   platform:
-    description: "Single platform to build (e.g., linux/amd64)"
+    description: Single platform to build, for example linux/amd64
     required: false
     default: ""
   load:
-    description: "Load image into local Docker daemon (only works with linux/amd64 - the runner architecture)"
+    description: Load a single-platform image into the local Docker daemon
     required: false
     default: "false"
-  cli-version:
-    description: "Temporal CLI version to download (uses default from build helper if empty)"
-    required: false
-    default: ""
-  alpine-tag:
-    description: "Alpine base image tag"
+  release-tag:
+    description: Release Docker tag to publish in addition to the immutable SHA tag
     required: false
     default: ""
   dockerhub-username:
-    description: "Docker Hub username"
+    description: Docker Hub username
     required: false
   dockerhub-token:
-    description: "Docker Hub token"
+    description: Docker Hub token
     required: false
 
 outputs:
-  branch-tag:
-    description: "Docker-safe branch tag (e.g., branch-main, branch-release-v1.30.0)"
-    value: ${{ steps.image-tags.outputs.tag }}
-  sha-tag:
-    description: "Docker SHA tag (e.g., sha-abc1234)"
-    value: ${{ steps.image-tags.outputs.sha }}
   sha-full-tag:
-    description: "Docker full SHA tag (e.g., sha-abcdef123456...)"
-    value: ${{ steps.image-tags.outputs.sha-full }}
+    description: Immutable image tag for the current commit
+    value: ${{ steps.image-tags.outputs.sha-full-tag }}
 
 runs:
   using: composite
   steps:
-    - name: Build docker-build-helper
-      shell: bash
-      working-directory: ${{ github.workspace }}/.github/actions/build-docker-images/scripts
-      run: |
-        go build -o docker-build-helper .
-
     - name: Set image tags
       id: image-tags
       shell: bash
-      working-directory: ${{ github.workspace }}
-      run: .github/actions/build-docker-images/scripts/docker-build-helper set-image-tags
+      run: echo "sha-full-tag=sha-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
 
-    - name: Organize binaries for Docker
-      id: organize-binaries
+    - name: Validate release tag
+      if: inputs.release-tag != ''
       shell: bash
-      working-directory: ${{ github.workspace }}
       env:
-        PLATFORM: ${{ inputs.platform }}
+        RELEASE_TAG: ${{ inputs.release-tag }}
       run: |
-        .github/actions/build-docker-images/scripts/docker-build-helper organize-binaries
-
-    - name: Download Temporal CLI
-      shell: bash
-      working-directory: ${{ github.workspace }}
-      env:
-        AVAILABLE_ARCHS: ${{ steps.organize-binaries.outputs.available-archs }}
-        CLI_VERSION: ${{ inputs.cli-version }}
-      run: |
-        .github/actions/build-docker-images/scripts/docker-build-helper download-cli
-
-    - name: Extract CLI version from binary
-      id: extract-cli-version
-      shell: bash
-      working-directory: ${{ github.workspace }}
-      run: |
-        .github/actions/build-docker-images/scripts/docker-build-helper extract-binary-version temporal cli-version
-
-    - name: Extract server version from binary
-      id: extract-version
-      shell: bash
-      working-directory: ${{ github.workspace }}
-      run: |
-        .github/actions/build-docker-images/scripts/docker-build-helper extract-binary-version temporal-server server-version
+        if [[ ! "${RELEASE_TAG}" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]]; then
+          echo "Invalid Docker release tag: ${RELEASE_TAG}" >&2
+          exit 1
+        fi
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -108,60 +62,26 @@ runs:
         username: ${{ inputs.dockerhub-username }}
         password: ${{ inputs.dockerhub-token }}
 
-    - name: Build Docker images
-      if: inputs.push != 'true'
+    - name: Build image
       shell: bash
       working-directory: ${{ github.workspace }}
       env:
-        IMAGE_REPO: temporaliotest
-        IMAGE_SHA_SHORT_TAG: ${{ steps.image-tags.outputs.sha }}
-        IMAGE_SHA_FULL_TAG: ${{ steps.image-tags.outputs.sha-full }}
-        IMAGE_BRANCH_TAG: ${{ steps.image-tags.outputs.tag }}
-        TEMPORAL_SHA: ${{ steps.image-tags.outputs.git-sha }}
-        TAG_LATEST: ${{ inputs.tag-latest }}
-        ALPINE_TAG: ${{ inputs.alpine-tag }}
+        IMAGE_SHA_FULL_TAG: ${{ steps.image-tags.outputs.sha-full-tag }}
+        IMAGE_RELEASE_TAG: ${{ inputs.release-tag }}
         PLATFORM: ${{ inputs.platform }}
         LOAD: ${{ inputs.load }}
-        SERVER_VERSION: ${{ steps.extract-version.outputs.server-version }}
-        CLI_VERSION: ${{ steps.extract-cli-version.outputs.cli-version }}
+        PUSH: ${{ inputs.push }}
+        TEMPORAL_SHA: ${{ github.sha }}
       run: |
-        if [ -z "${ALPINE_TAG}" ]; then
-          unset ALPINE_TAG
+        bake_args=()
+        if [[ "${PUSH}" == "true" ]]; then
+          bake_args+=(--push)
+        fi
+        if [[ -n "${PLATFORM}" ]]; then
+          bake_args+=(--set "*.platform=${PLATFORM}")
+        fi
+        if [[ "${LOAD}" == "true" ]]; then
+          bake_args+=(--load)
         fi
 
-        if [ -n "${PLATFORM}" ]; then
-          docker buildx bake \
-            --set "*.platform=${PLATFORM}" \
-            $( [ "${LOAD}" = "true" ] && echo --load ) \
-            -f docker/docker-bake.hcl \
-            server admin-tools
-        else
-          docker buildx bake \
-            $( [ "${LOAD}" = "true" ] && echo --load ) \
-            -f docker/docker-bake.hcl \
-            server admin-tools
-        fi
-
-    - name: Build and push Docker images
-      if: inputs.push == 'true'
-      shell: bash
-      working-directory: ${{ github.workspace }}
-      env:
-        IMAGE_REPO: temporaliotest
-        IMAGE_SHA_SHORT_TAG: ${{ steps.image-tags.outputs.sha }}
-        IMAGE_SHA_FULL_TAG: ${{ steps.image-tags.outputs.sha-full }}
-        IMAGE_BRANCH_TAG: ${{ steps.image-tags.outputs.tag }}
-        TEMPORAL_SHA: ${{ steps.image-tags.outputs.git-sha }}
-        TAG_LATEST: ${{ inputs.tag-latest }}
-        ALPINE_TAG: ${{ inputs.alpine-tag }}
-        SERVER_VERSION: ${{ steps.extract-version.outputs.server-version }}
-        CLI_VERSION: ${{ steps.extract-cli-version.outputs.cli-version }}
-      run: |
-        if [ -z "${ALPINE_TAG}" ]; then
-          unset ALPINE_TAG
-        fi
-
-        docker buildx bake \
-          --push \
-          -f docker/docker-bake.hcl \
-          server admin-tools
+        docker buildx bake "${bake_args[@]}" -f docker/docker-bake.hcl server

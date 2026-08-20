@@ -1,11 +1,14 @@
 name: linters
 on:
   pull_request:
+  push:
+    branches:
+      - main
 permissions:
   contents: read
 jobs:
   lint-actions:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
@@ -25,7 +28,7 @@ jobs:
         shell: bash
 
   lint-protos:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
@@ -46,7 +49,7 @@ jobs:
           make lint-protos
 
   lint-api:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
@@ -67,7 +70,7 @@ jobs:
           make lint-api
 
   lint-workflows:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
@@ -87,7 +90,7 @@ jobs:
         run: make workflowcheck
 
   fmt:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
@@ -113,7 +116,7 @@ jobs:
           fi
 
   parallelize-tests:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
@@ -139,7 +142,7 @@ jobs:
           fi
 
   golangci:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
@@ -171,9 +174,10 @@ jobs:
       - lint-api
       - lint-protos
       - lint-actions
+      - lint-workflows
       - golangci
       - parallelize-tests
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     if: always()
     env:
       RESULTS: ${{ toJSON(needs.*.result) }}

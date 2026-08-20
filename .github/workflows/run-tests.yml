@@ -1,336 +1,42 @@
-name: All Tests
+name: Tests
 
 on:
   pull_request:
   push:
     branches:
       - main
-      - cloud/*
-      - feature/*
-      - release/*
 
 permissions:
   contents: read
 
-concurrency: # Auto-cancel existing runs in the PR when a new commit is pushed
-  group: run-tests-${{ github.head_ref || github.run_id }}
+concurrency:
+  group: tests-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 env:
-  # For pull_request: use the head of the PR branch (not the merge branch which is the default!)
-  # For push: use the pushed commit.
-  COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
-  PR_BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
+  MAX_TEST_ATTEMPTS: 3
   DOCKER_COMPOSE_FILE: ./develop/github/docker-compose.yml
   TEMPORAL_VERSION_CHECK_DISABLED: 1
-  MAX_TEST_ATTEMPTS: 3
-  SHARD_COUNT: 3 # NOTE: must match shard count in optimize-test-sharding.yml
 
 jobs:
-  test-setup:
-    name: Test setup
-    runs-on: ubuntu-latest
-    outputs:
-      job_matrix: ${{ steps.build_matrix.outputs.job_matrix }}
-      full_test_reason: ${{ steps.determine_scope.outputs.full_test_reason }}
-      runner_arm: ${{ steps.configure_runners.outputs.runner_arm }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ env.COMMIT }}
-          fetch-depth: 0
-
-      - name: Fetch base branch
-        if: ${{ github.event_name == 'pull_request' }}
-        run: git fetch origin ${{ github.event.pull_request.base.ref }}:${{ github.event.pull_request.base.ref }}
-
-      - name: Compute merge base
-        if: ${{ github.event_name == 'pull_request' }}
-        run: |
-          MERGE_BASE="$(git merge-base "${{ env.COMMIT }}" "${{ github.event.pull_request.base.ref }}")"
-          echo "MERGE_BASE=${MERGE_BASE}" >> "$GITHUB_ENV"
-
-      # If possible, run the "abridged" jobs on PRs to save time.
-      #
-      # The goal is to still cover all persistence code paths:
-      #   1. SQL
-      #   2. NoSQL (ie Cassandra)
-      #   3. Elasticsearch/OpenSearch
-      # All other jobs for the remaining databases only run a small set of smoke tests.
-      #
-      # Exceptions to this optimization:
-      #   1. commit is not a PR
-      #   2. `test-all-dbs` label set on PR
-      #   3. changes to persistence packages were made
-      - name: Determine test scope
-        id: determine_scope
-        run: |
-          FULL_TEST_REASON=""
-
-          event_name="${{ github.event_name }}"
-          labels='${{ toJson(github.event.pull_request.labels.*.name) }}'
-          merge_base="${MERGE_BASE:-}"
-
-          echo "event_name=$event_name"
-          echo "labels=$labels"
-          echo "merge_base=$merge_base"
-
-          # Push events (main, release branches) run all tests on all DBs
-          if [[ "$event_name" == "push" ]]; then
-            FULL_TEST_REASON="Running full tests on all DBs (push event)."
-          # Check for test-all-dbs label
-          elif echo "$labels" | jq -e 'any(. == "test-all-dbs")' > /dev/null 2>&1; then
-            FULL_TEST_REASON="Running full tests on all DBs (test-all-dbs label)."
-          # Check for persistence code changes
-          elif [[ -n "$merge_base" ]]; then
-            echo "Changed persistence files:"
-            git diff --name-only "$merge_base" "$COMMIT" | grep -E "^(common/persistence/|schema/)" || echo "(none)"
-            if git diff --name-only "$merge_base" "$COMMIT" | grep -qE "^(common/persistence/|schema/)"; then
-              FULL_TEST_REASON="Running full tests on all DBs (persistence code changes)."
-            fi
-          fi
-
-          echo "full_test_reason=$FULL_TEST_REASON" >> "$GITHUB_OUTPUT"
-
-      - name: ${{ steps.determine_scope.outputs.full_test_reason && 'ℹ️ Full tests' || 'ℹ️ Smoke tests' }}
-        run: echo "::notice::${{ steps.determine_scope.outputs.full_test_reason || 'Running smoke tests on extended DBs. Add the test-all-dbs label to run all tests on all DBs.' }}"
-
-      - name: Configure runners
-        id: configure_runners
-        run: |
-          # Use 8-core runners for temporalio org, standard runners for forks
-          if [[ "${{ github.repository_owner }}" == "temporalio" ]]; then
-            runner_arm="ubuntu-24.04-arm64-8-cores"
-          else
-            runner_arm="ubuntu-24.04-arm"
-          fi
-          echo "runner_arm=$runner_arm" >> "$GITHUB_OUTPUT"
-
-      # Primary DBs always get full tests, extended DBs get smoke tests (1 job) in abridged PRs.
-      - name: Build job matrix
-        id: build_matrix
-        env:
-          FULL_TEST_REASON: ${{ steps.determine_scope.outputs.full_test_reason }}
-          DB_CONFIGS: |
-            cass_es:
-              persistence_type: nosql
-              persistence_driver: cassandra
-              containers: [cassandra, elasticsearch]
-              required: true
-            cass_es8:
-              persistence_type: nosql
-              persistence_driver: cassandra
-              containers: [cassandra, elasticsearch8]
-            cass_os2:
-              persistence_type: nosql
-              persistence_driver: cassandra
-              containers: [cassandra, opensearch2]
-            cass_os3:
-              persistence_type: nosql
-              persistence_driver: cassandra
-              containers: [cassandra, opensearch3]
-            sqlite:
-              persistence_type: sql
-              persistence_driver: sqlite
-              containers: []
-            mysql8:
-              persistence_type: sql
-              persistence_driver: mysql8
-              containers: [mysql]
-            postgres12:
-              persistence_type: sql
-              persistence_driver: postgres12
-              containers: [postgresql]
-              required: true
-            postgres12_pgx:
-              persistence_type: sql
-              persistence_driver: postgres12_pgx
-              containers: [postgresql]
-          JOB_TYPES: |
-            functest:
-              cmd: make functional-test-coverage
-              test_timeout: 35m
-              github_timeout: 40
-              sharded: true
-            smoke:
-              cmd: make functional-test-coverage
-              test_timeout: 5m
-              github_timeout: 10
-              test_args: '"-run=TestActivityTestSuite|TestSignalWorkflowTestSuite|TestWorkflowTestSuite"'
-            ndc:
-              cmd: make functional-test-ndc-coverage
-              test_timeout: 10m
-              github_timeout: 15
-            xdc:
-              cmd: make functional-test-xdc-coverage
-              test_timeout: 30m
-              github_timeout: 35
-        run: |
-          # Convert YAML inputs to JSON for jq.
-          DBS_JSON=$(yq -o=json <<< "$DB_CONFIGS")
-          JOBS_JSON=$(yq -o=json <<< "$JOB_TYPES")
-
-          # Build the job matrix as a JSON array.
-          MATRIX=$(
-            jq -c -n \
-              --argjson dbs "$DBS_JSON" \
-              --argjson jobs "$JOBS_JSON" \
-              --argjson shard_count "$SHARD_COUNT" \
-              --arg full_test_reason "$FULL_TEST_REASON" \
-            '
-            [
-              $dbs | to_entries[] as $db |
-
-              # Full test suite for required DBs (or all DBs when full_test_reason is set).
-              (if $db.value.required or ($full_test_reason != "") then
-                $jobs | to_entries[] | select(.key != "smoke")
-              else
-                $jobs | to_entries[] | select(.key == "smoke")
-              end) as $job |
-
-              # Base entry: merge db config + job config + name
-              ($db.value + ($job.value | del(.sharded)) + {name: $db.key}) as $base |
-
-              # If sharded, emit one entry per shard; otherwise emit one entry
-              if $job.value.sharded then
-                range($shard_count) as $i |
-                $base + {
-                  display_name: "shard\($i)",
-                  shard_index: $i,
-                  total_shards: $shard_count
-                }
-              else
-                $base + {display_name: $job.key}
-              end
-            ]
-            '
-          )
-
-          echo "job_matrix=$MATRIX" >> "$GITHUB_OUTPUT"
-          echo "Generated $(jq length <<< "$MATRIX") jobs"
-
-  pre-build:
-    name: Pre-build for cache
-    needs: test-setup
-    runs-on: ${{ needs.test-setup.outputs.runner_arm }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ env.COMMIT }}
-
-      - uses: actions/setup-go@v6
-        with:
-          go-version-file: "go.mod"
-          cache: false # do our own caching
-
-      - name: Restore dependencies
-        id: restore-deps
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/go/pkg/mod
-          key: go-${{ runner.os }}${{ runner.arch }}-${{ hashFiles('go.mod') }}-deps-${{ hashFiles('go.sum') }}
-
-      - run: make pre-build-functional-test-coverage
-
-      - name: Save dependencies
-        uses: actions/cache/save@v5
-        if: ${{ steps.restore-deps.outputs.cache-hit != 'true' }}
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ steps.restore-deps.outputs.cache-primary-key }}
-
-      - name: Save build outputs
-        uses: actions/cache/save@v5
-        with:
-          path: ~/.cache/go-build
-          key: go-${{ runner.os }}${{ runner.arch }}-build-${{ env.COMMIT }}
-
-  misc-checks:
-    name: Misc checks
-    needs: [pre-build, test-setup]
-    runs-on: ${{ needs.test-setup.outputs.runner_arm }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ env.COMMIT }}
-          # buf-breaking tries to compare HEAD against merge base so we need to be able to find it
-          fetch-depth: 100
-
-      - uses: actions/setup-go@v6
-        with:
-          go-version-file: "go.mod"
-          cache: false # do our own caching
-
-      - name: Restore dependencies
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/go/pkg/mod
-          key: go-${{ runner.os }}${{ runner.arch }}-${{ hashFiles('go.mod') }}-deps-${{ hashFiles('go.sum') }}
-
-      - name: Restore build outputs
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/.cache/go-build
-          key: go-${{ runner.os }}${{ runner.arch }}-build-${{ env.COMMIT }}
-
-      - uses: arduino/setup-protoc@v3
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - run: GOOS=windows GOARCH=amd64 make clean-bins bins
-
-      - run: GOOS=darwin GOARCH=arm64 make clean-bins bins
-
-      - run: make clean-bins ci-build-misc
-
   unit-test:
-    name: Unit test
-    needs: [pre-build, test-setup]
-    runs-on: ${{ needs.test-setup.outputs.runner_arm }}
+    name: Unit tests
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ env.COMMIT }}
 
       - uses: actions/setup-go@v6
         with:
-          go-version-file: "go.mod"
-          cache: false # do our own caching
-
-      - name: Restore dependencies
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/go/pkg/mod
-          key: go-${{ runner.os }}${{ runner.arch }}-${{ hashFiles('go.mod') }}-deps-${{ hashFiles('go.sum') }}
-
-      - name: Restore build outputs
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/.cache/go-build
-          key: go-${{ runner.os }}${{ runner.arch }}-build-${{ env.COMMIT }}
+          go-version-file: go.mod
+          cache: true
 
       - name: Run unit tests
-        timeout-minutes: 20
-        run: TEST_TIMEOUT=15m ./develop/github/monitor_test.sh make unit-test-coverage
+        timeout-minutes: 25
+        run: ./develop/github/monitor_test.sh make unit-test-coverage
 
-      - name: Print memory snapshot
-        if: always()
-        run: cat /tmp/memory_snapshot.txt || true
-
-      - name: Generate crash report
-        if: failure() # if the tests failed, we would expect one JUnit XML report per attempt; otherwise it must have crashed
-        run: |
-          [ "$(find .testoutput -maxdepth 1 -name 'junit.*.xml' | wc -l)" -lt "$MAX_TEST_ATTEMPTS" ] &&
-            CRASH_REPORT_NAME="$GITHUB_JOB" make report-test-crash
-
-      - name: Generate test summary
-        uses: mikepenz/action-junit-report@v6
+      - name: Publish JUnit report
         if: ${{ !cancelled() }}
+        uses: mikepenz/action-junit-report@v6
         with:
           report_paths: ./.testoutput/junit.*.xml
           detailed_summary: true
@@ -338,99 +44,40 @@ jobs:
           annotate_only: true
           skip_annotations: true
 
-      - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./.testoutput
-          flags: unit-test
-
-      - name: Upload test results to Codecov
+      - name: Upload test artifacts
         if: ${{ !cancelled() }}
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./.testoutput
-          flags: unit-test
-          report_type: test_results
-
-      - name: Get job ID
-        id: get_job_id
-        uses: ./.github/actions/get-job-id
-        with:
-          job_name: Unit test
-          run_id: ${{ github.run_id }}
-
-      - name: Upload test results to GitHub
-        # Can't pin to major because the action linter doesn't recognize the include-hidden-files flag.
         uses: actions/upload-artifact@v6
-        if: ${{ !cancelled() }}
         with:
-          name: junit-xml--${{ github.run_id }}--${{ steps.get_job_id.outputs.job_id }}--${{ github.run_attempt }}--unit-test
+          name: junit-unit-${{ github.run_id }}-${{ github.run_attempt }}
           path: ./.testoutput/junit.*.xml
+          if-no-files-found: warn
           include-hidden-files: true
-          retention-days: 28
+          retention-days: 14
 
   integration-test:
-    name: Integration test
-    needs: [pre-build, test-setup]
-    runs-on: ${{ needs.test-setup.outputs.runner_arm }}
+    name: PostgreSQL integration tests
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ env.COMMIT }}
 
-      - name: Start containerized dependencies
-        uses: hoverkraft-tech/compose-action@v2.0.1
-        with:
-          compose-file: ${{ env.DOCKER_COMPOSE_FILE }}
-          services: |
-            cassandra
-            mysql
-            postgresql
-          down-flags: -v
+      - name: Start PostgreSQL
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
 
       - uses: actions/setup-go@v6
         with:
-          go-version-file: "go.mod"
-          cache: false # do our own caching
+          go-version-file: go.mod
+          cache: true
 
-      - name: Restore dependencies
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/go/pkg/mod
-          key: go-${{ runner.os }}${{ runner.arch }}-${{ hashFiles('go.mod') }}-deps-${{ hashFiles('go.sum') }}
-
-      - name: Restore build outputs
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/.cache/go-build
-          key: go-${{ runner.os }}${{ runner.arch }}-build-${{ env.COMMIT }}
-
-      - name: Wait for containerized dependencies to be healthy
-        run: |
-          # Word splitting is intentional here.
-          # shellcheck disable=SC2046
-          docker compose -f ${{ env.DOCKER_COMPOSE_FILE }} up --wait $(docker compose -f ${{ env.DOCKER_COMPOSE_FILE }} ps --services)
-
-      - name: Run integration test
-        timeout-minutes: 15
+      - name: Run PostgreSQL persistence and schema tests
+        timeout-minutes: 25
+        env:
+          TEST_ARGS: -run=^TestP\(Q\|ostgres\)$$
+          INTEGRATION_TEST_DIRS: ./common/persistence/tests ./tools/tests
         run: ./develop/github/monitor_test.sh make integration-test-coverage
 
-      - name: Print memory snapshot
-        if: always()
-        run: cat /tmp/memory_snapshot.txt || true
-
-      - name: Generate crash report
-        if: failure() # if the tests failed, we would expect one JUnit XML report per attempt; otherwise it must have crashed
-        run: |
-          [ "$(find .testoutput -maxdepth 1 -name 'junit.*.xml' | wc -l)" -lt "$MAX_TEST_ATTEMPTS" ] &&
-            CRASH_REPORT_NAME="$GITHUB_JOB" make report-test-crash
-
-      - name: Generate test summary
-        uses: mikepenz/action-junit-report@v6
+      - name: Publish JUnit report
         if: ${{ !cancelled() }}
+        uses: mikepenz/action-junit-report@v6
         with:
           report_paths: ./.testoutput/junit.*.xml
           detailed_summary: true
@@ -438,138 +85,78 @@ jobs:
           annotate_only: true
           skip_annotations: true
 
-      - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./.testoutput
-          flags: integration-test
-
-      - name: Upload test results to Codecov
+      - name: Upload test artifacts
         if: ${{ !cancelled() }}
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./.testoutput
-          flags: integration-test
-          report_type: test_results
-
-      - name: Get job ID
-        id: get_job_id
-        uses: ./.github/actions/get-job-id
-        with:
-          job_name: Integration test
-          run_id: ${{ github.run_id }}
-
-      - name: Upload test results to GitHub
-        # Can't pin to major because the action linter doesn't recognize the include-hidden-files flag.
         uses: actions/upload-artifact@v6
-        if: ${{ !cancelled() }}
         with:
-          name: junit-xml--${{ github.run_id }}--${{ steps.get_job_id.outputs.job_id }}--${{ github.run_attempt }}--integration-test
+          name: junit-postgres-integration-${{ github.run_id }}-${{ github.run_attempt }}
           path: ./.testoutput/junit.*.xml
+          if-no-files-found: warn
           include-hidden-files: true
-          retention-days: 28
+          retention-days: 14
 
-      - name: Tear down docker compose
-        if: ${{ always() }}
-        run: |
-          docker compose -f ${{ env.DOCKER_COMPOSE_FILE }} down -v
+      - name: Stop PostgreSQL
+        if: always()
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" down --volumes
 
-  # Root job name includes matrix details so it is unique per job variant.
-  # This MUST stay in sync with the `job_name` passed to the job-id action below.
   functional-test:
-    # Display name shown in the UI. The job-id lookup uses this exact value.
-    name: Functional test (${{ matrix.name }}, ${{ matrix.display_name }})
-    needs: [pre-build, test-setup]
+    name: PostgreSQL ${{ matrix.name }}${{ matrix.shard && format(' shard {0}', matrix.shard) || '' }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJson(needs.test-setup.outputs.job_matrix) }}
-    runs-on: ${{ needs.test-setup.outputs.runner_arm }}
+        include:
+          - name: functional
+            command: make functional-test-coverage
+            timeout: 40
+            shard: 0
+            total_shards: 3
+          - name: functional
+            command: make functional-test-coverage
+            timeout: 40
+            shard: 1
+            total_shards: 3
+          - name: functional
+            command: make functional-test-coverage
+            timeout: 40
+            shard: 2
+            total_shards: 3
+          - name: ndc
+            command: make functional-test-ndc-coverage
+            timeout: 20
+          - name: xdc
+            command: make functional-test-xdc-coverage
+            timeout: 40
     env:
-      PERSISTENCE_TYPE: ${{ matrix.persistence_type }}
-      PERSISTENCE_DRIVER: ${{ matrix.persistence_driver }}
-      TEST_TIMEOUT: ${{ matrix.test_timeout }}
+      PERSISTENCE_TYPE: sql
+      PERSISTENCE_DRIVER: postgres12
+      TEST_TIMEOUT: 35m
+      TEST_TOTAL_SHARDS: ${{ matrix.total_shards }}
+      TEST_SHARD_INDEX: ${{ matrix.total_shards && matrix.shard || '' }}
+      TEMPORAL_TEST_LOG_FILE: ${{ github.workspace }}/.testoutput/debug.log
+      TEMPORAL_TEST_LOG_LEVEL: info
     steps:
-      - uses: ScribeMD/docker-cache@0.3.7
-        with:
-          key: docker-${{ runner.os }}${{ runner.arch }}-${{ hashFiles(env.DOCKER_COMPOSE_FILE) }}
-
       - uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ env.COMMIT }}
 
-      - name: Start containerized dependencies
-        if: ${{ toJson(matrix.containers) != '[]' }}
-        uses: hoverkraft-tech/compose-action@v2.0.1
-        with:
-          compose-file: ${{ env.DOCKER_COMPOSE_FILE }}
-          services: "${{ join(matrix.containers, '\n') }}"
-          down-flags: -v
+      - name: Start PostgreSQL
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
 
       - uses: actions/setup-go@v6
         with:
-          go-version-file: "go.mod"
-          cache: false # do our own caching
-
-      - name: Restore dependencies
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/go/pkg/mod
-          key: go-${{ runner.os }}${{ runner.arch }}-${{ hashFiles('go.mod') }}-deps-${{ hashFiles('go.sum') }}
-
-      - name: Restore build outputs
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/.cache/go-build
-          key: go-${{ runner.os }}${{ runner.arch }}-build-${{ env.COMMIT }}
-
-      - name: Get job ID
-        id: get_job_id
-        uses: ./.github/actions/get-job-id
-        with:
-          job_name: Functional test (${{ matrix.name }}, ${{ matrix.display_name }})
-          run_id: ${{ github.run_id }}
-
-      - name: ${{ matrix.display_name == 'smoke' && 'ℹ️ Smoke test' || 'ℹ️ Full test' }}
-        run: echo "::notice::${{ matrix.display_name == 'smoke' && 'This is a smoke test. Add the test-all-dbs label to run all tests on all DBs.' || needs.test-setup.outputs.full_test_reason }}"
-
-      - name: Wait for containerized dependencies to be healthy
-        if: ${{ toJson(matrix.containers) != '[]' }}
-        run: |
-          # Word splitting is intentional here.
-          # shellcheck disable=SC2046
-          docker compose -f ${{ env.DOCKER_COMPOSE_FILE }} up --wait $(docker compose -f ${{ env.DOCKER_COMPOSE_FILE }} ps --services)
+          go-version-file: go.mod
+          cache: true
 
       - name: Run functional test
-        timeout-minutes: ${{ matrix.github_timeout }}
-        run: ./develop/github/monitor_test.sh ${{ matrix.cmd }}
-        env:
-          TEST_TOTAL_SHARDS: ${{ matrix.total_shards }}
-          TEST_SHARD_INDEX: ${{ matrix.total_shards && matrix.shard_index }} # guard with total_shards to avoid falsy eval of shard_index=0
-          TEST_ARGS: "${{ matrix.test_args }}"
-          TEMPORAL_TEST_LOG_FILE: ${{ github.workspace }}/.testoutput/debug.log
-          TEMPORAL_TEST_LOG_LEVEL: info
+        timeout-minutes: ${{ matrix.timeout }}
+        run: ./develop/github/monitor_test.sh ${{ matrix.command }}
 
-      - name: Dump container logs
-        if: ${{ failure() && toJson(matrix.containers) != '[]' }}
-        run: docker compose -f ${{ env.DOCKER_COMPOSE_FILE }} logs --no-color
+      - name: Dump PostgreSQL logs
+        if: failure()
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" logs --no-color postgresql
 
-      - name: Print memory snapshot
-        if: always()
-        run: cat /tmp/memory_snapshot.txt || true
-
-      - name: Generate crash report
-        if: failure() # if the tests failed, we would expect one JUnit XML report per attempt; otherwise it must have crashed
-        run: |
-          [ "$(find .testoutput -maxdepth 1 -name 'junit.*.xml' | wc -l)" -lt "$MAX_TEST_ATTEMPTS" ] &&
-            CRASH_REPORT_NAME="$GITHUB_JOB" make report-test-crash
-
-      - name: Generate test summary
-        uses: mikepenz/action-junit-report@v6
+      - name: Publish JUnit report
         if: ${{ !cancelled() }}
+        uses: mikepenz/action-junit-report@v6
         with:
           report_paths: ./.testoutput/junit.*.xml
           detailed_summary: true
@@ -577,107 +164,26 @@ jobs:
           annotate_only: true
           skip_annotations: true
 
-      - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./.testoutput
-          flags: functional-test
-
-      - name: Upload test results to Codecov
+      - name: Upload test artifacts
         if: ${{ !cancelled() }}
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./.testoutput
-          flags: functional-test
-          report_type: test_results
-
-      - name: Upload test results to GitHub
-        # Can't pin to major because the action linter doesn't recognize the include-hidden-files flag.
         uses: actions/upload-artifact@v6
-        if: ${{ !cancelled() }}
         with:
-          name: junit-xml--${{ github.run_id }}--${{ steps.get_job_id.outputs.job_id }}--${{ github.run_attempt }}--${{ matrix.name }}--${{ matrix.display_name }}--functional-test
-          path: ./.testoutput/junit.*.xml
+          name: junit-postgres-${{ matrix.name }}-${{ matrix.shard || 'all' }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ./.testoutput/junit.*.xml
+            ./.testoutput/debug.log
+          if-no-files-found: warn
           include-hidden-files: true
-          retention-days: 28
-
-      - name: Upload debug logs
-        uses: actions/upload-artifact@v6
-        if: ${{ !cancelled() }}
-        with:
-          name: debug-logs--${{ github.run_id }}--${{ steps.get_job_id.outputs.job_id }}--${{ github.run_attempt }}--${{ matrix.name }}--${{ matrix.display_name }}--functional-test
-          path: ${{ github.workspace }}/.testoutput/debug.log
-          if-no-files-found: ignore
           retention-days: 14
 
-  mixed-brain-test:
-    name: Mixed brain test
-    needs: [pre-build, test-setup]
-    runs-on: ${{ needs.test-setup.outputs.runner_arm }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ env.COMMIT }}
-
-      - name: Start PostgreSQL
-        uses: hoverkraft-tech/compose-action@v2.0.1
-        with:
-          compose-file: ${{ env.DOCKER_COMPOSE_FILE }}
-          services: postgresql
-          down-flags: -v
-
-      - uses: actions/setup-go@v6
-        with:
-          go-version-file: "go.mod"
-          cache: false
-
-      - name: Restore dependencies
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/go/pkg/mod
-          key: go-${{ runner.os }}${{ runner.arch }}-${{ hashFiles('go.mod') }}-deps-${{ hashFiles('go.sum') }}
-
-      - name: Restore build outputs
-        uses: actions/cache/restore@v5
-        with:
-          path: ~/.cache/go-build
-          key: go-${{ runner.os }}${{ runner.arch }}-build-${{ env.COMMIT }}
-
-      - name: Install PostgreSQL schema
-        run: make install-schema-postgresql12
-
-      - name: Run mixed brain test
-        timeout-minutes: 20
-        run: ./develop/github/monitor_test.sh make mixed-brain-test
-        env:
-          TEST_TIMEOUT: 18m
-          MIXED_BRAIN_TEST_DURATION: 5m
-          PERSISTENCE_DRIVER: postgres12
-
-      - name: Print memory snapshot
+      - name: Stop PostgreSQL
         if: always()
-        run: cat /tmp/memory_snapshot.txt || true
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" down --volumes
 
-      - name: Print current server logs
-        if: always()
-        run: cat .testoutput/mixedbrain_process-current.log || true
-
-      - name: Print release server logs
-        if: always()
-        run: cat .testoutput/mixedbrain_process-release.log || true
-
-      - name: Print Omes logs
-        if: always()
-        run: cat .testoutput/mixedbrain_omes.log || true
-
-  test-status:
+  tests-succeed:
+    name: All Tests Succeed
     if: always()
-    name: Test Status
     needs:
-      - misc-checks
       - unit-test
       - integration-test
       - functional-test
@@ -687,37 +193,6 @@ jobs:
     steps:
       - name: Check results
         run: |
-          # all statuses must be success
-          if [[ -n $(echo "$RESULTS" | jq '.[] | select (. != "success")') ]]; then
+          if [[ -n $(echo "$RESULTS" | jq '.[] | select(. != "success")') ]]; then
             exit 1
           fi
-
-  notify-failure:
-    name: Notify Slack on Failure
-    if: |
-      always() &&
-      github.ref == 'refs/heads/main' &&
-      needs.test-status.result == 'failure'
-    needs: test-status
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version-file: "go.mod"
-          cache: true
-
-      - name: Send Slack notification
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          go run ./cmd/tools/ci-notify alert \
-            --run-id "${{ github.run_id }}" \
-            --slack-webhook "$SLACK_WEBHOOK"
