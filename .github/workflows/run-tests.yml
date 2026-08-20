@@ -21,7 +21,7 @@ env:
 jobs:
   unit-test:
     name: Unit tests
-    runs-on: self-hosted
+    runs-on: ${{ 'linux-dind-heavy' }}
     steps:
       - uses: actions/checkout@v6
 
@@ -56,7 +56,7 @@ jobs:
 
   integration-test:
     name: PostgreSQL integration tests
-    runs-on: self-hosted
+    runs-on: ${{ 'linux-dind-heavy' }}
     steps:
       - uses: actions/checkout@v6
 
@@ -101,7 +101,7 @@ jobs:
 
   functional-test:
     name: PostgreSQL ${{ matrix.name }}${{ matrix.shard && format(' shard {0}', matrix.shard) || '' }}
-    runs-on: self-hosted
+    runs-on: ${{ 'linux-dind-heavy' }}
     strategy:
       fail-fast: false
       matrix:
@@ -181,7 +181,7 @@ jobs:
       - unit-test
       - integration-test
       - functional-test
-    runs-on: self-hosted
+    runs-on: ${{ 'linux-dind-light' }}
     env:
       RESULTS: ${{ toJSON(needs.*.result) }}
     steps:
