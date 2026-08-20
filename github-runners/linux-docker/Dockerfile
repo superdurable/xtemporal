@@ -59,9 +59,6 @@ COPY job-completed.sh /usr/local/bin/dex-engine-runner-job-completed.sh
 RUN chmod 0755 /usr/local/bin/dex-engine-runner-*.sh \
     && chown -R runner:runner /opt/actions-runner
 
-ENV ACTIONS_RUNNER_HOOK_JOB_STARTED=/usr/local/bin/dex-engine-runner-job-started.sh
-ENV ACTIONS_RUNNER_HOOK_JOB_COMPLETED=/usr/local/bin/dex-engine-runner-job-completed.sh
-
 HEALTHCHECK --interval=10s --timeout=5s --start-period=60s --retries=6 \
     CMD docker info >/dev/null 2>&1 && pgrep -f Runner.Listener >/dev/null || exit 1
 

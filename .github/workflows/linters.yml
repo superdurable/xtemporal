@@ -142,7 +142,16 @@ jobs:
           fi
 
   golangci:
+    needs:
+      - fmt
+      - lint-api
+      - lint-protos
+      - lint-actions
+      - lint-workflows
+      - parallelize-tests
     runs-on: ${{ 'linux-dind-light' }}
+    env:
+      GOMAXPROCS: 2
     steps:
       - uses: actions/checkout@v6
         with:
@@ -156,7 +165,7 @@ jobs:
 
       - name: lint code
         run: |
-          make GOLANGCI_LINT_FIX=false GOLANGCI_LINT_BASE_REV=HEAD~ lint-code
+          make GOLANGCI_LINT_CONCURRENCY=2 GOLANGCI_LINT_FIX=false GOLANGCI_LINT_BASE_REV=HEAD~ lint-code
 
       - name: check-is-dirty
         run: |
