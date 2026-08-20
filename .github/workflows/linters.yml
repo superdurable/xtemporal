@@ -170,7 +170,11 @@ jobs:
 
       - name: lint code
         run: |
-          make GOLANGCI_LINT_CONCURRENCY=1 GOLANGCI_LINT_FIX=false GOLANGCI_LINT_BASE_REV=HEAD~ lint-code
+          if git diff --quiet origin/main...HEAD -- '*.go' go.mod go.sum; then
+            echo "No Go or module changes to lint."
+            exit 0
+          fi
+          make GOLANGCI_LINT_CONCURRENCY=1 GOLANGCI_LINT_FIX=false GOLANGCI_LINT_BASE_REV=origin/main lint-code
 
       - name: check-is-dirty
         run: |
