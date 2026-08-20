@@ -33,12 +33,8 @@ type (
 		// Each value present in keys will have relevant tag value replaced with "_tag_excluded_"
 		// Each value in values list will white-list tag values to be reported as usual.
 		ExcludeTags map[string][]string `yaml:"excludeTags"`
-		// Prefix sets the prefix to all outgoing metrics
-		// When migrating from tally to opentelemetry and to be backward compatible with the existing metric names,
-		// if the prefix has a "_" suffix, add an additional "_" at the end.
-		// i.e. "temporal" -> "temporal", but "temporal_" -> "temporal__", "temporal__" -> "temporal___".
-		// This is because tally implementation blindly adds "_" as the separator between the prefix
-		// and the metric name, while opentelemetry implementation only adds it if it's not already there.
+		// Prefix is an optional outer prefix for Dex Engine metrics. For example,
+		// "examples_" produces "examples_dex_engine_*" metric names.
 		Prefix string `yaml:"prefix"`
 
 		// DefaultHistogramBoundaries defines the default histogram bucket
@@ -72,7 +68,8 @@ type (
 	StatsdConfig struct {
 		// The host and port of the statsd server
 		HostPort string `yaml:"hostPort" validate:"nonzero"`
-		// The prefix to use in reporting to statsd
+		// The prefix to use in reporting to statsd. Dex Engine ignores this value and
+		// emits dex_engine_* metrics.
 		Prefix string `yaml:"prefix" validate:"nonzero"`
 		// FlushInterval is the maximum interval for sending packets.
 		// If it is not specified, it defaults to 1 second.
@@ -461,6 +458,8 @@ func MetricsHandlerFromConfig(logger log.Logger, c *Config) (Handler, error) {
 		return NoopMetricsHandler, nil
 	}
 
+	metricPrefix := dexEngineMetricPrefixWithClientPrefix(c.Prefix)
+	c = copyConfigForDexEngineMetrics(c)
 	setDefaultPerUnitHistogramBoundaries(&c.ClientConfig)
 
 	fatalOnListenerError := true
@@ -469,8 +468,13 @@ func MetricsHandlerFromConfig(logger log.Logger, c *Config) (Handler, error) {
 		otelProvider, err := NewOpenTelemetryProviderWithStatsd(logger, c.Statsd, &c.ClientConfig)
 		if err != nil {
 			logger.Fatal(err.Error())
+			return nil, err
 		}
-		return NewOtelMetricsHandler(logger, otelProvider, c.ClientConfig, false)
+		metricsHandler, err := NewOtelMetricsHandler(logger, otelProvider, c.ClientConfig, false)
+		if err != nil {
+			return nil, err
+		}
+		return newPrefixedHandlerWithPrefix(metricsHandler, metricPrefix), nil
 	}
 
 	if c.Prometheus != nil && c.Prometheus.Framework == FrameworkOpentelemetry {
@@ -478,15 +482,34 @@ func MetricsHandlerFromConfig(logger log.Logger, c *Config) (Handler, error) {
 		otelProvider, err := NewOpenTelemetryProviderWithPrometheus(logger, c.Prometheus, &c.ClientConfig, fatalOnListenerError)
 		if err != nil {
 			logger.Fatal(err.Error())
+			return nil, err
 		}
-		return NewOtelMetricsHandler(logger, otelProvider, c.ClientConfig, c.ClientConfig.RecordTimerInSeconds)
+		metricsHandler, err := NewOtelMetricsHandler(logger, otelProvider, c.ClientConfig, c.RecordTimerInSeconds)
+		if err != nil {
+			return nil, err
+		}
+		return newPrefixedHandlerWithPrefix(metricsHandler, metricPrefix), nil
 	}
 
 	// fallback to tally if no framework is specified
-	return NewTallyMetricsHandler(
+	return newPrefixedHandlerWithPrefix(NewTallyMetricsHandler(
 		c.ClientConfig,
 		NewScope(logger, c),
-	), nil
+	), metricPrefix), nil
+}
+
+func copyConfigForDexEngineMetrics(c *Config) *Config {
+	configCopy := *c
+	configCopy.ClientConfig = c.ClientConfig
+	configCopy.Prefix = ""
+
+	if c.Statsd != nil {
+		statsdConfig := *c.Statsd
+		statsdConfig.Prefix = ""
+		configCopy.Statsd = &statsdConfig
+	}
+
+	return &configCopy
 }
 
 func configExcludeTags(cfg ClientConfig) map[string]map[string]struct{} {

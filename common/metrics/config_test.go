@@ -153,7 +153,7 @@ func TestMetricsHandlerFromConfig(t *testing.T) {
 					ListenAddress: "localhost:0",
 				},
 			},
-			expectedType: &tallyMetricsHandler{},
+			expectedType: &prefixedHandler{},
 		},
 		{
 			name: "opentelemetry",
@@ -163,7 +163,7 @@ func TestMetricsHandlerFromConfig(t *testing.T) {
 					ListenAddress: "localhost:0",
 				},
 			},
-			expectedType: &otelMetricsHandler{},
+			expectedType: &prefixedHandler{},
 		},
 	} {
 		c := c
@@ -178,4 +178,35 @@ func TestMetricsHandlerFromConfig(t *testing.T) {
 			assert.IsType(t, c.expectedType, handler)
 		})
 	}
+}
+
+func TestCopyConfigForDexEngineMetrics(t *testing.T) {
+	t.Parallel()
+
+	cfg := &Config{
+		ClientConfig: ClientConfig{Prefix: "legacy"},
+		Statsd: &StatsdConfig{
+			Prefix: "legacy_statsd",
+		},
+	}
+
+	metricsConfig := copyConfigForDexEngineMetrics(cfg)
+
+	require.Empty(t, metricsConfig.Prefix)
+	require.Empty(t, metricsConfig.Statsd.Prefix)
+	require.Equal(t, "legacy", cfg.Prefix)
+	require.Equal(t, "legacy_statsd", cfg.Statsd.Prefix)
+}
+
+func TestMetricsHandlerFromConfigUsesClientPrefixBeforeDexEnginePrefix(t *testing.T) {
+	t.Parallel()
+
+	handler, err := MetricsHandlerFromConfig(log.NewNoopLogger(), &Config{
+		ClientConfig: ClientConfig{Prefix: "examples_"},
+	})
+	require.NoError(t, err)
+
+	prefixed, ok := handler.(*prefixedHandler)
+	require.True(t, ok)
+	require.Equal(t, "examples_dex_engine_", prefixed.metricPrefix)
 }
