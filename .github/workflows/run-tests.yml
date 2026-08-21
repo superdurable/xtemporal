@@ -132,7 +132,7 @@ jobs:
       PERSISTENCE_DRIVER: postgres12
       TEST_TIMEOUT: 35m
       TEST_TOTAL_SHARDS: ${{ matrix.total_shards }}
-      TEST_SHARD_INDEX: ${{ matrix.total_shards && matrix.shard || '' }}
+      TEST_SHARD_INDEX: ${{ matrix.shard }}
       TEMPORAL_TEST_LOG_FILE: ${{ github.workspace }}/.testoutput/debug.log
       TEMPORAL_TEST_LOG_LEVEL: info
     steps:
