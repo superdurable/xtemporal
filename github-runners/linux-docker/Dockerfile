@@ -1,7 +1,7 @@
 FROM ubuntu:24.04
 
 ARG RUNNER_VERSION=2.336.0
-ARG RUNNER_SHA256=04cf0be1aff4c3ec3554466c39124ca250e3effd8873bb7e8d68535aa9505d5d
+ARG RUNNER_SHA256=58b758e420b87093fbd4bfddd368074960053e2f1388f01848c82624b90f27d1
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV RUNNER_ALLOW_RUNASROOT=1
@@ -28,7 +28,7 @@ RUN apt-get update \
     && install -m 0755 -d /etc/apt/keyrings \
     && curl --fail --location https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc \
     && chmod a+r /etc/apt/keyrings/docker.asc \
-    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu noble stable" > /etc/apt/sources.list.d/docker.list \
+    && echo "deb [arch=arm64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu noble stable" > /etc/apt/sources.list.d/docker.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         containerd.io \
@@ -46,7 +46,7 @@ WORKDIR /opt/actions-runner
 RUN curl --fail --location \
         --retry 5 --retry-all-errors --retry-delay 2 \
         --output actions-runner.tar.gz \
-        "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz" \
+        "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-arm64-${RUNNER_VERSION}.tar.gz" \
     && echo "${RUNNER_SHA256}  actions-runner.tar.gz" | sha256sum --check \
     && tar -xzf actions-runner.tar.gz \
     && rm actions-runner.tar.gz \

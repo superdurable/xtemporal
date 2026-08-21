@@ -4,6 +4,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 image="dex-engine-actions-runner:2.336.0"
+platform="linux/arm64"
 container_prefix="dex-engine-linux-dind-runner"
 runner_prefix="dex-engine-linux-dind"
 repository="superdurable/temporal-server"
@@ -46,7 +47,7 @@ role_for() {
 
 build() {
   require_orbstack
-  docker build --platform linux/amd64 --tag "$image" "$script_dir"
+  docker build --platform "$platform" --tag "$image" "$script_dir"
 }
 
 create_runner() {
@@ -64,7 +65,7 @@ create_runner() {
 
   docker run \
     --detach \
-    --platform linux/amd64 \
+    --platform "$platform" \
     --privileged \
     --restart unless-stopped \
     --label com.superdurable.dex-engine.linux-runner=true \
@@ -123,8 +124,14 @@ stop() {
 
 reset() {
   require_orbstack
-  busy="$(gh api "repos/${repository}/actions/runners?per_page=100" \
-    --jq "[.runners[] | select(.name == \"${runner_prefix}\" or (.name | startswith(\"${runner_prefix}-\"))) | select(.busy)] | length")"
+  runners_json="$(gh api "repos/${repository}/actions/runners?per_page=100")"
+  busy=0
+  for index in $(seq 1 "$runner_count"); do
+    runner="$(runner_for "$index")"
+    if [[ "$(jq --arg runner "$runner" '[.runners[] | select(.name == $runner and .busy)] | length' <<<"$runners_json")" != 0 ]]; then
+      ((busy += 1))
+    fi
+  done
   if (( busy > 0 )); then
     echo "Refusing to reset while ${busy} runners are busy." >&2
     exit 1
@@ -135,12 +142,14 @@ reset() {
       docker rm --force "$container" >/dev/null
     fi
   done
-  while IFS= read -r runner_id; do
-    if [[ -n "$runner_id" ]]; then
-      gh api --method DELETE "repos/${repository}/actions/runners/${runner_id}" >/dev/null
-    fi
-  done < <(gh api "repos/${repository}/actions/runners?per_page=100" --jq \
-    ".runners[] | select(.name == \"${runner_prefix}\" or (.name | startswith(\"${runner_prefix}-\"))) | .id")
+  for index in $(seq 1 "$runner_count"); do
+    runner="$(runner_for "$index")"
+    while IFS= read -r runner_id; do
+      if [[ -n "$runner_id" ]]; then
+        gh api --method DELETE "repos/${repository}/actions/runners/${runner_id}" >/dev/null
+      fi
+    done < <(jq --raw-output --arg runner "$runner" '.runners[] | select(.name == $runner) | .id' <<<"$runners_json")
+  done
   rm -f "$script_dir"/.runner-token-*
   up
 }

@@ -1,6 +1,6 @@
 # Temporal Server GitHub runners on OrbStack
 
-This directory provisions a repository-scoped Linux/amd64 GitHub Actions runner pool for `superdurable/temporal-server`. Each runner has its own Docker daemon, Docker data volume, and Actions work volume.
+This directory provisions a repository-scoped native Linux/arm64 GitHub Actions runner pool for `superdurable/temporal-server`. Each runner has its own Docker daemon, Docker data volume, and Actions work volume.
 
 The pool contains two `linux-dind-heavy` runners for PostgreSQL, unit-test, and image jobs, plus four `linux-dind-light` runners for linters and CI gates. These are the labels used by the CI workflows.
 
