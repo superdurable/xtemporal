@@ -143,14 +143,29 @@ var (
 		"FetchWorkerConfig":     func() any { return &workflowservice.FetchWorkerConfigResponse{} },
 		"UpdateWorkerConfig":    func() any { return &workflowservice.UpdateWorkerConfigResponse{} },
 
-		"StartActivityExecution":         func() any { return &workflowservice.StartActivityExecutionResponse{} },
-		"CountActivityExecutions":        func() any { return &workflowservice.CountActivityExecutionsResponse{} },
-		"ListActivityExecutions":         func() any { return &workflowservice.ListActivityExecutionsResponse{} },
-		"DescribeActivityExecution":      func() any { return &workflowservice.DescribeActivityExecutionResponse{} },
-		"PollActivityExecution":          func() any { return &workflowservice.PollActivityExecutionResponse{} },
-		"RequestCancelActivityExecution": func() any { return &workflowservice.RequestCancelActivityExecutionResponse{} },
-		"TerminateActivityExecution":     func() any { return &workflowservice.TerminateActivityExecutionResponse{} },
-		"DeleteActivityExecution":        func() any { return &workflowservice.DeleteActivityExecutionResponse{} },
+		"StartActivityExecution":          func() any { return &workflowservice.StartActivityExecutionResponse{} },
+		"CountActivityExecutions":         func() any { return &workflowservice.CountActivityExecutionsResponse{} },
+		"ListActivityExecutions":          func() any { return &workflowservice.ListActivityExecutionsResponse{} },
+		"DescribeActivityExecution":       func() any { return &workflowservice.DescribeActivityExecutionResponse{} },
+		"PollActivityExecution":           func() any { return &workflowservice.PollActivityExecutionResponse{} },
+		"RequestCancelActivityExecution":  func() any { return &workflowservice.RequestCancelActivityExecutionResponse{} },
+		"TerminateActivityExecution":      func() any { return &workflowservice.TerminateActivityExecutionResponse{} },
+		"DeleteActivityExecution":         func() any { return &workflowservice.DeleteActivityExecutionResponse{} },
+		"CountNexusOperationExecutions":   func() any { return &workflowservice.CountNexusOperationExecutionsResponse{} },
+		"DeleteNexusOperationExecution":   func() any { return &workflowservice.DeleteNexusOperationExecutionResponse{} },
+		"DescribeNexusOperationExecution": func() any { return &workflowservice.DescribeNexusOperationExecutionResponse{} },
+		"ListNexusOperationExecutions":    func() any { return &workflowservice.ListNexusOperationExecutionsResponse{} },
+		"PollNexusOperationExecution":     func() any { return &workflowservice.PollNexusOperationExecutionResponse{} },
+		"RequestCancelNexusOperationExecution": func() any {
+			return &workflowservice.RequestCancelNexusOperationExecutionResponse{}
+		},
+		"StartNexusOperationExecution":     func() any { return &workflowservice.StartNexusOperationExecutionResponse{} },
+		"TerminateNexusOperationExecution": func() any { return &workflowservice.TerminateNexusOperationExecutionResponse{} },
+		"CountWorkers":                     func() any { return &workflowservice.CountWorkersResponse{} },
+		"UpdateActivityExecutionOptions":   func() any { return &workflowservice.UpdateActivityExecutionOptionsResponse{} },
+		"PauseActivityExecution":           func() any { return &workflowservice.PauseActivityExecutionResponse{} },
+		"UnpauseActivityExecution":         func() any { return &workflowservice.UnpauseActivityExecutionResponse{} },
+		"ResetActivityExecution":           func() any { return &workflowservice.ResetActivityExecutionResponse{} },
 	}
 )
 

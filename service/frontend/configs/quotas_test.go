@@ -94,6 +94,7 @@ func (s *quotasSuite) TestVisibilityAPIs() {
 		"/temporal.api.workflowservice.v1.WorkflowService/ListArchivedWorkflowExecutions": {},
 		"/temporal.api.workflowservice.v1.WorkflowService/ListWorkers":                    {},
 		"/temporal.api.workflowservice.v1.WorkflowService/DescribeWorker":                 {},
+		"/temporal.api.workflowservice.v1.WorkflowService/CountWorkers":                   {},
 
 		"/temporal.api.workflowservice.v1.WorkflowService/GetWorkerTaskReachability":         {},
 		"/temporal.api.workflowservice.v1.WorkflowService/ListSchedules":                     {},
@@ -104,8 +105,10 @@ func (s *quotasSuite) TestVisibilityAPIs() {
 		"/temporal.api.workflowservice.v1.WorkflowService/GetDeploymentReachability":         {},
 		"/temporal.api.workflowservice.v1.WorkflowService/ListWorkerDeployments":             {},
 
-		"/temporal.api.workflowservice.v1.WorkflowService/CountActivityExecutions": {},
-		"/temporal.api.workflowservice.v1.WorkflowService/ListActivityExecutions":  {},
+		"/temporal.api.workflowservice.v1.WorkflowService/CountActivityExecutions":       {},
+		"/temporal.api.workflowservice.v1.WorkflowService/ListActivityExecutions":        {},
+		"/temporal.api.workflowservice.v1.WorkflowService/CountNexusOperationExecutions": {},
+		"/temporal.api.workflowservice.v1.WorkflowService/ListNexusOperationExecutions":  {},
 	}
 
 	var service workflowservice.WorkflowServiceServer
