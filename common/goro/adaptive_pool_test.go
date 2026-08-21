@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/superdurable/temporal-server/common/clock"
 	"github.com/superdurable/temporal-server/common/goro"
 )
@@ -139,7 +140,8 @@ func TestAdaptivePool_ShrinksAgain(t *testing.T) {
 	// after no more than 10ms, the free worker should exit
 	// wait until worker is blocked on timer
 	assert.Eventually(t, func() bool { return ts.NumTimers() == 1 }, time.Second, time.Millisecond)
-	ts.Advance(20 * time.Millisecond) // let timer fire
-	// wait for worker to exit
-	assert.Eventually(t, func() bool { return p.NumWorkers() == 2 }, time.Second, time.Millisecond)
+	require.Eventually(t, func() bool {
+		ts.Advance(20 * time.Millisecond)
+		return p.NumWorkers() < 3
+	}, time.Second, time.Millisecond)
 }

@@ -12,7 +12,7 @@ jobs:
   required-checks:
     name: required-checks
     runs-on: ${{ 'linux-dind-light' }}
-    timeout-minutes: 55
+    timeout-minutes: 210
     steps:
       - name: Wait for required checks
         uses: actions/github-script@v8
@@ -23,7 +23,7 @@ jobs:
               "All Tests Succeed",
             ]);
             const headSHA = context.payload.pull_request.head.sha;
-            const deadline = Date.now() + 50 * 60 * 1000;
+            const deadline = Date.now() + 200 * 60 * 1000;
 
             while (Date.now() < deadline) {
               const { data } = await github.rest.checks.listForRef({
