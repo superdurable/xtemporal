@@ -480,27 +480,44 @@ func (s *MatcherDataSuite) TestPollForwardFailedTimedOut() {
 
 	s.md.EnqueueTaskNoWait(t1)
 
-	done := make(chan struct{})
+	forwarded := make(chan *waitingPoller, 1)
+	reenqueue := make(chan struct{})
+	done := make(chan *waitingPoller, 1)
 	go func() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 		tres := s.md.EnqueueTaskAndWait([]context.Context{ctx}, newPollForwarderTask(pollForwarderPriority, parentPollForwarder))
 		// task is woken up with poller to forward
-		s.NotNil(tres.poller)
+		poller := tres.poller
+		if poller == nil {
+			done <- nil
+			return
+		}
 		// there's a new task in the meantime
 		s.md.EnqueueTaskNoWait(t2)
-		time.Sleep(11 * time.Millisecond) // nolint:forbidigo
+		forwarded <- poller
+		<-reenqueue
 		// but we waited too long, poller timed out, so this does nothing (but doesn't crash or assert)
-		s.md.ReenqueuePollerIfNotMatched(tres.poller)
-		done <- struct{}{}
+		s.md.ReenqueuePollerIfNotMatched(poller)
+		done <- poller
 	}()
 
 	s.waitForTasks(2)
 
 	s.Equal(t1, s.pollRealTime(10*time.Millisecond).task)
-	s.Error(s.pollRealTime(10 * time.Millisecond).ctxErr)
+	pollCtx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	pollResult := make(chan *matchResult, 1)
+	go func() {
+		pollResult <- s.pollContext(pollCtx, nil)
+	}()
 
-	<-done
+	s.NotNil(<-forwarded)
+	cancel()
+	s.Require().Error((<-pollResult).ctxErr)
+	close(reenqueue)
+
+	s.NotNil(<-done)
 }
 
 func (s *MatcherDataSuite) TestReprocessTasks() {
