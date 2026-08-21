@@ -32,7 +32,7 @@ services:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -proot"]
 
   postgresql:
-    image: postgres:13.5
+    image: postgres:13.23
     ports:
       - "5432:5432"
     environment:
