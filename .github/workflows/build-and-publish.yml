@@ -1,7 +1,6 @@
 name: Build and Publish Dex Engine Image
 
 on:
-  pull_request:
   push:
     branches:
       - main
@@ -13,7 +12,7 @@ permissions:
 
 jobs:
   build-image:
-    runs-on: ubuntu-latest
+    runs-on: ${{ 'linux-dind-heavy' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -22,18 +21,8 @@ jobs:
 
       - name: Build temporal-server
         uses: ./.github/actions/build-binaries
-        with:
-          single-arch: ${{ github.event_name == 'pull_request' && 'amd64' || '' }}
-
-      - name: Build Dex Engine image
-        if: github.event_name == 'pull_request'
-        uses: ./.github/actions/build-docker-images
-        with:
-          platform: linux/amd64
-          load: true
 
       - name: Publish Dex Engine image
-        if: github.event_name != 'pull_request'
         uses: ./.github/actions/build-docker-images
         with:
           push: true

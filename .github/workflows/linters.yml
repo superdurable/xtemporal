@@ -6,9 +6,14 @@ on:
       - main
 permissions:
   contents: read
+
+concurrency:
+  group: linters-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint-actions:
-    runs-on: ubuntu-latest
+    runs-on: ${{ 'linux-dind-light' }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -18,7 +23,7 @@ jobs:
         with:
           go-version-file: "go.mod"
           check-latest: true
-          cache: true
+          cache: false
 
       - name: lint actions
         run: |
@@ -28,7 +33,7 @@ jobs:
         shell: bash
 
   lint-protos:
-    runs-on: ubuntu-latest
+    runs-on: ${{ 'linux-dind-light' }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -38,7 +43,7 @@ jobs:
         with:
           go-version-file: "go.mod"
           check-latest: true
-          cache: true
+          cache: false
 
       - uses: arduino/setup-protoc@v3
         with:
@@ -49,7 +54,7 @@ jobs:
           make lint-protos
 
   lint-api:
-    runs-on: ubuntu-latest
+    runs-on: ${{ 'linux-dind-light' }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -59,7 +64,7 @@ jobs:
         with:
           go-version-file: "go.mod"
           check-latest: true
-          cache: true
+          cache: false
 
       - uses: arduino/setup-protoc@v3
         with:
@@ -70,7 +75,7 @@ jobs:
           make lint-api
 
   lint-workflows:
-    runs-on: ubuntu-latest
+    runs-on: ${{ 'linux-dind-light' }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -80,7 +85,7 @@ jobs:
         with:
           go-version-file: "go.mod"
           check-latest: true
-          cache: true
+          cache: false
 
       - uses: arduino/setup-protoc@v3
         with:
@@ -90,7 +95,7 @@ jobs:
         run: make workflowcheck
 
   fmt:
-    runs-on: ubuntu-latest
+    runs-on: ${{ 'linux-dind-light' }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -100,7 +105,7 @@ jobs:
         with:
           go-version-file: "go.mod"
           check-latest: true
-          cache: true
+          cache: false
 
       - name: apply formatters
         run: |
@@ -116,7 +121,7 @@ jobs:
           fi
 
   parallelize-tests:
-    runs-on: ubuntu-latest
+    runs-on: ${{ 'linux-dind-light' }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -126,7 +131,7 @@ jobs:
         with:
           go-version-file: "go.mod"
           check-latest: true
-          cache: true
+          cache: false
 
       - name: check test parallelization
         run: make parallelize-tests
@@ -142,7 +147,16 @@ jobs:
           fi
 
   golangci:
-    runs-on: ubuntu-latest
+    needs:
+      - fmt
+      - lint-api
+      - lint-protos
+      - lint-actions
+      - lint-workflows
+      - parallelize-tests
+    runs-on: ${{ 'linux-dind-light' }}
+    env:
+      GOMAXPROCS: 1
     steps:
       - uses: actions/checkout@v6
         with:
@@ -152,11 +166,15 @@ jobs:
         with:
           go-version-file: "go.mod"
           check-latest: true
-          cache: true
+          cache: false
 
       - name: lint code
         run: |
-          make GOLANGCI_LINT_FIX=false GOLANGCI_LINT_BASE_REV=HEAD~ lint-code
+          if git diff --quiet origin/main...HEAD -- '*.go' go.mod go.sum; then
+            echo "No Go or module changes to lint."
+            exit 0
+          fi
+          make GOLANGCI_LINT_CONCURRENCY=1 GOLANGCI_LINT_FIX=false GOLANGCI_LINT_BASE_REV=origin/main lint-code
 
       - name: check-is-dirty
         run: |
@@ -177,7 +195,7 @@ jobs:
       - lint-workflows
       - golangci
       - parallelize-tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ 'linux-dind-light' }}
     if: always()
     env:
       RESULTS: ${{ toJSON(needs.*.result) }}
