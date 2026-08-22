@@ -141,8 +141,6 @@ func (s *adminHandlerSuite) SetupTest() {
 	}
 
 	cfg := &Config{
-		NumHistoryShards: 4,
-
 		SearchAttributesNumberOfKeysLimit:     dynamicconfig.GetIntPropertyFnFilteredByNamespace(10),
 		SearchAttributesSizeOfValueLimit:      dynamicconfig.GetIntPropertyFnFilteredByNamespace(10),
 		SearchAttributesTotalSizeLimit:        dynamicconfig.GetIntPropertyFnFilteredByNamespace(10),
@@ -188,6 +186,7 @@ func (s *adminHandlerSuite) SetupTest() {
 		s.mockResource.GetMatchingClient(),
 	}
 	s.mockMetadata.EXPECT().GetCurrentClusterName().Return(uuid.NewString()).AnyTimes()
+	s.mockMetadata.EXPECT().GetCurrentShardCount().Return(cluster.ShardCount{Count: 4, Version: 1}).AnyTimes()
 	s.mockExecutionMgr.EXPECT().GetName().Return("mock-execution-manager").AnyTimes()
 	s.mockVisibilityMgr.EXPECT().GetStoreNames().Return([]string{"mock-vis-store"})
 

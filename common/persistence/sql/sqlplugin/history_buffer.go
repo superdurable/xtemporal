@@ -10,7 +10,6 @@ import (
 type (
 	// BufferedEventsRow represents a row in buffered_events table
 	BufferedEventsRow struct {
-		ShardID      int32
 		NamespaceID  primitives.UUID
 		WorkflowID   string
 		RunID        primitives.UUID
@@ -21,7 +20,6 @@ type (
 	// BufferedEventsFilter contains the column names within buffered_events table that
 	// can be used to filter results through a WHERE clause
 	BufferedEventsFilter struct {
-		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID

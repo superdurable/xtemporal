@@ -111,7 +111,6 @@ func HistoryScavengerActivity(
 
 	ctx := activityCtx.Value(scannerContextKey).(scannerContext)
 	rps := ctx.cfg.PersistenceMaxQPS()
-	numShards := ctx.cfg.Persistence.NumHistoryShards
 
 	hbd := history.ScavengerHeartbeatDetails{}
 	if activity.HasHeartbeatDetails(activityCtx) {
@@ -121,7 +120,7 @@ func HistoryScavengerActivity(
 	}
 
 	scavenger := history.NewScavenger(
-		numShards,
+		ctx.shardCount,
 		ctx.executionManager,
 		rps,
 		ctx.historyClient,
@@ -167,7 +166,7 @@ func ExecutionsScavengerActivity(
 	metricsHandler := ctx.metricsHandler
 	scavenger := executions.NewScavenger(
 		activityCtx,
-		ctx.cfg.Persistence.NumHistoryShards,
+		ctx.shardCount,
 		ctx.cfg.ExecutionScannerPerHostQPS,
 		ctx.cfg.ExecutionScannerPerShardQPS,
 		ctx.cfg.ExecutionDataDurationBuffer,

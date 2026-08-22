@@ -3,6 +3,7 @@ package history
 import (
 	"context"
 	"fmt"
+	"github.com/superdurable/temporal-server/common/cluster"
 	"testing"
 	"time"
 
@@ -92,7 +93,7 @@ func (s *ScavengerTestSuite) createTestScavenger(
 	executionDataAge := dynamicconfig.GetDurationPropertyFn(time.Second)
 	enableRetentionVerification := dynamicconfig.GetBoolPropertyFn(true)
 	s.scavenger = NewScavenger(
-		s.numShards,
+		cluster.StaticShardCount(s.numShards),
 		s.mockExecutionManager,
 		rps,
 		s.mockHistoryClient,

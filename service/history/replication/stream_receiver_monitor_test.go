@@ -64,7 +64,7 @@ func (s *streamReceiverMonitorSuite) SetupTest() {
 	processToolBox := ProcessToolBox{
 		Config: configs.NewConfig(
 			dynamicconfig.NewNoopCollection(),
-			1,
+			cluster.StaticShardCount(1),
 		),
 		ClusterMetadata: s.clusterMetadata,
 		ClientBean:      s.clientBean,

@@ -10,7 +10,6 @@ import (
 type (
 	// HistoryTreeRow represents a row in history_tree table
 	HistoryTreeRow struct {
-		ShardID      int32
 		TreeID       primitives.UUID
 		BranchID     primitives.UUID
 		Data         []byte
@@ -20,21 +19,18 @@ type (
 	// HistoryTreeSelectFilter contains the column names within history_tree table that
 	// can be used to filter results through a WHERE clause
 	HistoryTreeSelectFilter struct {
-		ShardID int32
-		TreeID  primitives.UUID
+		TreeID primitives.UUID
 	}
 
 	// HistoryTreeDeleteFilter contains the column names within history_tree table that
 	// can be used to filter results through a WHERE clause
 	HistoryTreeDeleteFilter struct {
-		ShardID  int32
 		TreeID   primitives.UUID
 		BranchID primitives.UUID
 	}
 
 	// HistoryTreeBranchPage is a struct which represents a page of history tree branches to query.
 	HistoryTreeBranchPage struct {
-		ShardID  int32
 		TreeID   primitives.UUID
 		BranchID primitives.UUID
 		Limit    int

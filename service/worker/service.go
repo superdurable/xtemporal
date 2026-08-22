@@ -334,6 +334,7 @@ func (s *Service) initScanner(serializer serialization.Serializer) error {
 	s.scanner = scanner.New(
 		s.logger,
 		s.config.ScannerCfg,
+		cluster.CurrentShardCount(s.clusterMetadata, s.config.ScannerCfg.Persistence.NumHistoryShards),
 		s.sdkClientFactory,
 		s.metricsHandler,
 		s.executionManager,

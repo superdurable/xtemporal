@@ -3,6 +3,7 @@ package respondworkflowtaskcompleted
 import (
 	"context"
 	"fmt"
+	"github.com/superdurable/temporal-server/common/cluster"
 	"math/rand"
 	"testing"
 	"time"
@@ -71,7 +72,7 @@ func TestCommandProtocolMessage(t *testing.T) {
 		out.updates = update.NewRegistry(out.ms)
 		var effects effect.Buffer
 		col := dynamicconfig.NewCollection(dynamicconfig.StaticClient(nil), logger)
-		config := configs.NewConfig(col, 1)
+		config := configs.NewConfig(col, cluster.StaticShardCount(1))
 		mockMeta := persistence.NewMockMetadataManager(gomock.NewController(t))
 		nsReg := nsregistry.NewRegistry(
 			mockMeta,

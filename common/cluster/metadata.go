@@ -53,6 +53,9 @@ type (
 		GetCurrentClusterName() string
 		// GetAllClusterInfo return the all cluster name -> corresponding info
 		GetAllClusterInfo() map[string]ClusterInformation
+		// GetCurrentShardCount returns the current cluster's history shard count
+		// paired with the cluster metadata version it was read at.
+		GetCurrentShardCount() ShardCount
 		// ClusterNameForFailoverVersion return the corresponding cluster name for a given failover version
 		ClusterNameForFailoverVersion(isGlobalNamespace bool, failoverVersion int64) string
 		// GetFailoverVersionIncrement return the Failover version increment value
@@ -64,6 +67,15 @@ type (
 	}
 
 	CallbackFn func(oldClusterMetadata map[string]*ClusterInformation, newClusterMetadata map[string]*ClusterInformation)
+
+	// ShardCount is a history shard count together with the cluster metadata
+	// version that produced it. Carrying the version lets a caller record which
+	// shard map it routed with, so that a route computed against a stale count
+	// can be detected rather than silently landing on the wrong shard.
+	ShardCount struct {
+		Count   int32
+		Version int64
+	}
 
 	// Config contains the all cluster which participated in cross DC
 	Config struct {
@@ -126,6 +138,11 @@ type (
 		// versionToClusterName contains all initial version -> corresponding cluster name
 		versionToClusterName map[int64]string
 
+		// currentShardCount mirrors clusterInfo[currentClusterName]'s shard count.
+		// Routing reads it per request, so it is kept outside clusterLock to avoid
+		// the map copy GetAllClusterInfo performs.
+		currentShardCount atomic.Pointer[ShardCount]
+
 		clusterCallbackLock   sync.RWMutex
 		clusterChangeCallback map[any]CallbackFn
 	}
@@ -169,7 +186,7 @@ func NewMetadata(
 	if refreshDuration == nil {
 		refreshDuration = dynamicconfig.GetDurationPropertyFn(refreshInterval)
 	}
-	return &metadataImpl{
+	m := &metadataImpl{
 		status:                   common.DaemonStatusInitialized,
 		enableGlobalNamespace:    enableGlobalNamespace,
 		failoverVersionIncrement: failoverVersionIncrement,
@@ -182,6 +199,8 @@ func NewMetadata(
 		logger:                   logger,
 		refreshDuration:          refreshDuration,
 	}
+	m.refreshCurrentShardCount()
+	return m
 }
 
 func NewMetadataFromConfig(
@@ -323,6 +342,23 @@ func (m *metadataImpl) GetAllClusterInfo() map[string]ClusterInformation {
 	return result
 }
 
+func (m *metadataImpl) GetCurrentShardCount() ShardCount {
+	if sc := m.currentShardCount.Load(); sc != nil {
+		return *sc
+	}
+	return ShardCount{}
+}
+
+// refreshCurrentShardCount republishes the atomic shard count from clusterInfo.
+// Callers must hold clusterLock.
+func (m *metadataImpl) refreshCurrentShardCount() {
+	info, ok := m.clusterInfo[m.currentClusterName]
+	if !ok {
+		return
+	}
+	m.currentShardCount.Store(&ShardCount{Count: info.ShardCount, Version: info.version})
+}
+
 func (m *metadataImpl) ClusterNameForFailoverVersion(isGlobalNamespace bool, failoverVersion int64) string {
 	if failoverVersion == common.EmptyVersion {
 		// Local namespace uses EmptyVersion. But local namespace could be promoted to global namespace. Once promoted,
@@ -435,6 +471,7 @@ func (m *metadataImpl) refreshClusterMetadata(ctx context.Context) error {
 				newClusterInfo.HTTPAddress == oldClusterInfo.HTTPAddress &&
 				newClusterInfo.InitialFailoverVersion == oldClusterInfo.InitialFailoverVersion &&
 				newClusterInfo.ClusterID == oldClusterInfo.ClusterID &&
+				newClusterInfo.ShardCount == oldClusterInfo.ShardCount &&
 				maps.Equal(newClusterInfo.Tags, oldClusterInfo.Tags) {
 				// key cluster info does not change
 				continue
@@ -478,6 +515,7 @@ func (m *metadataImpl) updateClusterInfoLocked(
 			m.clusterInfo[clusterName] = *newClusterMetadata[clusterName]
 		}
 	}
+	m.refreshCurrentShardCount()
 }
 
 func (m *metadataImpl) updateFailoverVersionToClusterName() {

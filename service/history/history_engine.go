@@ -1063,7 +1063,7 @@ func (e *historyEngineImpl) AddTasks(
 		ctx,
 		e.shardContext,
 		e.serializer,
-		int(e.config.NumberOfShards),
+		int(e.config.NumberOfShards()),
 		request,
 		e.taskCategoryRegistry,
 	)

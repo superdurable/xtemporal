@@ -9,6 +9,7 @@ import (
 	"github.com/superdurable/temporal-server/api/adminservice/v1"
 	"github.com/superdurable/temporal-server/api/historyservice/v1"
 	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/cluster"
 	"github.com/superdurable/temporal-server/common/dynamicconfig"
 	"github.com/superdurable/temporal-server/common/log"
 	"github.com/superdurable/temporal-server/common/log/tag"
@@ -28,7 +29,7 @@ type (
 	// Scavenger is the type that holds the state for executions scavenger daemon
 	Scavenger struct {
 		status           int32
-		numHistoryShards int32
+		numHistoryShards cluster.ShardCountFn
 		activityContext  context.Context
 
 		executionManager              persistence.ExecutionManager
@@ -60,7 +61,7 @@ type (
 //   - Stop() method is called to stop the scavenger
 func NewScavenger(
 	activityContext context.Context,
-	numHistoryShards int32,
+	numHistoryShards cluster.ShardCountFn,
 	perHostQPS dynamicconfig.IntPropertyFn,
 	perShardQPS dynamicconfig.IntPropertyFn,
 	executionDataDurationBuffer dynamicconfig.DurationPropertyFn,
@@ -145,7 +146,10 @@ func (s *Scavenger) run() {
 		s.stopWG.Done()
 	}()
 
-	for shardID := int32(1); shardID <= s.numHistoryShards; shardID++ {
+	// Read once per run so the loop terminates; the next run picks up a count
+	// that grew in the meantime.
+	shardCount := s.numHistoryShards()
+	for shardID := int32(1); shardID <= shardCount; shardID++ {
 		submitted := s.executor.Submit(newTask(
 			s.activityContext,
 			shardID,

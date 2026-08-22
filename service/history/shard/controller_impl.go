@@ -442,7 +442,7 @@ func (c *ControllerImpl) acquireShards(ctx context.Context) {
 
 	concurrency := int64(max(c.config.AcquireShardConcurrency(), 1))
 	sem := semaphore.NewWeighted(concurrency)
-	numShards := c.config.NumberOfShards
+	numShards := c.config.NumberOfShards()
 	randomStartOffset := rand.Int31n(numShards)
 	for index := range numShards {
 		shardID := (index+randomStartOffset)%numShards + 1
@@ -547,7 +547,7 @@ func (c *ControllerImpl) validateShardId(shardID int32) error {
 	if shardID <= 0 {
 		return invalidShardIdLowerBound
 	}
-	if shardID > c.config.NumberOfShards {
+	if shardID > c.config.NumberOfShards() {
 		return invalidShardIdUpperBound
 	}
 	return nil

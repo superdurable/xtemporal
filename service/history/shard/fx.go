@@ -32,7 +32,7 @@ var ownershipBasedQuotaScalerModule = fx.Options(
 	) (*OwnershipBasedQuotaScalerImpl, error) {
 		return NewOwnershipBasedQuotaScaler(
 			impl,
-			int(cfg.NumberOfShards),
+			int(cfg.NumberOfShards()),
 			nil,
 		)
 	}),

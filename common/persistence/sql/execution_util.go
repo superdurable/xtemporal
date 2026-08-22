@@ -44,7 +44,6 @@ func (m *sqlExecutionStore) applyWorkflowMutationTx(
 	// TODO Remove me if UPDATE holds the lock to the end of a transaction
 	if err := lockAndCheckExecution(ctx,
 		tx,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -68,7 +67,6 @@ func (m *sqlExecutionStore) applyWorkflowMutationTx(
 		workflowMutation.NextEventID,
 		lastWriteVersion,
 		workflowMutation.DBRecordVersion,
-		shardID,
 	); err != nil {
 		return serviceerror.NewUnavailablef("applyWorkflowMutationTx failed. Failed to update executions row. Erorr: %v", err)
 	}
@@ -85,7 +83,6 @@ func (m *sqlExecutionStore) applyWorkflowMutationTx(
 		tx,
 		workflowMutation.UpsertActivityInfos,
 		workflowMutation.DeleteActivityInfos,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -97,7 +94,6 @@ func (m *sqlExecutionStore) applyWorkflowMutationTx(
 		tx,
 		workflowMutation.UpsertTimerInfos,
 		workflowMutation.DeleteTimerInfos,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -109,7 +105,6 @@ func (m *sqlExecutionStore) applyWorkflowMutationTx(
 		tx,
 		workflowMutation.UpsertChildExecutionInfos,
 		workflowMutation.DeleteChildExecutionInfos,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -121,7 +116,6 @@ func (m *sqlExecutionStore) applyWorkflowMutationTx(
 		tx,
 		workflowMutation.UpsertRequestCancelInfos,
 		workflowMutation.DeleteRequestCancelInfos,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -133,7 +127,6 @@ func (m *sqlExecutionStore) applyWorkflowMutationTx(
 		tx,
 		workflowMutation.UpsertSignalInfos,
 		workflowMutation.DeleteSignalInfos,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -145,7 +138,6 @@ func (m *sqlExecutionStore) applyWorkflowMutationTx(
 		tx,
 		workflowMutation.UpsertSignalRequestedIDs,
 		workflowMutation.DeleteSignalRequestedIDs,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes); err != nil {
@@ -155,7 +147,6 @@ func (m *sqlExecutionStore) applyWorkflowMutationTx(
 	if workflowMutation.ClearBufferedEvents {
 		if err := deleteBufferedEvents(ctx,
 			tx,
-			shardID,
 			namespaceIDBytes,
 			workflowID,
 			runIDBytes,
@@ -167,7 +158,6 @@ func (m *sqlExecutionStore) applyWorkflowMutationTx(
 	if err := updateBufferedEvents(ctx,
 		tx,
 		workflowMutation.NewBufferedEvents,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -179,7 +169,6 @@ func (m *sqlExecutionStore) applyWorkflowMutationTx(
 		tx,
 		workflowMutation.UpsertChasmNodes,
 		workflowMutation.DeleteChasmNodes,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -212,7 +201,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 	// TODO Is there a way to modify the various map tables without fear of other people adding rows after we delete, without locking the executions row?
 	if err := lockAndCheckExecution(ctx,
 		tx,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -236,7 +224,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 		workflowSnapshot.NextEventID,
 		lastWriteVersion,
 		workflowSnapshot.DBRecordVersion,
-		shardID,
 	); err != nil {
 		return serviceerror.NewUnavailablef("applyWorkflowSnapshotTxAsReset failed. Failed to update executions row. Erorr: %v", err)
 	}
@@ -251,7 +238,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 
 	if err := deleteActivityInfoMap(ctx,
 		tx,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -263,7 +249,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 		tx,
 		workflowSnapshot.ActivityInfos,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -273,7 +258,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 
 	if err := deleteTimerInfoMap(ctx,
 		tx,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -285,7 +269,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 		tx,
 		workflowSnapshot.TimerInfos,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -295,7 +278,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 
 	if err := deleteChildExecutionInfoMap(ctx,
 		tx,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -307,7 +289,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 		tx,
 		workflowSnapshot.ChildExecutionInfos,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -317,7 +298,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 
 	if err := deleteRequestCancelInfoMap(ctx,
 		tx,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -329,7 +309,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 		tx,
 		workflowSnapshot.RequestCancelInfos,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -339,7 +318,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 
 	if err := deleteSignalInfoMap(ctx,
 		tx,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -351,7 +329,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 		tx,
 		workflowSnapshot.SignalInfos,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -361,7 +338,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 
 	if err := deleteSignalsRequestedSet(ctx,
 		tx,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes); err != nil {
@@ -372,7 +348,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 		tx,
 		workflowSnapshot.SignalRequestedIDs,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -382,7 +357,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 
 	if err := deleteBufferedEvents(ctx,
 		tx,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -392,7 +366,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 
 	if err := deleteChasmNodeMap(ctx,
 		tx,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -404,7 +377,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsReset(
 		tx,
 		workflowSnapshot.ChasmNodes,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -444,7 +416,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsNew(
 		workflowSnapshot.NextEventID,
 		lastWriteVersion,
 		workflowSnapshot.DBRecordVersion,
-		shardID,
 	); err != nil {
 		return err
 	}
@@ -461,7 +432,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsNew(
 		tx,
 		workflowSnapshot.ActivityInfos,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -473,7 +443,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsNew(
 		tx,
 		workflowSnapshot.TimerInfos,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -485,7 +454,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsNew(
 		tx,
 		workflowSnapshot.ChildExecutionInfos,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -497,7 +465,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsNew(
 		tx,
 		workflowSnapshot.RequestCancelInfos,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -509,7 +476,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsNew(
 		tx,
 		workflowSnapshot.SignalInfos,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -521,7 +487,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsNew(
 		tx,
 		workflowSnapshot.SignalRequestedIDs,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -533,7 +498,6 @@ func (m *sqlExecutionStore) applyWorkflowSnapshotTxAsNew(
 		tx,
 		workflowSnapshot.ChasmNodes,
 		nil,
-		shardID,
 		namespaceIDBytes,
 		workflowID,
 		runIDBytes,
@@ -575,25 +539,23 @@ func applyTasks(
 func lockCurrentExecutionIfExists(
 	ctx context.Context,
 	tx sqlplugin.Tx,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	archetypeID chasm.ArchetypeID,
 ) (*sqlplugin.CurrentExecutionsRow, error) {
 	rows, err := tx.LockCurrentExecutionsJoinExecutions(ctx, sqlplugin.CurrentExecutionsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		ArchetypeID: archetypeID,
 	})
 	if err != nil {
 		if err != sql.ErrNoRows {
-			return nil, serviceerror.NewUnavailablef("lockCurrentExecutionIfExists failed. Failed to get current_executions row for (shard,namespace,workflow) = (%v, %v, %v). Error: %v", shardID, namespaceID, workflowID, err)
+			return nil, serviceerror.NewUnavailablef("lockCurrentExecutionIfExists failed. Failed to get current_executions row for (namespace,workflow) = (%v, %v). Error: %v", namespaceID, workflowID, err)
 		}
 	}
 	size := len(rows)
 	if size > 1 {
-		return nil, serviceerror.NewUnavailablef("lockCurrentExecutionIfExists failed. Multiple current_executions rows for (shard,namespace,workflow) = (%v, %v, %v).", shardID, namespaceID, workflowID)
+		return nil, serviceerror.NewUnavailablef("lockCurrentExecutionIfExists failed. Multiple current_executions rows for (namespace,workflow) = (%v, %v).", namespaceID, workflowID)
 	}
 	if size == 0 {
 		return nil, nil
@@ -629,7 +591,6 @@ func createOrUpdateCurrentExecution(
 func lockAndCheckExecution(
 	ctx context.Context,
 	tx sqlplugin.Tx,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
@@ -637,7 +598,7 @@ func lockAndCheckExecution(
 	dbRecordVersion int64,
 ) error {
 
-	version, nextEventID, err := lockExecution(ctx, tx, shardID, namespaceID, workflowID, runID)
+	version, nextEventID, err := lockExecution(ctx, tx, namespaceID, workflowID, runID)
 	if err != nil {
 		return err
 	}
@@ -667,14 +628,12 @@ func lockAndCheckExecution(
 func lockExecution(
 	ctx context.Context,
 	tx sqlplugin.Tx,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) (int64, int64, error) {
 
 	dbRecordVersion, nextEventID, err := tx.WriteLockExecutions(ctx, sqlplugin.ExecutionsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -682,8 +641,7 @@ func lockExecution(
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return 0, 0, &p.ConditionFailedError{
-				Msg: fmt.Sprintf("WriteLockExecutions failed. Unable to lock (shard, namespace, workflow, run) = (%v,%v,%v,%v) which does not exist.",
-					shardID,
+				Msg: fmt.Sprintf("WriteLockExecutions failed. Unable to lock (namespace, workflow, run) = (%v,%v,%v) which does not exist.",
 					namespaceID,
 					workflowID,
 					runID),
@@ -940,7 +898,6 @@ func createVisibilityTasks(
 func assertNotCurrentExecution(
 	ctx context.Context,
 	tx sqlplugin.Tx,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
@@ -948,7 +905,6 @@ func assertNotCurrentExecution(
 	serializer serialization.Serializer,
 ) error {
 	currentRow, err := tx.LockCurrentExecutions(ctx, sqlplugin.CurrentExecutionsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		ArchetypeID: archetypeID,
@@ -996,7 +952,6 @@ func assertRunIDAndUpdateCurrentExecution(
 	}
 	if err := assertCurrentExecution(ctx,
 		tx,
-		row.ShardID,
 		row.NamespaceID,
 		row.WorkflowID,
 		row.ArchetypeID,
@@ -1011,7 +966,6 @@ func assertRunIDAndUpdateCurrentExecution(
 func assertCurrentExecution(
 	ctx context.Context,
 	tx sqlplugin.Tx,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	archetypeID chasm.ArchetypeID,
@@ -1019,7 +973,6 @@ func assertCurrentExecution(
 ) error {
 
 	currentRow, err := tx.LockCurrentExecutions(ctx, sqlplugin.CurrentExecutionsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		ArchetypeID: archetypeID,
@@ -1084,7 +1037,6 @@ func (m *sqlExecutionStore) buildExecutionRow(
 	nextEventID int64,
 	lastWriteVersion int64,
 	dbRecordVersion int64,
-	shardID int32,
 ) (row *sqlplugin.ExecutionsRow, err error) {
 	// TODO: double encoding execution state? executionState could've been passed to the function as
 	// *commonpb.DataBlob like executionInfo
@@ -1104,7 +1056,6 @@ func (m *sqlExecutionStore) buildExecutionRow(
 	}
 
 	return &sqlplugin.ExecutionsRow{
-		ShardID:          shardID,
 		NamespaceID:      nsBytes,
 		WorkflowID:       workflowID,
 		RunID:            ridBytes,
@@ -1128,7 +1079,6 @@ func (m *sqlExecutionStore) createExecution(
 	nextEventID int64,
 	lastWriteVersion int64,
 	dbRecordVersion int64,
-	shardID int32,
 ) error {
 
 	row, err := m.buildExecutionRow(
@@ -1139,7 +1089,6 @@ func (m *sqlExecutionStore) createExecution(
 		nextEventID,
 		lastWriteVersion,
 		dbRecordVersion,
-		shardID,
 	)
 	if err != nil {
 		return err
@@ -1176,7 +1125,6 @@ func (m *sqlExecutionStore) updateExecution(
 	nextEventID int64,
 	lastWriteVersion int64,
 	dbRecordVersion int64,
-	shardID int32,
 ) error {
 	row, err := m.buildExecutionRow(
 		namespaceID,
@@ -1186,7 +1134,6 @@ func (m *sqlExecutionStore) updateExecution(
 		nextEventID,
 		lastWriteVersion,
 		dbRecordVersion,
-		shardID,
 	)
 	if err != nil {
 		return err

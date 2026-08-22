@@ -83,8 +83,59 @@ func TestUpdateCurrentClusterMetadataRecord(t *testing.T) {
 		cfg,
 		nil,
 		updateRecord,
+		log.NewNoopLogger(),
 	)
 	require.NoError(t, err)
+}
+
+func TestUpdateCurrentClusterMetadataRecord_ShardCount(t *testing.T) {
+	configDir := path.Join(testutils.GetRepoRootDirectory(), "config")
+
+	for _, tc := range []struct {
+		name          string
+		persisted     int32
+		configured    int32
+		expectedSaved int32
+	}{
+		{name: "power of two growth is adopted", persisted: 4, configured: 16, expectedSaved: 16},
+		{name: "non power of two growth is refused", persisted: 4, configured: 12, expectedSaved: 4},
+		{name: "shrink is refused", persisted: 8, configured: 4, expectedSaved: 8},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cfg, err := config.Load(
+				config.WithEnv("development-cluster-a"),
+				config.WithConfigDir(configDir),
+			)
+			require.NoError(t, err)
+			cfg.Persistence.NumHistoryShards = tc.configured
+
+			controller := gomock.NewController(t)
+			mockClusterMetadataManager := persistence.NewMockClusterMetadataManager(controller)
+			mockClusterMetadataManager.EXPECT().SaveClusterMetadata(gomock.Any(), gomock.Any()).DoAndReturn(
+				func(_ context.Context, request *persistence.SaveClusterMetadataRequest) (bool, error) {
+					require.Equal(t, tc.expectedSaved, request.HistoryShardCount)
+					return true, nil
+				},
+			)
+
+			updateRecord := &persistence.GetClusterMetadataResponse{
+				ClusterMetadata: &persistencespb.ClusterMetadata{HistoryShardCount: tc.persisted},
+				Version:         1,
+			}
+			require.NoError(t, updateCurrentClusterMetadataRecord(
+				context.TODO(),
+				mockClusterMetadataManager,
+				cfg,
+				nil,
+				updateRecord,
+				log.NewNoopLogger(),
+			))
+
+			// A refused count must not leak into the running config.
+			overwriteCurrentClusterMetadataWithDBRecord(cfg, updateRecord, log.NewNoopLogger())
+			require.Equal(t, tc.expectedSaved, cfg.Persistence.NumHistoryShards)
+		})
+	}
 }
 
 func TestOverwriteCurrentClusterMetadataWithDBRecord(t *testing.T) {

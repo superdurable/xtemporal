@@ -8,6 +8,7 @@ import (
 	"github.com/superdurable/temporal-server/client/history"
 	"github.com/superdurable/temporal-server/common"
 	"github.com/superdurable/temporal-server/common/backoff"
+	"github.com/superdurable/temporal-server/common/cluster"
 	"github.com/superdurable/temporal-server/common/config"
 	"github.com/superdurable/temporal-server/common/dynamicconfig"
 	"github.com/superdurable/temporal-server/common/headers"
@@ -21,7 +22,7 @@ import (
 // SchedulerServiceLayeredClient is a client for SchedulerService.
 type SchedulerServiceLayeredClient struct {
 	metricsHandler metrics.Handler
-	numShards      int32
+	numShards      cluster.ShardCountFn
 	redirector     history.Redirector[SchedulerServiceClient]
 	retryPolicy    backoff.RetryPolicy
 }
@@ -32,6 +33,7 @@ func NewSchedulerServiceLayeredClient(
 	rpcFactory common.RPCFactory,
 	monitor membership.Monitor,
 	config *config.Persistence,
+	clusterMetadata cluster.Metadata,
 	logger log.Logger,
 	metricsHandler metrics.Handler,
 ) (SchedulerServiceClient, error) {
@@ -54,7 +56,7 @@ func NewSchedulerServiceLayeredClient(
 	return &SchedulerServiceLayeredClient{
 		metricsHandler: metricsHandler,
 		redirector:     redirector,
-		numShards:      config.NumHistoryShards,
+		numShards:      cluster.CurrentShardCount(clusterMetadata, config.NumHistoryShards),
 		retryPolicy:    common.CreateHistoryClientRetryPolicy(),
 	}, nil
 }
@@ -80,7 +82,7 @@ func (c *SchedulerServiceLayeredClient) callCreateScheduleNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetScheduleId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetScheduleId(), c.numShards())
 	op := func(ctx context.Context, client SchedulerServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)
@@ -123,7 +125,7 @@ func (c *SchedulerServiceLayeredClient) callUpdateScheduleNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetScheduleId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetScheduleId(), c.numShards())
 	op := func(ctx context.Context, client SchedulerServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)
@@ -166,7 +168,7 @@ func (c *SchedulerServiceLayeredClient) callPatchScheduleNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetScheduleId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetScheduleId(), c.numShards())
 	op := func(ctx context.Context, client SchedulerServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)
@@ -209,7 +211,7 @@ func (c *SchedulerServiceLayeredClient) callDeleteScheduleNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetScheduleId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetScheduleId(), c.numShards())
 	op := func(ctx context.Context, client SchedulerServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)
@@ -252,7 +254,7 @@ func (c *SchedulerServiceLayeredClient) callDescribeScheduleNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetScheduleId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetScheduleId(), c.numShards())
 	op := func(ctx context.Context, client SchedulerServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)
@@ -295,7 +297,7 @@ func (c *SchedulerServiceLayeredClient) callListScheduleMatchingTimesNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetScheduleId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetScheduleId(), c.numShards())
 	op := func(ctx context.Context, client SchedulerServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)
@@ -338,7 +340,7 @@ func (c *SchedulerServiceLayeredClient) callCreateFromMigrationStateNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetState().GetSchedulerState().GetScheduleId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetState().GetSchedulerState().GetScheduleId(), c.numShards())
 	op := func(ctx context.Context, client SchedulerServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)
@@ -381,7 +383,7 @@ func (c *SchedulerServiceLayeredClient) callCreateSentinelNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetScheduleId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetScheduleId(), c.numShards())
 	op := func(ctx context.Context, client SchedulerServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)
@@ -424,7 +426,7 @@ func (c *SchedulerServiceLayeredClient) callMigrateToWorkflowNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetScheduleId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetScheduleId(), c.numShards())
 	op := func(ctx context.Context, client SchedulerServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)

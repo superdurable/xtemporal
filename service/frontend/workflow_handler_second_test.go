@@ -61,7 +61,7 @@ func TestCHASMSchedulerRoutingAndCreationGates(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			config := NewConfig(dc.NewNoopCollection(), 1)
+			config := NewConfig(dc.NewNoopCollection())
 			config.EnableCHASMSchedulerCreation = dc.GetBoolPropertyFnFilteredByNamespace(tc.enableCreation)
 			config.EnableCHASMSchedulerRouting = dc.GetBoolPropertyFnFilteredByNamespace(tc.enableRouting)
 			config.AllowedExperiments = dc.GetTypedPropertyFnFilteredByNamespace(tc.allowedExp)

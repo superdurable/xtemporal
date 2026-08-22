@@ -18,7 +18,6 @@ func updateActivityInfos(
 	tx sqlplugin.Tx,
 	activityInfos map[int64]*commonpb.DataBlob,
 	deleteIDs map[int64]struct{},
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
@@ -28,7 +27,6 @@ func updateActivityInfos(
 		rows := make([]sqlplugin.ActivityInfoMapsRow, 0, len(activityInfos))
 		for scheduledEventId, blob := range activityInfos {
 			rows = append(rows, sqlplugin.ActivityInfoMapsRow{
-				ShardID:      shardID,
 				NamespaceID:  namespaceID,
 				WorkflowID:   workflowID,
 				RunID:        runID,
@@ -45,7 +43,6 @@ func updateActivityInfos(
 
 	if len(deleteIDs) > 0 {
 		if _, err := tx.DeleteFromActivityInfoMaps(ctx, sqlplugin.ActivityInfoMapsFilter{
-			ShardID:     shardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  workflowID,
 			RunID:       runID,
@@ -60,14 +57,12 @@ func updateActivityInfos(
 func getActivityInfoMap(
 	ctx context.Context,
 	db sqlplugin.DB,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) (map[int64]*commonpb.DataBlob, error) {
 
 	rows, err := db.SelectAllFromActivityInfoMaps(ctx, sqlplugin.ActivityInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -87,14 +82,12 @@ func getActivityInfoMap(
 func deleteActivityInfoMap(
 	ctx context.Context,
 	tx sqlplugin.Tx,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) error {
 
 	if _, err := tx.DeleteAllFromActivityInfoMaps(ctx, sqlplugin.ActivityInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -109,7 +102,6 @@ func updateTimerInfos(
 	tx sqlplugin.Tx,
 	timerInfos map[string]*commonpb.DataBlob,
 	deleteIDs map[string]struct{},
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
@@ -119,7 +111,6 @@ func updateTimerInfos(
 		rows := make([]sqlplugin.TimerInfoMapsRow, 0, len(timerInfos))
 		for timerID, blob := range timerInfos {
 			rows = append(rows, sqlplugin.TimerInfoMapsRow{
-				ShardID:      shardID,
 				NamespaceID:  namespaceID,
 				WorkflowID:   workflowID,
 				RunID:        runID,
@@ -135,7 +126,6 @@ func updateTimerInfos(
 
 	if len(deleteIDs) > 0 {
 		if _, err := tx.DeleteFromTimerInfoMaps(ctx, sqlplugin.TimerInfoMapsFilter{
-			ShardID:     shardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  workflowID,
 			RunID:       runID,
@@ -150,14 +140,12 @@ func updateTimerInfos(
 func getTimerInfoMap(
 	ctx context.Context,
 	db sqlplugin.DB,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) (map[string]*commonpb.DataBlob, error) {
 
 	rows, err := db.SelectAllFromTimerInfoMaps(ctx, sqlplugin.TimerInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -176,14 +164,12 @@ func getTimerInfoMap(
 func deleteTimerInfoMap(
 	ctx context.Context,
 	tx sqlplugin.Tx,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) error {
 
 	if _, err := tx.DeleteAllFromTimerInfoMaps(ctx, sqlplugin.TimerInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -198,7 +184,6 @@ func updateChildExecutionInfos(
 	tx sqlplugin.Tx,
 	childExecutionInfos map[int64]*commonpb.DataBlob,
 	deleteIDs map[int64]struct{},
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
@@ -208,7 +193,6 @@ func updateChildExecutionInfos(
 		rows := make([]sqlplugin.ChildExecutionInfoMapsRow, 0, len(childExecutionInfos))
 		for initiatedID, blob := range childExecutionInfos {
 			rows = append(rows, sqlplugin.ChildExecutionInfoMapsRow{
-				ShardID:      shardID,
 				NamespaceID:  namespaceID,
 				WorkflowID:   workflowID,
 				RunID:        runID,
@@ -224,7 +208,6 @@ func updateChildExecutionInfos(
 
 	if len(deleteIDs) > 0 {
 		if _, err := tx.DeleteFromChildExecutionInfoMaps(ctx, sqlplugin.ChildExecutionInfoMapsFilter{
-			ShardID:      shardID,
 			NamespaceID:  namespaceID,
 			WorkflowID:   workflowID,
 			RunID:        runID,
@@ -239,14 +222,12 @@ func updateChildExecutionInfos(
 func getChildExecutionInfoMap(
 	ctx context.Context,
 	db sqlplugin.DB,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) (map[int64]*commonpb.DataBlob, error) {
 
 	rows, err := db.SelectAllFromChildExecutionInfoMaps(ctx, sqlplugin.ChildExecutionInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -266,14 +247,12 @@ func getChildExecutionInfoMap(
 func deleteChildExecutionInfoMap(
 	ctx context.Context,
 	tx sqlplugin.Tx,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) error {
 
 	if _, err := tx.DeleteAllFromChildExecutionInfoMaps(ctx, sqlplugin.ChildExecutionInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -288,7 +267,6 @@ func updateRequestCancelInfos(
 	tx sqlplugin.Tx,
 	requestCancelInfos map[int64]*commonpb.DataBlob,
 	deleteIDs map[int64]struct{},
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
@@ -298,7 +276,6 @@ func updateRequestCancelInfos(
 		rows := make([]sqlplugin.RequestCancelInfoMapsRow, 0, len(requestCancelInfos))
 		for initiatedID, blob := range requestCancelInfos {
 			rows = append(rows, sqlplugin.RequestCancelInfoMapsRow{
-				ShardID:      shardID,
 				NamespaceID:  namespaceID,
 				WorkflowID:   workflowID,
 				RunID:        runID,
@@ -315,7 +292,6 @@ func updateRequestCancelInfos(
 
 	if len(deleteIDs) > 0 {
 		if _, err := tx.DeleteFromRequestCancelInfoMaps(ctx, sqlplugin.RequestCancelInfoMapsFilter{
-			ShardID:      shardID,
 			NamespaceID:  namespaceID,
 			WorkflowID:   workflowID,
 			RunID:        runID,
@@ -330,14 +306,12 @@ func updateRequestCancelInfos(
 func getRequestCancelInfoMap(
 	ctx context.Context,
 	db sqlplugin.DB,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) (map[int64]*commonpb.DataBlob, error) {
 
 	rows, err := db.SelectAllFromRequestCancelInfoMaps(ctx, sqlplugin.RequestCancelInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -357,14 +331,12 @@ func getRequestCancelInfoMap(
 func deleteRequestCancelInfoMap(
 	ctx context.Context,
 	tx sqlplugin.Tx,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) error {
 
 	if _, err := tx.DeleteAllFromRequestCancelInfoMaps(ctx, sqlplugin.RequestCancelInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -379,7 +351,6 @@ func updateSignalInfos(
 	tx sqlplugin.Tx,
 	signalInfos map[int64]*commonpb.DataBlob,
 	deleteIDs map[int64]struct{},
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
@@ -389,7 +360,6 @@ func updateSignalInfos(
 		rows := make([]sqlplugin.SignalInfoMapsRow, 0, len(signalInfos))
 		for initiatedId, blob := range signalInfos {
 			rows = append(rows, sqlplugin.SignalInfoMapsRow{
-				ShardID:      shardID,
 				NamespaceID:  namespaceID,
 				WorkflowID:   workflowID,
 				RunID:        runID,
@@ -406,7 +376,6 @@ func updateSignalInfos(
 
 	if len(deleteIDs) > 0 {
 		if _, err := tx.DeleteFromSignalInfoMaps(ctx, sqlplugin.SignalInfoMapsFilter{
-			ShardID:      shardID,
 			NamespaceID:  namespaceID,
 			WorkflowID:   workflowID,
 			RunID:        runID,
@@ -421,14 +390,12 @@ func updateSignalInfos(
 func getSignalInfoMap(
 	ctx context.Context,
 	db sqlplugin.DB,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) (map[int64]*commonpb.DataBlob, error) {
 
 	rows, err := db.SelectAllFromSignalInfoMaps(ctx, sqlplugin.SignalInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -448,14 +415,12 @@ func getSignalInfoMap(
 func deleteSignalInfoMap(
 	ctx context.Context,
 	tx sqlplugin.Tx,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) error {
 
 	if _, err := tx.DeleteAllFromSignalInfoMaps(ctx, sqlplugin.SignalInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -470,7 +435,6 @@ func updateChasmNodes(
 	tx sqlplugin.Tx,
 	chasmNodes map[string]persistence.InternalChasmNode,
 	deleteIDs map[string]struct{},
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
@@ -479,7 +443,6 @@ func updateChasmNodes(
 		rows := make([]sqlplugin.ChasmNodeMapsRow, 0, len(chasmNodes))
 		for path, node := range chasmNodes {
 			row := sqlplugin.ChasmNodeMapsRow{
-				ShardID:          shardID,
 				NamespaceID:      namespaceID,
 				WorkflowID:       workflowID,
 				RunID:            runID,
@@ -500,7 +463,6 @@ func updateChasmNodes(
 
 	if len(deleteIDs) > 0 {
 		if _, err := tx.DeleteFromChasmNodeMaps(ctx, sqlplugin.ChasmNodeMapsFilter{
-			ShardID:     shardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  workflowID,
 			RunID:       runID,
@@ -516,13 +478,11 @@ func updateChasmNodes(
 func getChasmNodeMap(
 	ctx context.Context,
 	db sqlplugin.DB,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) (map[string]persistence.InternalChasmNode, error) {
 	rows, err := db.SelectAllFromChasmNodeMaps(ctx, sqlplugin.ChasmNodeMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -545,13 +505,11 @@ func getChasmNodeMap(
 func deleteChasmNodeMap(
 	ctx context.Context,
 	tx sqlplugin.Tx,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) error {
 	if _, err := tx.DeleteAllFromChasmNodeMaps(ctx, sqlplugin.ChasmNodeMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,

@@ -8,6 +8,7 @@ import (
 	"github.com/superdurable/temporal-server/client/history"
 	"github.com/superdurable/temporal-server/common"
 	"github.com/superdurable/temporal-server/common/backoff"
+	"github.com/superdurable/temporal-server/common/cluster"
 	"github.com/superdurable/temporal-server/common/config"
 	"github.com/superdurable/temporal-server/common/dynamicconfig"
 	"github.com/superdurable/temporal-server/common/headers"
@@ -21,7 +22,7 @@ import (
 // ActivityServiceLayeredClient is a client for ActivityService.
 type ActivityServiceLayeredClient struct {
 	metricsHandler metrics.Handler
-	numShards      int32
+	numShards      cluster.ShardCountFn
 	redirector     history.Redirector[ActivityServiceClient]
 	retryPolicy    backoff.RetryPolicy
 }
@@ -32,6 +33,7 @@ func NewActivityServiceLayeredClient(
 	rpcFactory common.RPCFactory,
 	monitor membership.Monitor,
 	config *config.Persistence,
+	clusterMetadata cluster.Metadata,
 	logger log.Logger,
 	metricsHandler metrics.Handler,
 ) (ActivityServiceClient, error) {
@@ -54,7 +56,7 @@ func NewActivityServiceLayeredClient(
 	return &ActivityServiceLayeredClient{
 		metricsHandler: metricsHandler,
 		redirector:     redirector,
-		numShards:      config.NumHistoryShards,
+		numShards:      cluster.CurrentShardCount(clusterMetadata, config.NumHistoryShards),
 		retryPolicy:    common.CreateHistoryClientRetryPolicy(),
 	}, nil
 }
@@ -80,7 +82,7 @@ func (c *ActivityServiceLayeredClient) callStartActivityExecutionNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetActivityId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetActivityId(), c.numShards())
 	op := func(ctx context.Context, client ActivityServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)
@@ -123,7 +125,7 @@ func (c *ActivityServiceLayeredClient) callDescribeActivityExecutionNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetActivityId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetActivityId(), c.numShards())
 	op := func(ctx context.Context, client ActivityServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)
@@ -166,7 +168,7 @@ func (c *ActivityServiceLayeredClient) callPollActivityExecutionNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetActivityId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetActivityId(), c.numShards())
 	op := func(ctx context.Context, client ActivityServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)
@@ -209,7 +211,7 @@ func (c *ActivityServiceLayeredClient) callTerminateActivityExecutionNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetActivityId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetActivityId(), c.numShards())
 	op := func(ctx context.Context, client ActivityServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)
@@ -252,7 +254,7 @@ func (c *ActivityServiceLayeredClient) callRequestCancelActivityExecutionNoRetry
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetActivityId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetActivityId(), c.numShards())
 	op := func(ctx context.Context, client ActivityServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)
@@ -295,7 +297,7 @@ func (c *ActivityServiceLayeredClient) callDeleteActivityExecutionNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetActivityId(), c.numShards)
+	shardID := common.WorkflowIDToHistoryShard(request.GetNamespaceId(), request.GetFrontendRequest().GetActivityId(), c.numShards())
 	op := func(ctx context.Context, client ActivityServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)

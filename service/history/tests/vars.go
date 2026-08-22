@@ -159,7 +159,7 @@ var (
 
 func NewDynamicConfig() *configs.Config {
 	dc := dynamicconfig.NewNoopCollection()
-	config := configs.NewConfig(dc, 1)
+	config := configs.NewConfig(dc, cluster.StaticShardCount(1))
 	config.EnableActivityEagerExecution = dynamicconfig.GetBoolPropertyFnFilteredByNamespace(true)
 	config.NamespaceCacheRefreshInterval = dynamicconfig.GetDurationPropertyFn(time.Second)
 	config.ReplicationEnableUpdateWithNewTaskMerge = dynamicconfig.GetBoolPropertyFn(true)

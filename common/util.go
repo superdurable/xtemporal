@@ -396,6 +396,31 @@ func WorkflowIDToHistoryShard(
 	return int32(hash%uint32(numberOfShards)) + 1 // ShardID starts with 1
 }
 
+// ValidateShardCountIncrease reports whether a cluster may grow from oldCount
+// to newCount shards.
+//
+// Growth must multiply the count by a power of two. That is what makes a split
+// clean: since h mod 2N is either h mod N or (h mod N)+N, doubling sends each
+// old shard s to exactly the two new shards s and s+N, and every new shard
+// draws from exactly one old shard. Note this holds for any N, so the shard
+// count itself need not be a power of two — only the ratio.
+func ValidateShardCountIncrease(oldCount, newCount int32) error {
+	if oldCount < 1 {
+		return fmt.Errorf("current shard count %d must be positive", oldCount)
+	}
+	if newCount <= oldCount {
+		return fmt.Errorf("shard count may only increase: %d is not greater than %d", newCount, oldCount)
+	}
+	if newCount%oldCount != 0 || !isPowerOfTwo(newCount/oldCount) {
+		return fmt.Errorf("shard count must grow by a power of two: %d is not %d times a power of two", newCount, oldCount)
+	}
+	return nil
+}
+
+func isPowerOfTwo(n int32) bool {
+	return n > 0 && n&(n-1) == 0
+}
+
 func MapShardID(
 	sourceShardCount int32,
 	targetShardCount int32,

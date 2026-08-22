@@ -3,6 +3,7 @@ package history
 import (
 	"context"
 	"errors"
+	"github.com/superdurable/temporal-server/common/cluster"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,7 +28,7 @@ func TestDescribeHistoryHost(t *testing.T) {
 	hostInfoProvider := membership.NewMockHostInfoProvider(ctrl)
 	h := Handler{
 		config: &configs.Config{
-			NumberOfShards: 10,
+			NumberOfShards: cluster.StaticShardCount(10),
 		},
 		metricsHandler:    metrics.NoopMetricsHandler,
 		logger:            log.NewNoopLogger(),

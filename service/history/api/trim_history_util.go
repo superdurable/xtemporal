@@ -39,7 +39,7 @@ func TrimHistoryNode(
 	}
 
 	_, err = shardContext.GetExecutionManager().TrimHistoryBranch(ctx, &persistence.TrimHistoryBranchRequest{
-		ShardID:       common.WorkflowIDToHistoryShard(namespaceID, workflowID, shardContext.GetConfig().NumberOfShards),
+		ShardID:       common.WorkflowIDToHistoryShard(namespaceID, workflowID, shardContext.GetConfig().NumberOfShards()),
 		BranchToken:   response.CurrentBranchToken,
 		NodeID:        response.GetLastFirstEventId(),
 		TransactionID: response.GetLastFirstEventTxnId(),

@@ -6,6 +6,7 @@ import (
 
 	chasmnexus "github.com/superdurable/temporal-server/chasm/lib/nexusoperation"
 	"github.com/superdurable/temporal-server/common/backoff"
+	"github.com/superdurable/temporal-server/common/cluster"
 	"github.com/superdurable/temporal-server/common/config"
 	"github.com/superdurable/temporal-server/common/dynamicconfig"
 	"github.com/superdurable/temporal-server/common/headers"
@@ -164,7 +165,7 @@ NexusOperationCancelRequestFailed events. Default true.`,
 )
 
 type Config struct {
-	NumHistoryShards                    int32
+	NumHistoryShards                    cluster.ShardCountFn
 	RequestTimeout                      dynamicconfig.DurationPropertyFnWithDestinationFilter
 	MinRequestTimeout                   dynamicconfig.DurationPropertyFnWithNamespaceFilter
 	MaxConcurrentOperations             dynamicconfig.IntPropertyFnWithNamespaceFilter
@@ -182,7 +183,7 @@ type Config struct {
 	RetryPolicy                         func() backoff.RetryPolicy
 }
 
-func ConfigProvider(dc *dynamicconfig.Collection, cfg *config.Persistence) *Config {
+func ConfigProvider(dc *dynamicconfig.Collection, cfg *config.Persistence, clusterMetadata cluster.Metadata) *Config {
 	return &Config{
 		RequestTimeout:                      RequestTimeout.Get(dc),
 		MinRequestTimeout:                   MinRequestTimeout.Get(dc),
@@ -207,6 +208,6 @@ func ConfigProvider(dc *dynamicconfig.Collection, cfg *config.Persistence) *Conf
 				backoff.NoInterval,
 			)
 		},
-		NumHistoryShards: cfg.NumHistoryShards,
+		NumHistoryShards: cluster.CurrentShardCount(clusterMetadata, cfg.NumHistoryShards),
 	}
 }

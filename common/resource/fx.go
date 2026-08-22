@@ -243,6 +243,7 @@ func ClientFactoryProvider(
 	dynamicCollection *dynamicconfig.Collection,
 	testHooks testhooks.TestHooks,
 	persistenceConfig *config.Persistence,
+	clusterMetadata cluster.Metadata,
 	logger log.SnTaggedLogger,
 	throttledLogger log.ThrottledLogger,
 ) client.Factory {
@@ -252,7 +253,7 @@ func ClientFactoryProvider(
 		metricsHandler,
 		dynamicCollection,
 		testHooks,
-		persistenceConfig.NumHistoryShards,
+		cluster.CurrentShardCount(clusterMetadata, persistenceConfig.NumHistoryShards),
 		logger,
 		throttledLogger,
 	)

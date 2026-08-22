@@ -71,7 +71,7 @@ func (s *operatorHandlerSuite) SetupTest() {
 	)
 
 	args := NewOperatorHandlerImplArgs{
-		&Config{NumHistoryShards: 4},
+		&Config{},
 		s.mockResource.Logger,
 		s.mockResource.GetSDKClientFactory(),
 		s.mockResource.GetMetricsHandler(),
@@ -81,6 +81,7 @@ func (s *operatorHandlerSuite) SetupTest() {
 		s.mockResource.GetHistoryClient(),
 		s.mockResource.GetClusterMetadataManager(),
 		s.mockResource.GetClusterMetadata(),
+		cluster.StaticShardCount(4),
 		s.mockResource.GetClientFactory(),
 		s.mockResource.NamespaceCache,
 		endpointClient,

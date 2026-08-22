@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"context"
+	"github.com/superdurable/temporal-server/common/cluster"
 	"sync"
 	"testing"
 
@@ -201,6 +202,7 @@ func (s *scannerTestSuite) TestScannerEnabled() {
 						},
 					},
 				},
+				cluster.StaticShardCount(1),
 				mockSdkClientFactory,
 				metrics.NoopMetricsHandler,
 				p.NewMockExecutionManager(ctrl),
@@ -278,6 +280,7 @@ func (s *scannerTestSuite) TestScannerShutdown() {
 				},
 			},
 		},
+		cluster.StaticShardCount(1),
 		mockSdkClientFactory,
 		metrics.NoopMetricsHandler,
 		p.NewMockExecutionManager(ctrl),

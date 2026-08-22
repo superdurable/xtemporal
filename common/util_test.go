@@ -65,6 +65,49 @@ func TestMapShardID_ByNamespaceWorkflow_4And16(t *testing.T) {
 	require.True(t, found)
 }
 
+func TestValidateShardCountIncrease(t *testing.T) {
+	cases := []struct {
+		old, new int32
+		wantErr  bool
+	}{
+		{4, 8, false},
+		{4, 16, false},
+		{1, 2, false},
+		{6, 12, false}, // base need not be a power of two
+		{6, 24, false}, // ratio 4
+		{4, 4, true},   // no change
+		{8, 4, true},   // decrease
+		{4, 12, true},  // ratio 3 is not a power of two
+		{4, 6, true},   // not a multiple
+		{0, 4, true},   // invalid current count
+	}
+	for _, tc := range cases {
+		err := ValidateShardCountIncrease(tc.old, tc.new)
+		if tc.wantErr {
+			require.Error(t, err, "%d -> %d", tc.old, tc.new)
+		} else {
+			require.NoError(t, err, "%d -> %d", tc.old, tc.new)
+		}
+	}
+}
+
+// TestShardSplitProperty checks the invariant ValidateShardCountIncrease relies
+// on: after doubling, a workflow's new shard is either its old shard or its old
+// shard plus the old count. This is what makes each old shard split into
+// exactly two new ones, and it must hold for non-power-of-two counts too.
+func TestShardSplitProperty(t *testing.T) {
+	for _, oldCount := range []int32{1, 4, 6, 12, 512} {
+		newCount := oldCount * 2
+		for i := 0; i < 2000; i++ {
+			namespaceID, workflowID := uuid.NewString(), uuid.NewString()
+			oldShard := WorkflowIDToHistoryShard(namespaceID, workflowID, oldCount)
+			newShard := WorkflowIDToHistoryShard(namespaceID, workflowID, newCount)
+			require.Contains(t, []int32{oldShard, oldShard + oldCount}, newShard,
+				"count %d->%d: shard %d went to %d", oldCount, newCount, oldShard, newShard)
+		}
+	}
+}
+
 func TestMapShardID_1To4(t *testing.T) {
 	sourceShardCount := int32(1)
 	targetShardCount := int32(4)

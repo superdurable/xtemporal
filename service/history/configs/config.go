@@ -2,6 +2,7 @@ package configs
 
 import (
 	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/cluster"
 	"github.com/superdurable/temporal-server/common/dynamicconfig"
 	"github.com/superdurable/temporal-server/common/namespace"
 	"github.com/superdurable/temporal-server/common/retrypolicy"
@@ -9,7 +10,7 @@ import (
 
 // Config represents configuration for history service
 type Config struct {
-	NumberOfShards int32
+	NumberOfShards cluster.ShardCountFn
 
 	EnableReplicationStream             dynamicconfig.BoolPropertyFn
 	EnableSeparateReplicationEnableFlag dynamicconfig.BoolPropertyFn
@@ -425,7 +426,7 @@ type Config struct {
 // NewConfig returns new service config with default values
 func NewConfig(
 	dc *dynamicconfig.Collection,
-	numberOfShards int32,
+	numberOfShards cluster.ShardCountFn,
 ) *Config {
 	cfg := &Config{
 		NumberOfShards: numberOfShards,
@@ -803,5 +804,5 @@ func NewConfig(
 
 // GetShardID return the corresponding shard ID for a given namespaceID and workflowID pair
 func (config *Config) GetShardID(namespaceID namespace.ID, workflowID string) int32 {
-	return common.WorkflowIDToHistoryShard(namespaceID.String(), workflowID, config.NumberOfShards)
+	return common.WorkflowIDToHistoryShard(namespaceID.String(), workflowID, config.NumberOfShards())
 }

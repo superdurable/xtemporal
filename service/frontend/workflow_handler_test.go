@@ -3224,7 +3224,7 @@ func (s *WorkflowHandlerSuite) TestGetWorkflowExecutionHistory_InternalRawHistor
 }
 
 func (s *WorkflowHandlerSuite) newConfig() *Config {
-	return NewConfig(dc.NewNoopCollection(), numHistoryShards)
+	return NewConfig(dc.NewNoopCollection())
 }
 
 func updateRequest(

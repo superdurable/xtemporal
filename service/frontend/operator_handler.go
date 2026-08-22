@@ -60,6 +60,7 @@ type (
 		historyClient          resource.HistoryClient
 		clusterMetadataManager persistence.ClusterMetadataManager
 		clusterMetadata        clustermetadata.Metadata
+		shardCount             clustermetadata.ShardCountFn
 		clientFactory          svc.Factory
 		namespaceRegistry      namespace.Registry
 		nexusEndpointClient    *NexusEndpointClient
@@ -76,6 +77,7 @@ type (
 		historyClient          resource.HistoryClient
 		clusterMetadataManager persistence.ClusterMetadataManager
 		clusterMetadata        clustermetadata.Metadata
+		shardCount             clustermetadata.ShardCountFn
 		clientFactory          svc.Factory
 		namespaceRegistry      namespace.Registry
 		nexusEndpointClient    *NexusEndpointClient
@@ -105,6 +107,7 @@ func NewOperatorHandlerImpl(
 		historyClient:          args.historyClient,
 		clusterMetadataManager: args.clusterMetadataManager,
 		clusterMetadata:        args.clusterMetadata,
+		shardCount:             args.shardCount,
 		clientFactory:          args.clientFactory,
 		namespaceRegistry:      args.namespaceRegistry,
 		nexusEndpointClient:    args.nexusEndpointClient,
@@ -743,10 +746,10 @@ func (h *OperatorHandlerImpl) validateRemoteClusterMetadata(metadata *adminservi
 		// failover version increment is mismatch with current cluster config
 		return serviceerror.NewInvalidArgument("Cannot add remote cluster due to failover version increment mismatch")
 	}
-	if metadata.GetHistoryShardCount() != h.config.NumHistoryShards {
+	if metadata.GetHistoryShardCount() != h.shardCount() {
 		remoteShardCount := metadata.GetHistoryShardCount()
 		large := remoteShardCount
-		small := h.config.NumHistoryShards
+		small := h.shardCount()
 		if large < small {
 			small, large = large, small
 		}

@@ -13,7 +13,6 @@ import (
 const (
 	deleteMapQryTemplate = `DELETE FROM %v
 WHERE
-shard_id = ? AND
 namespace_id = ? AND
 workflow_id = ? AND
 run_id = ?`
@@ -27,15 +26,14 @@ run_id = ?`
 	// %[5]v should be the name of the key associated with the map
 	// e.g. for ActivityInfo it is "schedule_id"
 	setKeyInMapQryTemplate = `INSERT INTO %[1]v
-(shard_id, namespace_id, workflow_id, run_id, %[5]v, %[2]v)
+(namespace_id, workflow_id, run_id, %[5]v, %[2]v)
 VALUES
-(:shard_id, :namespace_id, :workflow_id, :run_id, :%[5]v, %[3]v) 
+(:namespace_id, :workflow_id, :run_id, :%[5]v, %[3]v)
 ON DUPLICATE KEY UPDATE %[5]v=VALUES(%[5]v), %[4]v;`
 
 	// %[2]v is the name of the key
 	deleteKeyInMapQryTemplate = `DELETE FROM %[1]v
 WHERE
-shard_id = ? AND
 namespace_id = ? AND
 workflow_id = ? AND
 run_id = ? AND
@@ -46,7 +44,6 @@ run_id = ? AND
 	// %[3]v is the value columns, separated by commas
 	getMapQryTemplate = `SELECT %[2]v, %[3]v FROM %[1]v
 WHERE
-shard_id = ? AND
 namespace_id = ? AND
 workflow_id = ? AND
 run_id = ?`
@@ -91,7 +88,7 @@ func makeGetMapQryTemplate(tableName string, nonPrimaryKeyColumns []string, mapK
 }
 
 var (
-	// Omit shard_id, run_id, namespace_id, workflow_id, schedule_id since they're in the primary key
+	// Omit run_id, namespace_id, workflow_id, schedule_id since they're in the primary key
 	activityInfoColumns = []string{
 		"data",
 		"data_encoding",
@@ -125,7 +122,6 @@ func (mdb *db) SelectAllFromActivityInfoMaps(
 	if err := mdb.SelectContext(ctx,
 		&rows,
 		getActivityInfoMapQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -133,7 +129,6 @@ func (mdb *db) SelectAllFromActivityInfoMaps(
 		return nil, err
 	}
 	for i := 0; i < len(rows); i++ {
-		rows[i].ShardID = filter.ShardID
 		rows[i].NamespaceID = filter.NamespaceID
 		rows[i].WorkflowID = filter.WorkflowID
 		rows[i].RunID = filter.RunID
@@ -148,7 +143,6 @@ func (mdb *db) DeleteFromActivityInfoMaps(
 ) (sql.Result, error) {
 	query, args, err := sqlx.In(
 		deleteKeyInActivityInfoMapQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -170,7 +164,6 @@ func (mdb *db) DeleteAllFromActivityInfoMaps(
 ) (sql.Result, error) {
 	return mdb.ExecContext(ctx,
 		deleteActivityInfoMapQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -211,7 +204,6 @@ func (mdb *db) SelectAllFromTimerInfoMaps(
 	if err := mdb.SelectContext(ctx,
 		&rows,
 		getTimerInfoMapSQLQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -219,7 +211,6 @@ func (mdb *db) SelectAllFromTimerInfoMaps(
 		return nil, err
 	}
 	for i := 0; i < len(rows); i++ {
-		rows[i].ShardID = filter.ShardID
 		rows[i].NamespaceID = filter.NamespaceID
 		rows[i].WorkflowID = filter.WorkflowID
 		rows[i].RunID = filter.RunID
@@ -234,7 +225,6 @@ func (mdb *db) DeleteFromTimerInfoMaps(
 ) (sql.Result, error) {
 	query, args, err := sqlx.In(
 		deleteKeyInTimerInfoMapSQLQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -256,7 +246,6 @@ func (mdb *db) DeleteAllFromTimerInfoMaps(
 ) (sql.Result, error) {
 	return mdb.ExecContext(ctx,
 		deleteTimerInfoMapSQLQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -297,7 +286,6 @@ func (mdb *db) SelectAllFromChildExecutionInfoMaps(
 	if err := mdb.SelectContext(ctx,
 		&rows,
 		getChildExecutionInfoMapQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -305,7 +293,6 @@ func (mdb *db) SelectAllFromChildExecutionInfoMaps(
 		return nil, err
 	}
 	for i := 0; i < len(rows); i++ {
-		rows[i].ShardID = filter.ShardID
 		rows[i].NamespaceID = filter.NamespaceID
 		rows[i].WorkflowID = filter.WorkflowID
 		rows[i].RunID = filter.RunID
@@ -320,7 +307,6 @@ func (mdb *db) DeleteFromChildExecutionInfoMaps(
 ) (sql.Result, error) {
 	query, args, err := sqlx.In(
 		deleteKeyInChildExecutionInfoMapQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -342,7 +328,6 @@ func (mdb *db) DeleteAllFromChildExecutionInfoMaps(
 ) (sql.Result, error) {
 	return mdb.ExecContext(ctx,
 		deleteChildExecutionInfoMapQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -382,7 +367,6 @@ func (mdb *db) SelectAllFromRequestCancelInfoMaps(
 	var rows []sqlplugin.RequestCancelInfoMapsRow
 	if err := mdb.SelectContext(ctx,
 		&rows, getRequestCancelInfoMapQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -390,7 +374,6 @@ func (mdb *db) SelectAllFromRequestCancelInfoMaps(
 		return nil, err
 	}
 	for i := 0; i < len(rows); i++ {
-		rows[i].ShardID = filter.ShardID
 		rows[i].NamespaceID = filter.NamespaceID
 		rows[i].WorkflowID = filter.WorkflowID
 		rows[i].RunID = filter.RunID
@@ -405,7 +388,6 @@ func (mdb *db) DeleteFromRequestCancelInfoMaps(
 ) (sql.Result, error) {
 	query, args, err := sqlx.In(
 		deleteKeyInRequestCancelInfoMapQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -427,7 +409,6 @@ func (mdb *db) DeleteAllFromRequestCancelInfoMaps(
 ) (sql.Result, error) {
 	return mdb.ExecContext(ctx,
 		deleteRequestCancelInfoMapQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -468,7 +449,6 @@ func (mdb *db) SelectAllFromSignalInfoMaps(
 	if err := mdb.SelectContext(ctx,
 		&rows,
 		getSignalInfoMapQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -476,7 +456,6 @@ func (mdb *db) SelectAllFromSignalInfoMaps(
 		return nil, err
 	}
 	for i := 0; i < len(rows); i++ {
-		rows[i].ShardID = filter.ShardID
 		rows[i].NamespaceID = filter.NamespaceID
 		rows[i].WorkflowID = filter.WorkflowID
 		rows[i].RunID = filter.RunID
@@ -491,7 +470,6 @@ func (mdb *db) DeleteFromSignalInfoMaps(
 ) (sql.Result, error) {
 	query, args, err := sqlx.In(
 		deleteKeyInSignalInfoMapQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -513,7 +491,6 @@ func (mdb *db) DeleteAllFromSignalInfoMaps(
 ) (sql.Result, error) {
 	return mdb.ExecContext(ctx,
 		deleteSignalInfoMapQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -523,27 +500,24 @@ func (mdb *db) DeleteAllFromSignalInfoMaps(
 const (
 	deleteAllSignalsRequestedSetQry = `DELETE FROM signals_requested_sets
 WHERE
-shard_id = ? AND
 namespace_id = ? AND
 workflow_id = ? AND
 run_id = ?
 `
 
 	createSignalsRequestedSetQry = `INSERT INTO signals_requested_sets
-(shard_id, namespace_id, workflow_id, run_id, signal_id) VALUES
-(:shard_id, :namespace_id, :workflow_id, :run_id, :signal_id)
+(namespace_id, workflow_id, run_id, signal_id) VALUES
+(:namespace_id, :workflow_id, :run_id, :signal_id)
 ON DUPLICATE KEY UPDATE signal_id = VALUES (signal_id)`
 
 	deleteSignalsRequestedSetQry = `DELETE FROM signals_requested_sets
-WHERE 
-shard_id = ? AND
+WHERE
 namespace_id = ? AND
 workflow_id = ? AND
 run_id = ? AND
 signal_id IN ( ? )`
 
 	getSignalsRequestedSetQry = `SELECT signal_id FROM signals_requested_sets WHERE
-shard_id = ? AND
 namespace_id = ? AND
 workflow_id = ? AND
 run_id = ?`
@@ -570,7 +544,6 @@ func (mdb *db) SelectAllFromSignalsRequestedSets(
 	if err := mdb.SelectContext(ctx,
 		&rows,
 		getSignalsRequestedSetQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -578,7 +551,6 @@ func (mdb *db) SelectAllFromSignalsRequestedSets(
 		return nil, err
 	}
 	for i := 0; i < len(rows); i++ {
-		rows[i].ShardID = filter.ShardID
 		rows[i].NamespaceID = filter.NamespaceID
 		rows[i].WorkflowID = filter.WorkflowID
 		rows[i].RunID = filter.RunID
@@ -593,7 +565,6 @@ func (mdb *db) DeleteFromSignalsRequestedSets(
 ) (sql.Result, error) {
 	query, args, err := sqlx.In(
 		deleteSignalsRequestedSetQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -615,7 +586,6 @@ func (mdb *db) DeleteAllFromSignalsRequestedSets(
 ) (sql.Result, error) {
 	return mdb.ExecContext(ctx,
 		deleteAllSignalsRequestedSetQry,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -647,7 +617,6 @@ func (mdb *db) SelectAllFromChasmNodeMaps(
 	if err := mdb.SelectContext(ctx,
 		&rows,
 		getChasmNodeMapSQLQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -656,7 +625,6 @@ func (mdb *db) SelectAllFromChasmNodeMaps(
 	}
 
 	for i := range rows {
-		rows[i].ShardID = filter.ShardID
 		rows[i].NamespaceID = filter.NamespaceID
 		rows[i].WorkflowID = filter.WorkflowID
 		rows[i].RunID = filter.RunID
@@ -678,7 +646,6 @@ func (mdb *db) ReplaceIntoChasmNodeMaps(
 func (mdb *db) DeleteFromChasmNodeMaps(ctx context.Context, filter sqlplugin.ChasmNodeMapsFilter) (sql.Result, error) {
 	query, args, err := sqlx.In(
 		deleteKeyInChasmNodeMapSQLQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -696,7 +663,6 @@ func (mdb *db) DeleteFromChasmNodeMaps(ctx context.Context, filter sqlplugin.Cha
 func (mdb *db) DeleteAllFromChasmNodeMaps(ctx context.Context, filter sqlplugin.ChasmNodeMapsAllFilter) (sql.Result, error) {
 	return mdb.ExecContext(ctx,
 		deleteChasmNodeMapSQLQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,

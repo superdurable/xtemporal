@@ -13,6 +13,7 @@ import (
 	"github.com/superdurable/temporal-server/client/history"
 	"github.com/superdurable/temporal-server/client/matching"
 	"github.com/superdurable/temporal-server/common"
+	"github.com/superdurable/temporal-server/common/cluster"
 	"github.com/superdurable/temporal-server/common/dynamicconfig"
 	"github.com/superdurable/temporal-server/common/log"
 	"github.com/superdurable/temporal-server/common/membership"
@@ -43,7 +44,7 @@ type (
 			metricsHandler metrics.Handler,
 			dc *dynamicconfig.Collection,
 			testHooks testhooks.TestHooks,
-			numberOfHistoryShards int32,
+			numberOfHistoryShards cluster.ShardCountFn,
 			logger log.Logger,
 			throttledLogger log.Logger,
 		) Factory
@@ -58,7 +59,7 @@ type (
 		metricsHandler        metrics.Handler
 		dynConfig             *dynamicconfig.Collection
 		testHooks             testhooks.TestHooks
-		numberOfHistoryShards int32
+		numberOfHistoryShards cluster.ShardCountFn
 		logger                log.Logger
 		throttledLogger       log.Logger
 	}
@@ -83,7 +84,7 @@ func (p *factoryProviderImpl) NewFactory(
 	metricsHandler metrics.Handler,
 	dc *dynamicconfig.Collection,
 	testHooks testhooks.TestHooks,
-	numberOfHistoryShards int32,
+	numberOfHistoryShards cluster.ShardCountFn,
 	logger log.Logger,
 	throttledLogger log.Logger,
 ) Factory {
