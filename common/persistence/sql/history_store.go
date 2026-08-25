@@ -18,6 +18,9 @@ const (
 	// NOTE: transaction ID is *= -1 in DB
 	MinTxnID int64 = math.MaxInt64
 	MaxTxnID int64 = math.MinInt64 + 1 // int overflow
+
+	// uuidSize is the encoded width of primitives.UUID, matching the BINARY(16)/BYTEA columns.
+	uuidSize = 16
 )
 
 // AppendHistoryNodes add(or override) a node to a history branch
@@ -45,7 +48,6 @@ func (m *sqlExecutionStore) AppendHistoryNodes(
 		TxnID:        node.TransactionID,
 		Data:         node.Events.Data,
 		DataEncoding: node.Events.EncodingType.String(),
-		ShardID:      request.ShardID,
 	}
 
 	if !request.IsNewBranch {
@@ -67,7 +69,6 @@ func (m *sqlExecutionStore) AppendHistoryNodes(
 
 	treeInfoBlob := request.TreeInfo
 	treeRow := &sqlplugin.HistoryTreeRow{
-		ShardID:      request.ShardID,
 		TreeID:       treeIDBytes,
 		BranchID:     branchIDBytes,
 		Data:         treeInfoBlob.Data,
@@ -115,7 +116,6 @@ func (m *sqlExecutionStore) DeleteHistoryNodes(
 	branchInfo := request.BranchInfo
 	nodeID := request.NodeID
 	txnID := request.TransactionID
-	shardID := request.ShardID
 
 	if nodeID < p.GetBeginNodeID(branchInfo) {
 		return &p.InvalidPersistenceRequestError{
@@ -137,7 +137,6 @@ func (m *sqlExecutionStore) DeleteHistoryNodes(
 		BranchID: branchIDBytes,
 		NodeID:   nodeID,
 		TxnID:    txnID,
-		ShardID:  shardID,
 	}
 
 	_, err = m.DB.DeleteFromHistoryNode(ctx, nodeRow)
@@ -195,7 +194,6 @@ func (m *sqlExecutionStore) ReadHistoryBranch(
 	}
 
 	rows, err := m.DB.RangeSelectFromHistoryNode(ctx, sqlplugin.HistoryNodeSelectFilter{
-		ShardID:      request.ShardID,
 		TreeID:       treeIDBytes,
 		BranchID:     branchIDBytes,
 		MinNodeID:    minNodeId,
@@ -308,7 +306,6 @@ func (m *sqlExecutionStore) ForkHistoryBranch(
 	}
 
 	row := &sqlplugin.HistoryTreeRow{
-		ShardID:      request.ShardID,
 		TreeID:       treeIDBytes,
 		BranchID:     newBranchIdBytes,
 		Data:         treeInfoBlob.Data,
@@ -348,7 +345,6 @@ func (m *sqlExecutionStore) DeleteHistoryBranch(
 		_, err = tx.DeleteFromHistoryTree(ctx, sqlplugin.HistoryTreeDeleteFilter{
 			TreeID:   treeIDBytes,
 			BranchID: branchIDBytes,
-			ShardID:  request.ShardID,
 		})
 		if err != nil {
 			return err
@@ -362,7 +358,6 @@ func (m *sqlExecutionStore) DeleteHistoryBranch(
 			}
 
 			deleteFilter := sqlplugin.HistoryNodeDeleteFilter{
-				ShardID:   request.ShardID,
 				TreeID:    treeIDBytes,
 				BranchID:  branchIDBytes,
 				MinNodeID: br.BeginNodeId,
@@ -379,7 +374,6 @@ func (m *sqlExecutionStore) DeleteHistoryBranch(
 // getAllHistoryTreeBranchesPaginationToken represents the primary key of the latest row in the history_tree table that
 // we returned.
 type getAllHistoryTreeBranchesPaginationToken struct {
-	ShardID  int32
 	TreeID   primitives.UUID
 	BranchID primitives.UUID
 }
@@ -394,14 +388,18 @@ func (m *sqlExecutionStore) GetAllHistoryTreeBranches(
 	}
 
 	page := sqlplugin.HistoryTreeBranchPage{
-		Limit: pageSize,
+		// Start from the lowest possible key rather than the zero value. The pagination predicate
+		// compares (tree_id, branch_id) against these bounds, and a nil UUID binds as SQL NULL,
+		// which makes the whole comparison NULL — never true — so no rows would ever be returned.
+		TreeID:   make(primitives.UUID, uuidSize),
+		BranchID: make(primitives.UUID, uuidSize),
+		Limit:    pageSize,
 	}
 	if len(request.NextPageToken) != 0 {
 		var token getAllHistoryTreeBranchesPaginationToken
 		if err := json.Unmarshal(request.NextPageToken, &token); err != nil {
 			return nil, err
 		}
-		page.ShardID = token.ShardID
 		page.TreeID = token.TreeID
 		page.BranchID = token.BranchID
 	}
@@ -432,7 +430,6 @@ func (m *sqlExecutionStore) GetAllHistoryTreeBranches(
 	// if we filled the page with rows, then set the next page token
 	lastRow := rows[len(rows)-1]
 	token := getAllHistoryTreeBranchesPaginationToken{
-		ShardID:  lastRow.ShardID,
 		TreeID:   lastRow.TreeID,
 		BranchID: lastRow.BranchID,
 	}
@@ -460,8 +457,7 @@ func (m *sqlExecutionStore) GetHistoryTreeContainingBranch(
 	}
 
 	rows, err := m.DB.SelectFromHistoryTree(ctx, sqlplugin.HistoryTreeSelectFilter{
-		TreeID:  treeID,
-		ShardID: request.ShardID,
+		TreeID: treeID,
 	})
 	if err == sql.ErrNoRows || (err == nil && len(rows) == 0) {
 		return &p.InternalGetHistoryTreeContainingBranchResponse{}, nil

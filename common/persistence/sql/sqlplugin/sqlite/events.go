@@ -10,39 +10,39 @@ import (
 const (
 	// below are templates for history_node table
 	replaceHistoryNodesQuery = `REPLACE INTO history_node (` +
-		`shard_id, tree_id, branch_id, node_id, prev_txn_id, txn_id, data, data_encoding) ` +
-		`VALUES (:shard_id, :tree_id, :branch_id, :node_id, :prev_txn_id, :txn_id, :data, :data_encoding) `
+		`tree_id, branch_id, node_id, prev_txn_id, txn_id, data, data_encoding) ` +
+		`VALUES (:tree_id, :branch_id, :node_id, :prev_txn_id, :txn_id, :data, :data_encoding) `
 
 	getHistoryNodesQuery = `SELECT node_id, prev_txn_id, txn_id, data, data_encoding FROM history_node ` +
-		`WHERE shard_id = ? AND tree_id = ? AND branch_id = ? AND ((node_id = ? AND txn_id > ?) OR node_id > ?) AND node_id < ? ` +
-		`ORDER BY shard_id, tree_id, branch_id, node_id, txn_id LIMIT ? `
+		`WHERE tree_id = ? AND branch_id = ? AND ((node_id = ? AND txn_id > ?) OR node_id > ?) AND node_id < ? ` +
+		`ORDER BY tree_id, branch_id, node_id, txn_id LIMIT ? `
 
 	getHistoryNodesReverseQuery = `SELECT node_id, prev_txn_id, txn_id, data, data_encoding FROM history_node ` +
-		`WHERE shard_id = ? AND tree_id = ? AND branch_id = ? AND node_id >= ? AND ((node_id = ? AND txn_id < ?) OR node_id < ?) ` +
-		`ORDER BY shard_id, tree_id, branch_id DESC, node_id DESC, txn_id DESC LIMIT ? `
+		`WHERE tree_id = ? AND branch_id = ? AND node_id >= ? AND ((node_id = ? AND txn_id < ?) OR node_id < ?) ` +
+		`ORDER BY tree_id, branch_id DESC, node_id DESC, txn_id DESC LIMIT ? `
 
 	getHistoryNodeMetadataQuery = `SELECT node_id, prev_txn_id, txn_id FROM history_node ` +
-		`WHERE shard_id = ? AND tree_id = ? AND branch_id = ? AND ((node_id = ? AND txn_id > ?) OR node_id > ?) AND node_id < ? ` +
-		`ORDER BY shard_id, tree_id, branch_id, node_id, txn_id LIMIT ? `
+		`WHERE tree_id = ? AND branch_id = ? AND ((node_id = ? AND txn_id > ?) OR node_id > ?) AND node_id < ? ` +
+		`ORDER BY tree_id, branch_id, node_id, txn_id LIMIT ? `
 
-	deleteHistoryNodeQuery = `DELETE FROM history_node WHERE shard_id = ? AND tree_id = ? AND branch_id = ? AND node_id = ? AND txn_id = ? `
+	deleteHistoryNodeQuery = `DELETE FROM history_node WHERE tree_id = ? AND branch_id = ? AND node_id = ? AND txn_id = ? `
 
-	deleteHistoryNodesQuery = `DELETE FROM history_node WHERE shard_id = ? AND tree_id = ? AND branch_id = ? AND node_id >= ? `
+	deleteHistoryNodesQuery = `DELETE FROM history_node WHERE tree_id = ? AND branch_id = ? AND node_id >= ? `
 
 	// below are templates for history_tree table
 	addHistoryTreeQuery = `REPLACE INTO history_tree (` +
-		`shard_id, tree_id, branch_id, data, data_encoding) ` +
-		`VALUES (:shard_id, :tree_id, :branch_id, :data, :data_encoding) `
+		`tree_id, branch_id, data, data_encoding) ` +
+		`VALUES (:tree_id, :branch_id, :data, :data_encoding) `
 
-	getHistoryTreeQuery = `SELECT branch_id, data, data_encoding FROM history_tree WHERE shard_id = ? AND tree_id = ? `
+	getHistoryTreeQuery = `SELECT branch_id, data, data_encoding FROM history_tree WHERE tree_id = ? `
 
-	paginateBranchesQuery = `SELECT shard_id, tree_id, branch_id, data, data_encoding
+	paginateBranchesQuery = `SELECT tree_id, branch_id, data, data_encoding
         FROM history_tree
-        WHERE (shard_id, tree_id, branch_id) > ($1, $2, $3)
-        ORDER BY shard_id, tree_id, branch_id
-        LIMIT $4`
+        WHERE (tree_id, branch_id) > ($1, $2)
+        ORDER BY tree_id, branch_id
+        LIMIT $3`
 
-	deleteHistoryTreeQuery = `DELETE FROM history_tree WHERE shard_id = ? AND tree_id = ? AND branch_id = ? `
+	deleteHistoryTreeQuery = `DELETE FROM history_tree WHERE tree_id = ? AND branch_id = ? `
 )
 
 // For history_node table:
@@ -69,7 +69,6 @@ func (mdb *db) DeleteFromHistoryNode(
 	row.TxnID = -row.TxnID
 	return mdb.conn.ExecContext(ctx,
 		deleteHistoryNodeQuery,
-		row.ShardID,
 		row.TreeID,
 		row.BranchID,
 		row.NodeID,
@@ -94,7 +93,6 @@ func (mdb *db) RangeSelectFromHistoryNode(
 	var args []any
 	if filter.ReverseOrder {
 		args = []any{
-			filter.ShardID,
 			filter.TreeID,
 			filter.BranchID,
 			filter.MinNodeID,
@@ -105,7 +103,6 @@ func (mdb *db) RangeSelectFromHistoryNode(
 		}
 	} else {
 		args = []any{
-			filter.ShardID,
 			filter.TreeID,
 			filter.BranchID,
 			filter.MinNodeID,
@@ -135,7 +132,6 @@ func (mdb *db) RangeDeleteFromHistoryNode(
 ) (sql.Result, error) {
 	return mdb.conn.ExecContext(ctx,
 		deleteHistoryNodesQuery,
-		filter.ShardID,
 		filter.TreeID,
 		filter.BranchID,
 		filter.MinNodeID,
@@ -164,7 +160,6 @@ func (mdb *db) SelectFromHistoryTree(
 	err := mdb.conn.SelectContext(ctx,
 		&rows,
 		getHistoryTreeQuery,
-		filter.ShardID,
 		filter.TreeID,
 	)
 	return rows, err
@@ -180,7 +175,6 @@ func (mdb *db) PaginateBranchesFromHistoryTree(
 	err := mdb.conn.SelectContext(ctx,
 		&rows,
 		paginateBranchesQuery,
-		page.ShardID,
 		page.TreeID,
 		page.BranchID,
 		page.Limit,
@@ -195,7 +189,6 @@ func (mdb *db) DeleteFromHistoryTree(
 ) (sql.Result, error) {
 	return mdb.conn.ExecContext(ctx,
 		deleteHistoryTreeQuery,
-		filter.ShardID,
 		filter.TreeID,
 		filter.BranchID,
 	)
