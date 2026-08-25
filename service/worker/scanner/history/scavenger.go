@@ -11,7 +11,6 @@ import (
 	persistencespb "github.com/superdurable/temporal-server/api/persistence/v1"
 	"github.com/superdurable/temporal-server/chasm"
 	"github.com/superdurable/temporal-server/common"
-	"github.com/superdurable/temporal-server/common/cluster"
 	"github.com/superdurable/temporal-server/common/collection"
 	"github.com/superdurable/temporal-server/common/dynamicconfig"
 	"github.com/superdurable/temporal-server/common/log"
@@ -40,7 +39,7 @@ type (
 
 	// Scavenger is the type that holds the state for history scavenger daemon
 	Scavenger struct {
-		shardCount     cluster.ShardCountFn
+		numShards      int32
 		db             persistence.ExecutionManager
 		client         historyservice.HistoryServiceClient
 		adminClient    adminservice.AdminServiceClient
@@ -83,7 +82,7 @@ const (
 //   - describe the corresponding workflow execution
 //   - deletion of history itself, if there are no workflow execution
 func NewScavenger(
-	shardCount cluster.ShardCountFn,
+	numShards int32,
 	db persistence.ExecutionManager,
 	rps int,
 	client historyservice.HistoryServiceClient,
@@ -98,7 +97,7 @@ func NewScavenger(
 	serializer serialization.Serializer,
 ) *Scavenger {
 	return &Scavenger{
-		shardCount:  shardCount,
+		numShards:   numShards,
 		db:          db,
 		client:      client,
 		adminClient: adminClient,
@@ -227,7 +226,7 @@ func (s *Scavenger) filterTask(
 		s.hbd.ErrorCount++
 		return nil
 	}
-	shardID := common.WorkflowIDToHistoryShard(namespaceID, workflowID, s.shardCount())
+	shardID := common.WorkflowIDToHistoryShard(namespaceID, workflowID, s.numShards)
 
 	branchToken, err := s.serializer.HistoryBranchToBlob(branch.BranchInfo)
 	if err != nil {

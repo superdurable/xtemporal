@@ -1,7 +1,6 @@
 package shard
 
 import (
-	"github.com/superdurable/temporal-server/common/cluster"
 	"testing"
 	"time"
 
@@ -59,7 +58,7 @@ func (s *ownershipSuite) newController(contextFactory ContextFactory) *Controlle
 }
 
 func (s *ownershipSuite) TestAcquireViaMembershipUpdate() {
-	s.config.NumberOfShards = cluster.StaticShardCount(1)
+	s.config.NumberOfShards = 1
 	shardID := int32(1)
 
 	shard := historyi.NewMockControllableContext(s.controller)
@@ -102,7 +101,7 @@ func (s *ownershipSuite) TestAcquireViaMembershipUpdate() {
 }
 
 func (s *ownershipSuite) TestAcquireOnDemand() {
-	s.config.NumberOfShards = cluster.StaticShardCount(1)
+	s.config.NumberOfShards = 1
 	shardID := int32(1)
 
 	shard := historyi.NewMockControllableContext(s.controller)
@@ -132,7 +131,7 @@ func (s *ownershipSuite) TestAcquireOnDemand() {
 }
 
 func (s *ownershipSuite) TestAcquireViaTicker() {
-	s.config.NumberOfShards = cluster.StaticShardCount(1)
+	s.config.NumberOfShards = 1
 	s.config.AcquireShardInterval = func() time.Duration {
 		return 100 * time.Millisecond
 	}
@@ -172,7 +171,7 @@ func (s *ownershipSuite) TestAcquireViaTicker() {
 }
 
 func (s *ownershipSuite) TestAttemptAcquireUnowned() {
-	s.config.NumberOfShards = cluster.StaticShardCount(1)
+	s.config.NumberOfShards = 1
 	shardID := int32(1)
 
 	otherHost := "otherHost"

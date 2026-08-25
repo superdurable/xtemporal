@@ -349,6 +349,17 @@ func (s *ClusterMetadataManagerSuite) TestInitImmutableMetadataReadWrite() {
 	s.True(getResp.IsGlobalNamespaceEnabled)
 	s.True(getResp.IsConnectionEnabled)
 
+	// HistoryShardCount is mutable. Startup validation limits this operation to
+	// supported SQL shard-count increases.
+	getResp.HistoryShardCount *= 2
+	updated, err := s.ClusterMetadataManager.SaveClusterMetadata(s.ctx, &p.SaveClusterMetadataRequest{
+		ClusterMetadata: getResp.ClusterMetadata,
+		Version:         getResp.Version,
+	})
+	s.NoError(err)
+	s.True(updated)
+	historyShardsToPersist = getResp.HistoryShardCount
+
 	// Case 4 - Init, data persisted
 	// Attempt to overwrite with new values
 	secondResp, err := s.ClusterMetadataManager.SaveClusterMetadata(s.ctx, &p.SaveClusterMetadataRequest{

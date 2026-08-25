@@ -1132,7 +1132,7 @@ func (e *ChasmEngine) getShardContext(
 		common.WorkflowIDToHistoryShard(
 			ref.NamespaceID,
 			ref.BusinessID,
-			e.config.NumberOfShards(),
+			e.config.NumberOfShards,
 		),
 	)
 }

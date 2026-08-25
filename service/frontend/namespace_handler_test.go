@@ -83,7 +83,7 @@ func (s *namespaceHandlerCommonSuite) SetupTest() {
 	)
 	s.mockArchiverProvider = provider.NewMockArchiverProvider(s.controller)
 	s.fakeClock = clock.NewEventTimeSource()
-	s.config = NewConfig(dc.NewNoopCollection())
+	s.config = NewConfig(dc.NewNoopCollection(), 1024)
 	s.handler = newNamespaceHandler(
 		logger,
 		s.mockMetadataMgr,

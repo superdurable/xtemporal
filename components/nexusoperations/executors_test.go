@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/superdurable/temporal-server/common/cluster"
 	"testing"
 	"time"
 
@@ -1306,7 +1305,7 @@ func TestProcessCancelationTask_SystemEndpoint(t *testing.T) {
 					RequestTimeout:                      dynamicconfig.GetDurationPropertyFnFilteredByDestination(time.Hour),
 					MinRequestTimeout:                   dynamicconfig.GetDurationPropertyFnFilteredByNamespace(time.Millisecond),
 					RecordCancelRequestCompletionEvents: dynamicconfig.GetBoolPropertyFn(true),
-					NumHistoryShards:                    cluster.StaticShardCount(4),
+					NumHistoryShards:                    4,
 					RetryPolicy: func() backoff.RetryPolicy {
 						return backoff.NewExponentialRetryPolicy(time.Second)
 					},
@@ -1694,7 +1693,7 @@ func TestProcessInvocationTask_SystemEndpoint(t *testing.T) {
 					CallbackURLTemplate:     dynamicconfig.GetStringPropertyFn("http://localhost/callback"),
 					UseSystemCallbackURL:    dynamicconfig.GetBoolPropertyFn(true),
 					UseNewFailureWireFormat: dynamicconfig.GetBoolPropertyFnFilteredByNamespace(false),
-					NumHistoryShards:        cluster.StaticShardCount(4),
+					NumHistoryShards:        4,
 					RetryPolicy: func() backoff.RetryPolicy {
 						return backoff.NewExponentialRetryPolicy(time.Second)
 					},

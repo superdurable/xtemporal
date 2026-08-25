@@ -1065,7 +1065,7 @@ func (e taskExecutor) startOnHistoryService(
 	}
 	resp, err := e.HistoryClient.StartNexusOperation(ctx, &historyservice.StartNexusOperationRequest{
 		NamespaceId: ns.ID().String(),
-		ShardId:     res.RoutingKey.ShardID(e.Config.NumHistoryShards()),
+		ShardId:     res.RoutingKey.ShardID(e.Config.NumHistoryShards),
 		// NOTE: Header is not allowed for system operations.
 		Request: &nexuspb.StartOperationRequest{
 			Service:        args.service,
@@ -1138,7 +1138,7 @@ func (e taskExecutor) cancelOnHistoryService(
 
 	_, err = e.HistoryClient.CancelNexusOperation(ctx, &historyservice.CancelNexusOperationRequest{
 		NamespaceId: ns.ID().String(),
-		ShardId:     res.RoutingKey.ShardID(e.Config.NumHistoryShards()),
+		ShardId:     res.RoutingKey.ShardID(e.Config.NumHistoryShards),
 		Request: &nexuspb.CancelOperationRequest{
 			Service:        args.service,
 			Operation:      args.operation,

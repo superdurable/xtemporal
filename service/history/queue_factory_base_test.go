@@ -112,7 +112,7 @@ func (c *moduleTestCase) Run(t *testing.T) {
 func getModuleDependencies(controller *gomock.Controller, c *moduleTestCase) fx.Option {
 	cfg := configs.NewConfig(
 		dynamicconfig.NewNoopCollection(),
-		cluster.StaticShardCount(1),
+		1,
 	)
 	clusterMetadata := cluster.NewMockMetadata(controller)
 	clusterMetadata.EXPECT().GetCurrentClusterName().Return("module-test-cluster-name").AnyTimes()

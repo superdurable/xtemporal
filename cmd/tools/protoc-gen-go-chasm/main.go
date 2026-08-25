@@ -89,7 +89,6 @@ func (p *Plugin) Run(plugin *protogen.Plugin) error {
 		w.println(`"github.com/superdurable/temporal-server/client/history"`)
 		w.println(`"github.com/superdurable/temporal-server/common"`)
 		w.println(`"github.com/superdurable/temporal-server/common/backoff"`)
-		w.println(`"github.com/superdurable/temporal-server/common/cluster"`)
 		w.println(`"github.com/superdurable/temporal-server/common/config"`)
 		w.println(`"github.com/superdurable/temporal-server/common/dynamicconfig"`)
 		w.println(`"github.com/superdurable/temporal-server/common/headers"`)
@@ -126,7 +125,7 @@ func genAssignShard(m *protogen.Method) (string, error) {
 		return "", fmt.Errorf("random directive cannot be combined with namespace_id or business_id on %s", m.Desc.FullName())
 	}
 	if opts.Random {
-		return "shardID := int32(rand.Intn(int(c.numShards())) + 1)", nil
+		return "shardID := int32(rand.Intn(int(c.numShards)) + 1)", nil
 	}
 	if opts.BusinessId == "" {
 		return "", fmt.Errorf("business_id directive empty on %s", m.Desc.FullName())
@@ -149,7 +148,7 @@ func genAssignShard(m *protogen.Method) (string, error) {
 		return "", fmt.Errorf("unable to resolve business_id field path %q: %w", opts.BusinessId, err)
 	}
 
-	return fmt.Sprintf("shardID := common.WorkflowIDToHistoryShard(request%s, request%s, c.numShards())", namespaceIDFieldGetter, businessIDFieldGetter), nil
+	return fmt.Sprintf("shardID := common.WorkflowIDToHistoryShard(request%s, request%s, c.numShards)", namespaceIDFieldGetter, businessIDFieldGetter), nil
 }
 
 func goFieldPath(m *protogen.Method, path string) (string, error) {
@@ -185,7 +184,7 @@ func (p *Plugin) genClient(w *writer, svc *protogen.Service) error {
 	w.println("type %s struct {", structName)
 	w.indent()
 	w.println("metricsHandler metrics.Handler")
-	w.println("numShards      cluster.ShardCountFn")
+	w.println("numShards      int32")
 	w.println("redirector     history.Redirector[%sClient]", svc.GoName)
 	w.println("retryPolicy    backoff.RetryPolicy")
 	w.unindent()
@@ -199,7 +198,6 @@ func (p *Plugin) genClient(w *writer, svc *protogen.Service) error {
 	w.println("rpcFactory     common.RPCFactory,")
 	w.println("monitor        membership.Monitor,")
 	w.println("config         *config.Persistence,")
-	w.println("clusterMetadata cluster.Metadata,")
 	w.println("logger         log.Logger,")
 	w.println("metricsHandler metrics.Handler,")
 	w.unindent()
@@ -233,7 +231,7 @@ func (p *Plugin) genClient(w *writer, svc *protogen.Service) error {
 	w.indent() // start struct literal
 	w.println("metricsHandler: metricsHandler,")
 	w.println("redirector:     redirector,")
-	w.println("numShards:      cluster.CurrentShardCount(clusterMetadata, config.NumHistoryShards),")
+	w.println("numShards:      config.NumHistoryShards,")
 	w.println("retryPolicy:    common.CreateHistoryClientRetryPolicy(),")
 	w.unindent() // close struct literal
 	w.println("}, nil")

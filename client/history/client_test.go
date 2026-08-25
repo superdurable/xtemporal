@@ -2,7 +2,6 @@ package history_test
 
 import (
 	"context"
-	"github.com/superdurable/temporal-server/common/cluster"
 	"testing"
 	"time"
 
@@ -41,7 +40,7 @@ func TestErrLookup(t *testing.T) {
 		dynamicconfig.NewNoopCollection(),
 		serviceResolver,
 		log.NewTestLogger(),
-		cluster.StaticShardCount(1),
+		1,
 		nil,
 		time.Duration(0),
 	)
@@ -134,7 +133,7 @@ func TestShardAgnosticConnectionStrategy(t *testing.T) {
 				dynamicconfig.NewNoopCollection(),
 				serviceResolver,
 				log.NewTestLogger(),
-				cluster.StaticShardCount(2),
+				2,
 				rpcFactory,
 				time.Second,
 			)

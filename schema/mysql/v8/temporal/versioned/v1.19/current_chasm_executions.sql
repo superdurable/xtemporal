@@ -1,4 +1,5 @@
 CREATE TABLE current_chasm_executions(
+  shard_id INT NOT NULL,
   namespace_id BINARY(16) NOT NULL,
   business_id VARCHAR(255) NOT NULL,
   archetype_id INT UNSIGNED NOT NULL,
@@ -13,5 +14,5 @@ CREATE TABLE current_chasm_executions(
   -- `data` contains the ExecutionState (same as in `executions.state` above)
   data MEDIUMBLOB NULL,
   data_encoding VARCHAR(16) NOT NULL DEFAULT '',
-  PRIMARY KEY (namespace_id, business_id, archetype_id)
+  PRIMARY KEY (shard_id, namespace_id, business_id, archetype_id)
 );

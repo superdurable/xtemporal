@@ -9,7 +9,6 @@ import (
 	"github.com/superdurable/temporal-server/client/history"
 	"github.com/superdurable/temporal-server/common"
 	"github.com/superdurable/temporal-server/common/backoff"
-	"github.com/superdurable/temporal-server/common/cluster"
 	"github.com/superdurable/temporal-server/common/config"
 	"github.com/superdurable/temporal-server/common/dynamicconfig"
 	"github.com/superdurable/temporal-server/common/headers"
@@ -23,7 +22,7 @@ import (
 // TestServiceLayeredClient is a client for TestService.
 type TestServiceLayeredClient struct {
 	metricsHandler metrics.Handler
-	numShards      cluster.ShardCountFn
+	numShards      int32
 	redirector     history.Redirector[TestServiceClient]
 	retryPolicy    backoff.RetryPolicy
 }
@@ -34,7 +33,6 @@ func NewTestServiceLayeredClient(
 	rpcFactory common.RPCFactory,
 	monitor membership.Monitor,
 	config *config.Persistence,
-	clusterMetadata cluster.Metadata,
 	logger log.Logger,
 	metricsHandler metrics.Handler,
 ) (TestServiceClient, error) {
@@ -57,7 +55,7 @@ func NewTestServiceLayeredClient(
 	return &TestServiceLayeredClient{
 		metricsHandler: metricsHandler,
 		redirector:     redirector,
-		numShards:      cluster.CurrentShardCount(clusterMetadata, config.NumHistoryShards),
+		numShards:      config.NumHistoryShards,
 		retryPolicy:    common.CreateHistoryClientRetryPolicy(),
 	}, nil
 }
@@ -83,7 +81,7 @@ func (c *TestServiceLayeredClient) callTestNoRetry(
 		}
 		metrics.ClientLatency.With(metricsHandler).Record(time.Since(startTime))
 	}()
-	shardID := int32(rand.Intn(int(c.numShards())) + 1)
+	shardID := int32(rand.Intn(int(c.numShards)) + 1)
 	op := func(ctx context.Context, client TestServiceClient) error {
 		var err error
 		ctx, cancel := context.WithTimeout(ctx, history.DefaultTimeout)

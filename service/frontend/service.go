@@ -28,6 +28,7 @@ import (
 
 // Config represents configuration for frontend service
 type Config struct {
+	NumHistoryShards                     int32
 	PersistenceMaxQPS                    dynamicconfig.IntPropertyFn
 	PersistenceGlobalMaxQPS              dynamicconfig.IntPropertyFn
 	PersistenceNamespaceMaxQPS           dynamicconfig.IntPropertyFnWithNamespaceFilter
@@ -253,8 +254,10 @@ func (c *Config) IsExperimentAllowed(experiment string, namespace string) bool {
 // NewConfig returns new service config with default values
 func NewConfig(
 	dc *dynamicconfig.Collection,
+	numHistoryShards int32,
 ) *Config {
 	return &Config{
+		NumHistoryShards:                     numHistoryShards,
 		PersistenceMaxQPS:                    dynamicconfig.FrontendPersistenceMaxQPS.Get(dc),
 		PersistenceGlobalMaxQPS:              dynamicconfig.FrontendPersistenceGlobalMaxQPS.Get(dc),
 		PersistenceNamespaceMaxQPS:           dynamicconfig.FrontendPersistenceNamespaceMaxQPS.Get(dc),

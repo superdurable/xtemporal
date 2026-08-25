@@ -10,7 +10,6 @@ import (
 	"github.com/superdurable/temporal-server/api/matchingservice/v1"
 	"github.com/superdurable/temporal-server/common"
 	"github.com/superdurable/temporal-server/common/backoff"
-	"github.com/superdurable/temporal-server/common/cluster"
 	"github.com/superdurable/temporal-server/common/config"
 	"github.com/superdurable/temporal-server/common/dynamicconfig"
 	"github.com/superdurable/temporal-server/common/headers"
@@ -78,7 +77,6 @@ type (
 	// passed around within the scanner workflows / activities
 	scannerContext struct {
 		cfg                *Config
-		shardCount         cluster.ShardCountFn
 		logger             log.Logger
 		sdkClientFactory   sdk.ClientFactory
 		metricsHandler     metrics.Handler
@@ -113,7 +111,6 @@ type (
 func New(
 	logger log.Logger,
 	cfg *Config,
-	shardCount cluster.ShardCountFn,
 	sdkClientFactory sdk.ClientFactory,
 	metricsHandler metrics.Handler,
 	executionManager persistence.ExecutionManager,
@@ -131,7 +128,6 @@ func New(
 	return &Scanner{
 		context: scannerContext{
 			cfg:                cfg,
-			shardCount:         shardCount,
 			sdkClientFactory:   sdkClientFactory,
 			logger:             logger,
 			metricsHandler:     metricsHandler,

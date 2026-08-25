@@ -849,7 +849,7 @@ func (p *clientFactoryProvider) NewFactory(
 	metricsHandler metrics.Handler,
 	dc *dynamicconfig.Collection,
 	testHooks testhooks.TestHooks,
-	shardCount cluster.ShardCountFn,
+	numberOfHistoryShards int32,
 	logger log.Logger,
 	throttledLogger log.Logger,
 ) client.Factory {
@@ -859,7 +859,7 @@ func (p *clientFactoryProvider) NewFactory(
 		metricsHandler,
 		dc,
 		testHooks,
-		shardCount,
+		numberOfHistoryShards,
 		logger,
 		throttledLogger,
 	)

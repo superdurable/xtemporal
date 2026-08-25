@@ -59,13 +59,14 @@ func (s *historyExecutionSuite) TearDownTest() {
 }
 
 func (s *historyExecutionSuite) TestInsert_Success() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	nextEventID := rand.Int63()
 	lastWriteVersion := rand.Int63()
 
-	execution := s.newRandomExecutionRow(namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
+	execution := s.newRandomExecutionRow(shardID, namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
 	result, err := s.store.InsertIntoExecutions(newExecutionContext(), &execution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -74,32 +75,34 @@ func (s *historyExecutionSuite) TestInsert_Success() {
 }
 
 func (s *historyExecutionSuite) TestInsert_Fail_Duplicate() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	nextEventID := rand.Int63()
 	lastWriteVersion := rand.Int63()
 
-	execution := s.newRandomExecutionRow(namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
+	execution := s.newRandomExecutionRow(shardID, namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
 	result, err := s.store.InsertIntoExecutions(newExecutionContext(), &execution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
 	s.NoError(err)
 	s.Equal(1, int(rowsAffected))
 
-	execution = s.newRandomExecutionRow(namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
+	execution = s.newRandomExecutionRow(shardID, namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
 	_, err = s.store.InsertIntoExecutions(newExecutionContext(), &execution)
 	s.Error(err) // TODO persistence layer should do proper error translation
 }
 
 func (s *historyExecutionSuite) TestInsertSelect() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	nextEventID := rand.Int63()
 	lastWriteVersion := rand.Int63()
 
-	execution := s.newRandomExecutionRow(namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
+	execution := s.newRandomExecutionRow(shardID, namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
 	result, err := s.store.InsertIntoExecutions(newExecutionContext(), &execution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -107,6 +110,7 @@ func (s *historyExecutionSuite) TestInsertSelect() {
 	s.Equal(1, int(rowsAffected))
 
 	filter := sqlplugin.ExecutionsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -117,20 +121,21 @@ func (s *historyExecutionSuite) TestInsertSelect() {
 }
 
 func (s *historyExecutionSuite) TestInsertUpdate_Success() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	nextEventID := rand.Int63()
 	lastWriteVersion := rand.Int63()
 
-	execution := s.newRandomExecutionRow(namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
+	execution := s.newRandomExecutionRow(shardID, namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
 	result, err := s.store.InsertIntoExecutions(newExecutionContext(), &execution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
 	s.NoError(err)
 	s.Equal(1, int(rowsAffected))
 
-	execution = s.newRandomExecutionRow(namespaceID, workflowID, runID, rand.Int63(), rand.Int63())
+	execution = s.newRandomExecutionRow(shardID, namespaceID, workflowID, runID, rand.Int63(), rand.Int63())
 	result, err = s.store.UpdateExecutions(newExecutionContext(), &execution)
 	s.NoError(err)
 	rowsAffected, err = result.RowsAffected()
@@ -139,13 +144,14 @@ func (s *historyExecutionSuite) TestInsertUpdate_Success() {
 }
 
 func (s *historyExecutionSuite) TestUpdate_Fail() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	nextEventID := rand.Int63()
 	lastWriteVersion := rand.Int63()
 
-	execution := s.newRandomExecutionRow(namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
+	execution := s.newRandomExecutionRow(shardID, namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
 	result, err := s.store.UpdateExecutions(newExecutionContext(), &execution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -154,20 +160,21 @@ func (s *historyExecutionSuite) TestUpdate_Fail() {
 }
 
 func (s *historyExecutionSuite) TestInsertUpdateSelect() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	nextEventID := rand.Int63()
 	lastWriteVersion := rand.Int63()
 
-	execution := s.newRandomExecutionRow(namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
+	execution := s.newRandomExecutionRow(shardID, namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
 	result, err := s.store.InsertIntoExecutions(newExecutionContext(), &execution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
 	s.NoError(err)
 	s.Equal(1, int(rowsAffected))
 
-	execution = s.newRandomExecutionRow(namespaceID, workflowID, runID, rand.Int63(), rand.Int63())
+	execution = s.newRandomExecutionRow(shardID, namespaceID, workflowID, runID, rand.Int63(), rand.Int63())
 	result, err = s.store.UpdateExecutions(newExecutionContext(), &execution)
 	s.NoError(err)
 	rowsAffected, err = result.RowsAffected()
@@ -175,6 +182,7 @@ func (s *historyExecutionSuite) TestInsertUpdateSelect() {
 	s.Equal(1, int(rowsAffected))
 
 	filter := sqlplugin.ExecutionsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -185,11 +193,13 @@ func (s *historyExecutionSuite) TestInsertUpdateSelect() {
 }
 
 func (s *historyExecutionSuite) TestDeleteSelect() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
 	filter := sqlplugin.ExecutionsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -205,13 +215,14 @@ func (s *historyExecutionSuite) TestDeleteSelect() {
 }
 
 func (s *historyExecutionSuite) TestInsertDeleteSelect() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	nextEventID := rand.Int63()
 	lastWriteVersion := rand.Int63()
 
-	execution := s.newRandomExecutionRow(namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
+	execution := s.newRandomExecutionRow(shardID, namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
 	result, err := s.store.InsertIntoExecutions(newExecutionContext(), &execution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -219,6 +230,7 @@ func (s *historyExecutionSuite) TestInsertDeleteSelect() {
 	s.Equal(1, int(rowsAffected))
 
 	filter := sqlplugin.ExecutionsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -233,14 +245,60 @@ func (s *historyExecutionSuite) TestInsertDeleteSelect() {
 	s.Error(err) // TODO persistence layer should do proper error translation
 }
 
+func (s *historyExecutionSuite) TestAccessAfterShardCountChange() {
+	shardID := rand.Int31() / 2
+	namespaceID := primitives.NewUUID()
+	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
+	runID := primitives.NewUUID()
+
+	execution := s.newRandomExecutionRow(shardID, namespaceID, workflowID, runID, rand.Int63(), rand.Int63())
+	_, err := s.store.InsertIntoExecutions(newExecutionContext(), &execution)
+	s.NoError(err)
+
+	filter := sqlplugin.ExecutionsFilter{
+		ShardID:     shardID + 1,
+		NamespaceID: namespaceID,
+		WorkflowID:  workflowID,
+		RunID:       runID,
+	}
+	row, err := s.store.SelectFromExecutions(newExecutionContext(), filter)
+	s.NoError(err)
+	s.Equal(&execution, row)
+
+	updated := s.newRandomExecutionRow(filter.ShardID, namespaceID, workflowID, runID, rand.Int63(), rand.Int63())
+	result, err := s.store.UpdateExecutions(newExecutionContext(), &updated)
+	s.NoError(err)
+	rowsAffected, err := result.RowsAffected()
+	s.NoError(err)
+	s.Equal(1, int(rowsAffected))
+
+	expected := updated
+	expected.ShardID = shardID
+	row, err = s.store.SelectFromExecutions(newExecutionContext(), filter)
+	s.NoError(err)
+	s.Equal(&expected, row)
+
+	duplicate := execution
+	duplicate.ShardID = filter.ShardID
+	_, err = s.store.InsertIntoExecutions(newExecutionContext(), &duplicate)
+	s.Error(err)
+
+	result, err = s.store.DeleteFromExecutions(newExecutionContext(), filter)
+	s.NoError(err)
+	rowsAffected, err = result.RowsAffected()
+	s.NoError(err)
+	s.Equal(1, int(rowsAffected))
+}
+
 func (s *historyExecutionSuite) TestReadLock() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	nextEventID := rand.Int63()
 	lastWriteVersion := rand.Int63()
 
-	execution := s.newRandomExecutionRow(namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
+	execution := s.newRandomExecutionRow(shardID, namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
 	result, err := s.store.InsertIntoExecutions(newExecutionContext(), &execution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -250,6 +308,7 @@ func (s *historyExecutionSuite) TestReadLock() {
 	tx, err := s.store.BeginTx(newExecutionContext())
 	s.NoError(err)
 	filter := sqlplugin.ExecutionsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -262,13 +321,14 @@ func (s *historyExecutionSuite) TestReadLock() {
 }
 
 func (s *historyExecutionSuite) TestWriteLock() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	nextEventID := rand.Int63()
 	lastWriteVersion := rand.Int63()
 
-	execution := s.newRandomExecutionRow(namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
+	execution := s.newRandomExecutionRow(shardID, namespaceID, workflowID, runID, nextEventID, lastWriteVersion)
 	result, err := s.store.InsertIntoExecutions(newExecutionContext(), &execution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -278,6 +338,7 @@ func (s *historyExecutionSuite) TestWriteLock() {
 	tx, err := s.store.BeginTx(newExecutionContext())
 	s.NoError(err)
 	filter := sqlplugin.ExecutionsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -290,6 +351,7 @@ func (s *historyExecutionSuite) TestWriteLock() {
 }
 
 func (s *historyExecutionSuite) newRandomExecutionRow(
+	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
@@ -297,6 +359,7 @@ func (s *historyExecutionSuite) newRandomExecutionRow(
 	lastWriteVersion int64,
 ) sqlplugin.ExecutionsRow {
 	return sqlplugin.ExecutionsRow{
+		ShardID:          shardID,
 		NamespaceID:      namespaceID,
 		WorkflowID:       workflowID,
 		RunID:            runID,

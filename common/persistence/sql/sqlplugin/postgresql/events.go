@@ -10,22 +10,22 @@ import (
 const (
 	// below are templates for history_node table
 	addHistoryNodesQuery = `INSERT INTO history_node (` +
-		`tree_id, branch_id, node_id, prev_txn_id, txn_id, data, data_encoding) ` +
-		`VALUES (:tree_id, :branch_id, :node_id, :prev_txn_id, :txn_id, :data, :data_encoding) ` +
+		`shard_id, tree_id, branch_id, node_id, prev_txn_id, txn_id, data, data_encoding) ` +
+		`VALUES (:shard_id, :tree_id, :branch_id, :node_id, :prev_txn_id, :txn_id, :data, :data_encoding) ` +
 		`ON CONFLICT (tree_id, branch_id, node_id, txn_id) DO ` +
 		`UPDATE SET prev_txn_id=:prev_txn_id, data=:data, data_encoding=:data_encoding `
 
-	getHistoryNodesQuery = `SELECT node_id, prev_txn_id, txn_id, data, data_encoding FROM history_node ` +
+	getHistoryNodesQuery = `SELECT shard_id, node_id, prev_txn_id, txn_id, data, data_encoding FROM history_node ` +
 		`WHERE tree_id = $1 AND branch_id = $2 AND ((node_id = $3 AND txn_id > $4) OR node_id > $5) AND node_id < $6 ` +
-		`ORDER BY tree_id, branch_id, node_id, txn_id LIMIT $7 `
+		`ORDER BY node_id, txn_id LIMIT $7 `
 
-	getHistoryNodesReverseQuery = `SELECT node_id, prev_txn_id, txn_id, data, data_encoding FROM history_node ` +
+	getHistoryNodesReverseQuery = `SELECT shard_id, node_id, prev_txn_id, txn_id, data, data_encoding FROM history_node ` +
 		`WHERE tree_id = $1 AND branch_id = $2 AND node_id >= $3 AND ((node_id = $4 AND txn_id < $5) OR node_id < $6) ` +
-		`ORDER BY tree_id, branch_id DESC, node_id DESC, txn_id DESC LIMIT $7 `
+		`ORDER BY node_id DESC, txn_id DESC LIMIT $7 `
 
-	getHistoryNodeMetadataQuery = `SELECT node_id, prev_txn_id, txn_id FROM history_node ` +
+	getHistoryNodeMetadataQuery = `SELECT shard_id, node_id, prev_txn_id, txn_id FROM history_node ` +
 		`WHERE tree_id = $1 AND branch_id = $2 AND ((node_id = $3 AND txn_id > $4) OR node_id > $5) AND node_id < $6 ` +
-		`ORDER BY tree_id, branch_id, node_id, txn_id LIMIT $7 `
+		`ORDER BY node_id, txn_id LIMIT $7 `
 
 	deleteHistoryNodeQuery = `DELETE FROM history_node WHERE tree_id = $1 AND branch_id = $2 AND node_id = $3 AND txn_id = $4 `
 
@@ -33,18 +33,18 @@ const (
 
 	// below are templates for history_tree table
 	addHistoryTreeQuery = `INSERT INTO history_tree (` +
-		`tree_id, branch_id, data, data_encoding) ` +
-		`VALUES (:tree_id, :branch_id, :data, :data_encoding) ` +
+		`shard_id, tree_id, branch_id, data, data_encoding) ` +
+		`VALUES (:shard_id, :tree_id, :branch_id, :data, :data_encoding) ` +
 		`ON CONFLICT (tree_id, branch_id) DO UPDATE ` +
 		`SET data = excluded.data, data_encoding = excluded.data_encoding`
 
-	getHistoryTreeQuery = `SELECT branch_id, data, data_encoding FROM history_tree WHERE tree_id = $1 `
+	getHistoryTreeQuery = `SELECT shard_id, branch_id, data, data_encoding FROM history_tree WHERE tree_id = $1 `
 
-	paginateBranchesQuery = `SELECT tree_id, branch_id, data, data_encoding
+	paginateBranchesQuery = `SELECT shard_id, tree_id, branch_id, data, data_encoding
         FROM history_tree
-        WHERE (tree_id, branch_id) > ($1, $2)
-        ORDER BY tree_id, branch_id
-        LIMIT $3`
+        WHERE (shard_id, tree_id, branch_id) > ($1, $2, $3)
+        ORDER BY shard_id, tree_id, branch_id
+        LIMIT $4`
 
 	deleteHistoryTreeQuery = `DELETE FROM history_tree WHERE tree_id = $1 AND branch_id = $2 `
 )
@@ -179,6 +179,7 @@ func (pdb *db) PaginateBranchesFromHistoryTree(
 	err := pdb.SelectContext(ctx,
 		&rows,
 		paginateBranchesQuery,
+		page.ShardID,
 		page.TreeID,
 		page.BranchID,
 		page.Limit,

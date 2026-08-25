@@ -95,7 +95,7 @@ func Invoke(
 	shardID := common.WorkflowIDToHistoryShard(
 		ns.ID().String(),
 		execution.GetWorkflowId(),
-		shardContext.GetConfig().NumberOfShards(),
+		shardContext.GetConfig().NumberOfShards,
 	)
 	rawHistoryResponse, err := shardContext.GetExecutionManager().ReadRawHistoryBranch(ctx, &persistence.ReadHistoryBranchRequest{
 		BranchToken: targetVersionHistory.GetBranchToken(),

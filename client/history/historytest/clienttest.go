@@ -15,7 +15,6 @@ import (
 	"github.com/superdurable/temporal-server/api/historyservice/v1"
 	"github.com/superdurable/temporal-server/chasm"
 	"github.com/superdurable/temporal-server/client/history"
-	"github.com/superdurable/temporal-server/common/cluster"
 	"github.com/superdurable/temporal-server/common/dynamicconfig"
 	"github.com/superdurable/temporal-server/common/log"
 	"github.com/superdurable/temporal-server/common/membership"
@@ -165,7 +164,7 @@ func createClient(ctrl *gomock.Controller, listener *nettest.PipeListener) histo
 		dynamicconfig.NewNoopCollection(),
 		serviceResolver,
 		log.NewTestLogger(),
-		cluster.StaticShardCount(1),
+		1,
 		rpcFactory,
 		time.Second,
 	)

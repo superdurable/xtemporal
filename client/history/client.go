@@ -12,7 +12,6 @@ import (
 	"github.com/superdurable/temporal-server/api/historyservice/v1"
 	replicationspb "github.com/superdurable/temporal-server/api/replication/v1"
 	"github.com/superdurable/temporal-server/common"
-	"github.com/superdurable/temporal-server/common/cluster"
 	"github.com/superdurable/temporal-server/common/debug"
 	"github.com/superdurable/temporal-server/common/dynamicconfig"
 	"github.com/superdurable/temporal-server/common/headers"
@@ -37,7 +36,7 @@ const (
 type clientImpl struct {
 	connections     connectionPool[historyservice.HistoryServiceClient]
 	logger          log.Logger
-	numberOfShards  cluster.ShardCountFn
+	numberOfShards  int32
 	redirector      Redirector[historyservice.HistoryServiceClient]
 	timeout         time.Duration
 	tokenSerializer *tasktoken.Serializer
@@ -48,7 +47,7 @@ func NewClient(
 	dc *dynamicconfig.Collection,
 	historyServiceResolver membership.ServiceResolver,
 	logger log.Logger,
-	numberOfShards cluster.ShardCountFn,
+	numberOfShards int32,
 	rpcFactory RPCFactory,
 	timeout time.Duration,
 ) historyservice.HistoryServiceClient {
@@ -283,7 +282,7 @@ func (c *clientImpl) StreamWorkflowReplicationMessages(
 // getRandomShard returns a random shard ID for history APIs that are shard-agnostic (e.g. namespace or DLQ v2 APIs).
 func (c *clientImpl) getRandomShard() int32 {
 	// Add 1 at the end because shard IDs are 1-indexed.
-	return int32(rand.Intn(int(c.numberOfShards())) + 1)
+	return int32(rand.Intn(int(c.numberOfShards)) + 1)
 }
 
 func (c *clientImpl) createContext(parent context.Context) (context.Context, context.CancelFunc) {
@@ -291,7 +290,7 @@ func (c *clientImpl) createContext(parent context.Context) (context.Context, con
 }
 
 func (c *clientImpl) shardIDFromWorkflowID(namespaceID, workflowID string) int32 {
-	return common.WorkflowIDToHistoryShard(namespaceID, workflowID, c.numberOfShards())
+	return common.WorkflowIDToHistoryShard(namespaceID, workflowID, c.numberOfShards)
 }
 
 func checkShardID(shardID int32) error {

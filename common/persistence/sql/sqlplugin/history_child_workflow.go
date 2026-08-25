@@ -10,6 +10,7 @@ import (
 type (
 	// ChildExecutionInfoMapsRow represents a row in child_execution_info_maps table
 	ChildExecutionInfoMapsRow struct {
+		ShardID      int32
 		NamespaceID  primitives.UUID
 		WorkflowID   string
 		RunID        primitives.UUID
@@ -19,6 +20,7 @@ type (
 	}
 
 	ChildExecutionInfoMapsFilter struct {
+		ShardID      int32
 		NamespaceID  primitives.UUID
 		WorkflowID   string
 		RunID        primitives.UUID
@@ -26,6 +28,7 @@ type (
 	}
 
 	ChildExecutionInfoMapsAllFilter struct {
+		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID

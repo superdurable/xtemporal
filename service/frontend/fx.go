@@ -321,8 +321,12 @@ func GrpcServerOptionsProvider(
 
 func ConfigProvider(
 	dc *dynamicconfig.Collection,
+	persistenceConfig config.Persistence,
 ) *Config {
-	return NewConfig(dc)
+	return NewConfig(
+		dc,
+		persistenceConfig.NumHistoryShards,
+	)
 }
 
 func ThrottledLoggerRpsFnProvider(serviceConfig *Config) resource.ThrottledLoggerRpsFn {
@@ -761,7 +765,6 @@ func OperatorHandlerProvider(
 	historyClient resource.HistoryClient,
 	clusterMetadataManager persistence.ClusterMetadataManager,
 	clusterMetadata cluster.Metadata,
-	persistenceConfig config.Persistence,
 	clientFactory client.Factory,
 	namespaceRegistry namespace.Registry,
 	nexusEndpointClient *NexusEndpointClient,
@@ -777,7 +780,6 @@ func OperatorHandlerProvider(
 		historyClient,
 		clusterMetadataManager,
 		clusterMetadata,
-		cluster.CurrentShardCount(clusterMetadata, persistenceConfig.NumHistoryShards),
 		clientFactory,
 		namespaceRegistry,
 		nexusEndpointClient,

@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -54,10 +55,11 @@ func (s *historyTreeSuite) TearDownTest() {
 }
 
 func (s *historyTreeSuite) TestInsert_Success() {
+	shardID := rand.Int31()
 	treeID := primitives.NewUUID()
 	branchID := primitives.NewUUID()
 
-	node := s.newRandomTreeRow(treeID, branchID)
+	node := s.newRandomTreeRow(shardID, treeID, branchID)
 	result, err := s.store.InsertIntoHistoryTree(newExecutionContext(), &node)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -66,17 +68,18 @@ func (s *historyTreeSuite) TestInsert_Success() {
 }
 
 func (s *historyTreeSuite) TestInsert_Duplicate_Success() {
+	shardID := rand.Int31()
 	treeID := primitives.NewUUID()
 	branchID := primitives.NewUUID()
 
-	node := s.newRandomTreeRow(treeID, branchID)
+	node := s.newRandomTreeRow(shardID, treeID, branchID)
 	result, err := s.store.InsertIntoHistoryTree(newExecutionContext(), &node)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
 	s.NoError(err)
 	s.Equal(1, int(rowsAffected))
 
-	node = s.newRandomTreeRow(treeID, branchID)
+	node = s.newRandomTreeRow(shardID, treeID, branchID)
 	result, err = s.store.InsertIntoHistoryTree(newExecutionContext(), &node)
 	s.NoError(err)
 	_, err = result.RowsAffected()
@@ -86,10 +89,11 @@ func (s *historyTreeSuite) TestInsert_Duplicate_Success() {
 }
 
 func (s *historyTreeSuite) TestInsertSelect() {
+	shardID := rand.Int31()
 	treeID := primitives.NewUUID()
 	branchID := primitives.NewUUID()
 
-	tree := s.newRandomTreeRow(treeID, branchID)
+	tree := s.newRandomTreeRow(shardID, treeID, branchID)
 	result, err := s.store.InsertIntoHistoryTree(newExecutionContext(), &tree)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -97,21 +101,53 @@ func (s *historyTreeSuite) TestInsertSelect() {
 	s.Equal(1, int(rowsAffected))
 
 	selectFilter := sqlplugin.HistoryTreeSelectFilter{
-		TreeID: treeID,
+		ShardID: shardID,
+		TreeID:  treeID,
 	}
 	rows, err := s.store.SelectFromHistoryTree(newExecutionContext(), selectFilter)
 	s.NoError(err)
 	for index := range rows {
+		rows[index].ShardID = shardID
 		rows[index].TreeID = treeID
 	}
 	s.Equal([]sqlplugin.HistoryTreeRow{tree}, rows)
 }
 
+func (s *historyTreeSuite) TestAccessAfterShardCountChange() {
+	shardID := rand.Int31() / 2
+	treeID := primitives.NewUUID()
+	branchID := primitives.NewUUID()
+	tree := s.newRandomTreeRow(shardID, treeID, branchID)
+
+	_, err := s.store.InsertIntoHistoryTree(newExecutionContext(), &tree)
+	s.NoError(err)
+
+	filter := sqlplugin.HistoryTreeSelectFilter{ShardID: shardID + 1, TreeID: treeID}
+	rows, err := s.store.SelectFromHistoryTree(newExecutionContext(), filter)
+	s.NoError(err)
+	for i := range rows {
+		rows[i].TreeID = treeID
+	}
+	s.Equal([]sqlplugin.HistoryTreeRow{tree}, rows)
+
+	result, err := s.store.DeleteFromHistoryTree(newExecutionContext(), sqlplugin.HistoryTreeDeleteFilter{
+		ShardID:  filter.ShardID,
+		TreeID:   treeID,
+		BranchID: branchID,
+	})
+	s.NoError(err)
+	rowsAffected, err := result.RowsAffected()
+	s.NoError(err)
+	s.Equal(1, int(rowsAffected))
+}
+
 func (s *historyTreeSuite) TestDeleteSelect() {
+	shardID := rand.Int31()
 	treeID := primitives.NewUUID()
 	branchID := primitives.NewUUID()
 
 	deleteFilter := sqlplugin.HistoryTreeDeleteFilter{
+		ShardID:  shardID,
 		TreeID:   treeID,
 		BranchID: branchID,
 	}
@@ -122,21 +158,24 @@ func (s *historyTreeSuite) TestDeleteSelect() {
 	s.Equal(0, int(rowsAffected))
 
 	selectFilter := sqlplugin.HistoryTreeSelectFilter{
-		TreeID: treeID,
+		ShardID: shardID,
+		TreeID:  treeID,
 	}
 	rows, err := s.store.SelectFromHistoryTree(newExecutionContext(), selectFilter)
 	s.NoError(err)
 	for index := range rows {
+		rows[index].ShardID = shardID
 		rows[index].TreeID = treeID
 	}
 	s.Equal([]sqlplugin.HistoryTreeRow(nil), rows)
 }
 
 func (s *historyTreeSuite) TestInsertDeleteSelect() {
+	shardID := rand.Int31()
 	treeID := primitives.NewUUID()
 	branchID := primitives.NewUUID()
 
-	tree := s.newRandomTreeRow(treeID, branchID)
+	tree := s.newRandomTreeRow(shardID, treeID, branchID)
 	result, err := s.store.InsertIntoHistoryTree(newExecutionContext(), &tree)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -144,6 +183,7 @@ func (s *historyTreeSuite) TestInsertDeleteSelect() {
 	s.Equal(1, int(rowsAffected))
 
 	deleteFilter := sqlplugin.HistoryTreeDeleteFilter{
+		ShardID:  shardID,
 		TreeID:   treeID,
 		BranchID: branchID,
 	}
@@ -154,21 +194,25 @@ func (s *historyTreeSuite) TestInsertDeleteSelect() {
 	s.Equal(1, int(rowsAffected))
 
 	selectFilter := sqlplugin.HistoryTreeSelectFilter{
-		TreeID: treeID,
+		ShardID: shardID,
+		TreeID:  treeID,
 	}
 	rows, err := s.store.SelectFromHistoryTree(newExecutionContext(), selectFilter)
 	s.NoError(err)
 	for index := range rows {
+		rows[index].ShardID = shardID
 		rows[index].TreeID = treeID
 	}
 	s.Equal([]sqlplugin.HistoryTreeRow(nil), rows)
 }
 
 func (s *historyTreeSuite) newRandomTreeRow(
+	shardID int32,
 	treeID primitives.UUID,
 	branchID primitives.UUID,
 ) sqlplugin.HistoryTreeRow {
 	return sqlplugin.HistoryTreeRow{
+		ShardID:      shardID,
 		TreeID:       treeID,
 		BranchID:     branchID,
 		Data:         shuffle.Bytes(testHistoryTreeData),

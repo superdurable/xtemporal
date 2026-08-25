@@ -26,12 +26,11 @@ run_id = $3`
 	// %[4]v should be the name of the key associated with the map
 	// e.g. for ActivityInfo it is "schedule_id"
 	setKeyInMapQueryTemplate = `INSERT INTO %[1]v
-(namespace_id, workflow_id, run_id, %[4]v, %[2]v)
+(shard_id, namespace_id, workflow_id, run_id, %[4]v, %[2]v)
 VALUES
-(:namespace_id, :workflow_id, :run_id, :%[4]v, %[3]v)
+(:shard_id, :namespace_id, :workflow_id, :run_id, :%[4]v, %[3]v)
 ON CONFLICT (namespace_id, workflow_id, run_id, %[4]v) DO UPDATE
-	SET (namespace_id, workflow_id, run_id, %[4]v, %[2]v)
-  	  = (excluded.namespace_id, excluded.workflow_id, excluded.run_id, excluded.%[4]v, %[5]v)`
+	SET (%[2]v) = (%[5]v)`
 
 	// %[2]v is the name of the key
 	// NOTE: sqlx only support ? when doing `sqlx.In` expanding query
@@ -45,7 +44,7 @@ run_id = ? AND
 	// %[1]v is the name of the table
 	// %[2]v is the name of the key
 	// %[3]v is the value columns, separated by commas
-	getMapQueryTemplate = `SELECT %[2]v, %[3]v FROM %[1]v
+	getMapQueryTemplate = `SELECT shard_id, %[2]v, %[3]v FROM %[1]v
 WHERE
 namespace_id = $1 AND
 workflow_id = $2 AND
@@ -61,8 +60,8 @@ run_id = $3
 `
 
 	createSignalsRequestedSetQuery = `INSERT INTO signals_requested_sets
-(namespace_id, workflow_id, run_id, signal_id) VALUES
-(:namespace_id, :workflow_id, :run_id, :signal_id)
+(shard_id, namespace_id, workflow_id, run_id, signal_id) VALUES
+(:shard_id, :namespace_id, :workflow_id, :run_id, :signal_id)
 ON CONFLICT (namespace_id, workflow_id, run_id, signal_id) DO NOTHING`
 
 	// NOTE: sqlx only support ? when doing `sqlx.In` expanding query
@@ -73,7 +72,7 @@ workflow_id = ? AND
 run_id = ? AND
 signal_id IN ( ? )`
 
-	getSignalsRequestedSetQuery = `SELECT signal_id FROM signals_requested_sets WHERE
+	getSignalsRequestedSetQuery = `SELECT shard_id, signal_id FROM signals_requested_sets WHERE
 namespace_id = $1 AND
 workflow_id = $2 AND
 run_id = $3`
@@ -118,7 +117,7 @@ func makeGetMapQryTemplate(tableName string, nonPrimaryKeyColumns []string, mapK
 }
 
 var (
-	// Omit run_id, namespace_id, workflow_id, schedule_id since they're in the primary key
+	// Omit shard_id, run_id, namespace_id, workflow_id, schedule_id since they're in the primary key
 	activityInfoColumns = []string{
 		"data",
 		"data_encoding",

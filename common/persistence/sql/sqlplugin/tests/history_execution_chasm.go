@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"math/rand/v2"
 	"strings"
 	"testing"
 
@@ -94,6 +95,7 @@ func (s *historyExecutionChasmSuite) runTestCase(tc *testCase) {
 
 func newChasmNodeMapsAllFilter() sqlplugin.ChasmNodeMapsAllFilter {
 	return sqlplugin.ChasmNodeMapsAllFilter{
+		ShardID:     rand.Int32(),
 		NamespaceID: primitives.NewUUID(),
 		WorkflowID:  primitives.NewUUID().String(),
 		RunID:       primitives.NewUUID(),
@@ -102,6 +104,7 @@ func newChasmNodeMapsAllFilter() sqlplugin.ChasmNodeMapsAllFilter {
 
 func newChasmRowFromFilter(filter sqlplugin.ChasmNodeMapsAllFilter) sqlplugin.ChasmNodeMapsRow {
 	return sqlplugin.ChasmNodeMapsRow{
+		ShardID:          filter.ShardID,
 		NamespaceID:      filter.NamespaceID,
 		WorkflowID:       filter.WorkflowID,
 		RunID:            filter.RunID,
@@ -177,6 +180,7 @@ func (s *historyExecutionChasmSuite) TestDelete() {
 	tc := &testCase{
 		InsertRows: initialRows,
 		DeleteRows: &sqlplugin.ChasmNodeMapsFilter{
+			ShardID:     filter.ShardID,
 			NamespaceID: filter.NamespaceID,
 			WorkflowID:  filter.WorkflowID,
 			RunID:       filter.RunID,
@@ -236,6 +240,7 @@ func (s *historyExecutionChasmSuite) TestInsertReplaceDelete() {
 		InsertRows:  initialRows,
 		ReplaceRows: updatedRows,
 		DeleteRows: &sqlplugin.ChasmNodeMapsFilter{
+			ShardID:     filter.ShardID,
 			NamespaceID: filter.NamespaceID,
 			WorkflowID:  filter.WorkflowID,
 			RunID:       filter.RunID,

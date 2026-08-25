@@ -88,7 +88,7 @@ type (
 		status int32
 
 		logger                     log.Logger
-		shardCount                 cluster.ShardCountFn
+		numberOfHistoryShards      int32
 		config                     *Config
 		namespaceDLQHandler        nsreplication.DLQMessageHandler
 		eventSerializer            serialization.Serializer
@@ -184,7 +184,7 @@ func NewAdminHandler(
 	return &AdminHandler{
 		logger:                     args.Logger,
 		status:                     common.DaemonStatusInitialized,
-		shardCount:                 cluster.CurrentShardCount(args.ClusterMetadata, args.PersistenceConfig.NumHistoryShards),
+		numberOfHistoryShards:      args.PersistenceConfig.NumHistoryShards,
 		config:                     args.Config,
 		namespaceDLQHandler:        namespaceDLQHandler,
 		eventSerializer:            args.EventSerializer,
@@ -788,7 +788,7 @@ func (adh *AdminHandler) DescribeMutableState(ctx context.Context, request *admi
 		return nil, err
 	}
 
-	shardID := common.WorkflowIDToHistoryShard(namespaceID.String(), request.Execution.WorkflowId, adh.shardCount())
+	shardID := common.WorkflowIDToHistoryShard(namespaceID.String(), request.Execution.WorkflowId, adh.numberOfHistoryShards)
 	shardIDStr := convert.Int32ToString(shardID)
 
 	resolver, err := adh.membershipMonitor.GetResolver(primitives.HistoryService)
@@ -1876,10 +1876,10 @@ func (adh *AdminHandler) validateRemoteClusterMetadata(metadata *adminservice.De
 		// failover version increment is mismatch with current cluster config
 		return serviceerror.NewInvalidArgument("Cannot add remote cluster due to failover version increment mismatch")
 	}
-	if metadata.GetHistoryShardCount() != adh.shardCount() {
+	if metadata.GetHistoryShardCount() != adh.config.NumHistoryShards {
 		remoteShardCount := metadata.GetHistoryShardCount()
 		large := remoteShardCount
-		small := adh.shardCount()
+		small := adh.config.NumHistoryShards
 		if large < small {
 			small, large = large, small
 		}

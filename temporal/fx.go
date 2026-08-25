@@ -16,7 +16,6 @@ import (
 	chasmscheduler "github.com/superdurable/temporal-server/chasm/lib/scheduler"
 	chasmworkflow "github.com/superdurable/temporal-server/chasm/lib/workflow"
 	"github.com/superdurable/temporal-server/client"
-	"github.com/superdurable/temporal-server/common"
 	"github.com/superdurable/temporal-server/common/archiver"
 	"github.com/superdurable/temporal-server/common/archiver/provider"
 	"github.com/superdurable/temporal-server/common/authorization"
@@ -694,7 +693,6 @@ func ApplyClusterMetadataConfigProvider(
 			svc,
 			indexSearchAttributes,
 			resp,
-			logger,
 		); updateErr != nil {
 			return svc.ClusterMetadata, svc.Persistence, updateErr
 		}
@@ -781,7 +779,6 @@ func updateCurrentClusterMetadataRecord(
 	svc *config.Config,
 	initialIndexSearchAttributes map[string]*persistencespb.IndexSearchAttributes,
 	currentClusterDBRecord *persistence.GetClusterMetadataResponse,
-	logger log.Logger,
 ) error {
 	updateDBRecord := false
 	currentClusterMetadata := svc.ClusterMetadata
@@ -806,30 +803,14 @@ func updateCurrentClusterMetadataRecord(
 		currentClusterDBRecord.Tags = svc.ClusterMetadata.Tags
 		updateDBRecord = true
 	}
-
-	// Raising numHistoryShards and rolling the cluster is how it resizes. Only a
-	// power-of-two multiple is accepted, which is what keeps a workflow's new
-	// shard derived from its old one; hosts still running the old count during
-	// the roll therefore stay correct.
-	persistedShardCount := currentClusterDBRecord.HistoryShardCount
 	configuredShardCount := svc.Persistence.NumHistoryShards
+	persistedShardCount := currentClusterDBRecord.HistoryShardCount
 	if configuredShardCount != persistedShardCount {
-		if err := common.ValidateShardCountIncrease(persistedShardCount, configuredShardCount); err != nil {
-			// The persisted count stays authoritative;
-			// overwriteCurrentClusterMetadataWithDBRecord puts the config back.
-			logger.Warn("Ignoring configured history shard count",
-				tag.ClusterName(currentClusterName),
-				tag.Error(err),
-				tag.IgnoredValue(configuredShardCount),
-				tag.Value(persistedShardCount))
-		} else {
-			logger.Info("Growing history shard count",
-				tag.ClusterName(currentClusterName),
-				tag.NewInt32("previous-shard-count", persistedShardCount),
-				tag.NewInt32("shard-count", configuredShardCount))
-			currentClusterDBRecord.HistoryShardCount = configuredShardCount
-			updateDBRecord = true
+		if err := validateHistoryShardCountChange(svc.Persistence, persistedShardCount, configuredShardCount); err != nil {
+			return err
 		}
+		currentClusterDBRecord.HistoryShardCount = configuredShardCount
+		updateDBRecord = true
 	}
 
 	if updateIndexSearchAttributes(initialIndexSearchAttributes, currentClusterDBRecord) {
@@ -852,6 +833,26 @@ func updateCurrentClusterMetadataRecord(
 	return nil
 }
 
+func validateHistoryShardCountChange(
+	persistenceConfig config.Persistence,
+	oldCount int32,
+	newCount int32,
+) error {
+	if persistenceConfig.DefaultStoreType() != config.StoreTypeSQL {
+		return fmt.Errorf("changing numHistoryShards from %d to %d requires SQL persistence", oldCount, newCount)
+	}
+	if oldCount < 1 {
+		return fmt.Errorf("persisted numHistoryShards must be positive: %d", oldCount)
+	}
+	if newCount <= oldCount {
+		return fmt.Errorf("numHistoryShards can only increase: %d is not greater than %d", newCount, oldCount)
+	}
+	if newCount%oldCount != 0 {
+		return fmt.Errorf("numHistoryShards must be a multiple of the persisted value: %d is not a multiple of %d", newCount, oldCount)
+	}
+	return nil
+}
+
 func overwriteCurrentClusterMetadataWithDBRecord(
 	svc *config.Config,
 	currentClusterDBRecord *persistence.GetClusterMetadataResponse,
@@ -866,10 +867,15 @@ func overwriteCurrentClusterMetadataWithDBRecord(
 			tag.Value(currentClusterDBRecord.IsGlobalNamespaceEnabled))
 		svc.ClusterMetadata.EnableGlobalNamespace = currentClusterDBRecord.IsGlobalNamespaceEnabled
 	}
-	// A legal increase was already adopted into the record by
-	// updateCurrentClusterMetadataRecord, which also logged any count it refused.
-	// So this only has to put the authoritative count back into the config.
-	svc.Persistence.NumHistoryShards = currentClusterDBRecord.HistoryShardCount
+	persistedShardCount := currentClusterDBRecord.HistoryShardCount
+	if svc.Persistence.NumHistoryShards != persistedShardCount {
+		logger.Warn(
+			mismatchLogMessage,
+			tag.Key("persistence.numHistoryShards"),
+			tag.IgnoredValue(svc.Persistence.NumHistoryShards),
+			tag.Value(persistedShardCount))
+		svc.Persistence.NumHistoryShards = persistedShardCount
+	}
 	if currentClusterDBRecord.FailoverVersionIncrement != clusterMetadata.FailoverVersionIncrement {
 		logger.Warn(
 			mismatchLogMessage,

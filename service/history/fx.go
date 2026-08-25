@@ -11,7 +11,6 @@ import (
 	"github.com/superdurable/temporal-server/common"
 	commoncache "github.com/superdurable/temporal-server/common/cache"
 	"github.com/superdurable/temporal-server/common/clock"
-	"github.com/superdurable/temporal-server/common/cluster"
 	"github.com/superdurable/temporal-server/common/config"
 	"github.com/superdurable/temporal-server/common/dynamicconfig"
 	"github.com/superdurable/temporal-server/common/log"
@@ -61,10 +60,6 @@ var Module = fx.Options(
 	cache.Module,
 	archival.Module,
 	ChasmEngineModule,
-	fx.Provide(cluster.NewLazyMetadata),
-	fx.Invoke(func(lazyClusterMetadata cluster.LazyMetadata, clusterMetadata cluster.Metadata) {
-		lazyClusterMetadata.Set(clusterMetadata)
-	}),
 	fx.Provide(ConfigProvider), // might be worth just using provider for configs.Config directly
 	fx.Provide(workflow.NewCommandHandlerRegistry),
 	fx.Provide(RetryableInterceptorProvider),
@@ -185,11 +180,10 @@ func HistoryEngineFactoryProvider(
 func ConfigProvider(
 	dc *dynamicconfig.Collection,
 	persistenceConfig config.Persistence,
-	lazyClusterMetadata cluster.LazyMetadata,
 ) *configs.Config {
 	return configs.NewConfig(
 		dc,
-		lazyClusterMetadata.ShardCount(persistenceConfig.NumHistoryShards),
+		persistenceConfig.NumHistoryShards,
 	)
 }
 

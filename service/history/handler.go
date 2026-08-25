@@ -818,7 +818,7 @@ func (h *Handler) DescribeHistoryHost(_ context.Context, req *historyservice.Des
 	// if option 2/3 is provided, we want to check on the shard ownership to return the correct host address.
 	shardID := req.GetShardId()
 	if len(req.GetNamespaceId()) != 0 && req.GetWorkflowExecution() != nil {
-		shardID = common.WorkflowIDToHistoryShard(req.GetNamespaceId(), req.GetWorkflowExecution().GetWorkflowId(), h.config.NumberOfShards())
+		shardID = common.WorkflowIDToHistoryShard(req.GetNamespaceId(), req.GetWorkflowExecution().GetWorkflowId(), h.config.NumberOfShards)
 	}
 	if shardID > 0 {
 		_, err := h.controller.GetShardByID(shardID)
@@ -2118,7 +2118,7 @@ func (h *Handler) ForceDeleteWorkflowExecution(
 	shardID := common.WorkflowIDToHistoryShard(
 		namespaceID.String(),
 		request.Request.Execution.WorkflowId,
-		h.config.NumberOfShards(),
+		h.config.NumberOfShards,
 	)
 
 	workflowExecution := request.GetRequest().GetExecution()

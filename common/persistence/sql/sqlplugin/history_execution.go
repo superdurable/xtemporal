@@ -14,6 +14,7 @@ import (
 type (
 	// ExecutionsRow represents a row in executions table
 	ExecutionsRow struct {
+		ShardID          int32
 		NamespaceID      primitives.UUID
 		WorkflowID       string
 		RunID            primitives.UUID
@@ -29,6 +30,7 @@ type (
 	// ExecutionsFilter contains the column names within executions table that
 	// can be used to filter results through a WHERE clause
 	ExecutionsFilter struct {
+		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID
@@ -36,6 +38,7 @@ type (
 
 	// CurrentExecutionsRow represents a row in current_executions table
 	CurrentExecutionsRow struct {
+		ShardID          int32
 		NamespaceID      primitives.UUID
 		WorkflowID       string
 		RunID            primitives.UUID
@@ -52,6 +55,7 @@ type (
 	// CurrentExecutionsFilter contains the column names within current_executions table that
 	// can be used to filter results through a WHERE clause
 	CurrentExecutionsFilter struct {
+		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID
@@ -78,13 +82,13 @@ type (
 		InsertIntoCurrentExecutions(ctx context.Context, row *CurrentExecutionsRow) (sql.Result, error)
 		UpdateCurrentExecutions(ctx context.Context, row *CurrentExecutionsRow) (sql.Result, error)
 		// SelectFromCurrentExecutions returns one or more rows from current_executions table
-		// Required params - {namespaceID, workflowID, archetypeID}
+		// Required params - {shardID, namespaceID, workflowID, archetypeID}
 		SelectFromCurrentExecutions(ctx context.Context, filter CurrentExecutionsFilter) (*CurrentExecutionsRow, error)
 		// DeleteFromCurrentExecutions deletes a single row that matches the filter criteria
 		// If a row exist, that row will be deleted and this method will return success
 		// If there is no row matching the filter criteria, this method will still return success
 		// Callers can check the output of Result.RowsAffected() to see if a row was deleted or not
-		// Required params - {namespaceID, workflowID, runID, archetypeID}
+		// Required params - {shardID, namespaceID, workflowID, runID, archetypeID}
 		DeleteFromCurrentExecutions(ctx context.Context, filter CurrentExecutionsFilter) (sql.Result, error)
 		LockCurrentExecutions(ctx context.Context, filter CurrentExecutionsFilter) (*CurrentExecutionsRow, error)
 	}

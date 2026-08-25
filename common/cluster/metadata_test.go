@@ -102,55 +102,6 @@ func (s *metadataSuite) Test_Initialization() {
 	s.Equal(s.failoverVersionIncrement, s.metadata.GetFailoverVersionIncrement())
 }
 
-func (s *metadataSuite) Test_GetCurrentShardCount() {
-	s.Equal(ShardCount{Count: 1, Version: 1}, s.metadata.GetCurrentShardCount())
-}
-
-func (s *metadataSuite) Test_RefreshClusterMetadata_ShardCountChange() {
-	// A shard count bump is the only field that changes. It must still be
-	// treated as a real update: picked up by GetCurrentShardCount and delivered
-	// to change callbacks, otherwise history hosts never learn about a scale-up.
-	all := s.metadata.GetAllClusterInfo()
-
-	// Echo every cluster back unchanged except the current one's shard count, so
-	// the absent-cluster removal path cannot mask the result.
-	records := make([]*persistence.GetClusterMetadataResponse, 0, len(all))
-	for name, info := range all {
-		shardCount, version := info.ShardCount, info.version
-		if name == s.clusterName {
-			shardCount, version = 2, 2
-		}
-		records = append(records, &persistence.GetClusterMetadataResponse{
-			ClusterMetadata: &persistencespb.ClusterMetadata{
-				ClusterName:            name,
-				IsConnectionEnabled:    info.Enabled,
-				InitialFailoverVersion: info.InitialFailoverVersion,
-				HistoryShardCount:      shardCount,
-				ClusterAddress:         info.RPCAddress,
-			},
-			Version: version,
-		})
-	}
-
-	var gotOld, gotNew *ClusterInformation
-	callbackFired := false
-	s.metadata.clusterChangeCallback[uuid.NewString()] = func(old, new map[string]*ClusterInformation) {
-		callbackFired = true
-		gotOld, gotNew = old[s.clusterName], new[s.clusterName]
-	}
-
-	s.mockClusterMetadataStore.EXPECT().ListClusterMetadata(gomock.Any(), gomock.Any()).Return(
-		&persistence.ListClusterMetadataResponse{ClusterMetadata: records}, nil)
-
-	s.NoError(s.metadata.refreshClusterMetadata(context.Background()))
-	s.True(callbackFired, "shard count change must fire a metadata change callback")
-	s.Require().NotNil(gotOld, "current cluster missing from callback entries")
-	s.Require().NotNil(gotNew, "current cluster missing from callback entries")
-	s.Equal(int32(1), gotOld.ShardCount)
-	s.Equal(int32(2), gotNew.ShardCount)
-	s.Equal(ShardCount{Count: 2, Version: 2}, s.metadata.GetCurrentShardCount())
-}
-
 func (s *metadataSuite) Test_GetNextFailoverVersion() {
 	currentVersion := int64(102)
 	s.Equal(currentVersion+s.failoverVersionIncrement-1, s.metadata.GetNextFailoverVersion(s.clusterName, currentVersion))

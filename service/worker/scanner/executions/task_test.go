@@ -3,7 +3,6 @@ package executions
 import (
 	"context"
 	"errors"
-	"github.com/superdurable/temporal-server/common/cluster"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -43,7 +42,7 @@ func (s *taskTestSuite) createTask() *task {
 		executionManager: s.executionManager,
 		metricsHandler:   metrics.NoopMetricsHandler,
 		logger:           log.NewNoopLogger(),
-		scavenger:        &Scavenger{numHistoryShards: cluster.StaticShardCount(4)},
+		scavenger:        &Scavenger{numHistoryShards: 4},
 		ctx:              context.Background(),
 		rateLimiter:      s.rateLimiter,
 	}

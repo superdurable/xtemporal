@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -54,11 +55,12 @@ func (s *historyExecutionBufferSuite) TearDownTest() {
 }
 
 func (s *historyExecutionBufferSuite) TestInsert_Single() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
-	buffer := s.newRandomExecutionBufferRow(namespaceID, workflowID, runID)
+	buffer := s.newRandomExecutionBufferRow(shardID, namespaceID, workflowID, runID)
 	result, err := s.store.InsertIntoBufferedEvents(newExecutionContext(), []sqlplugin.BufferedEventsRow{buffer})
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -67,12 +69,13 @@ func (s *historyExecutionBufferSuite) TestInsert_Single() {
 }
 
 func (s *historyExecutionBufferSuite) TestInsert_Multiple() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
-	buffer1 := s.newRandomExecutionBufferRow(namespaceID, workflowID, runID)
-	buffer2 := s.newRandomExecutionBufferRow(namespaceID, workflowID, runID)
+	buffer1 := s.newRandomExecutionBufferRow(shardID, namespaceID, workflowID, runID)
+	buffer2 := s.newRandomExecutionBufferRow(shardID, namespaceID, workflowID, runID)
 	result, err := s.store.InsertIntoBufferedEvents(newExecutionContext(), []sqlplugin.BufferedEventsRow{buffer1, buffer2})
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -83,13 +86,14 @@ func (s *historyExecutionBufferSuite) TestInsert_Multiple() {
 func (s *historyExecutionBufferSuite) TestInsertSelect() {
 	numBufferedEvents := 20
 
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
 	var buffers []sqlplugin.BufferedEventsRow
 	for range numBufferedEvents {
-		buffer := s.newRandomExecutionBufferRow(namespaceID, workflowID, runID)
+		buffer := s.newRandomExecutionBufferRow(shardID, namespaceID, workflowID, runID)
 		buffers = append(buffers, buffer)
 	}
 	result, err := s.store.InsertIntoBufferedEvents(newExecutionContext(), buffers)
@@ -99,6 +103,7 @@ func (s *historyExecutionBufferSuite) TestInsertSelect() {
 	s.Equal(numBufferedEvents, int(rowsAffected))
 
 	filter := sqlplugin.BufferedEventsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -109,11 +114,13 @@ func (s *historyExecutionBufferSuite) TestInsertSelect() {
 }
 
 func (s *historyExecutionBufferSuite) TestDeleteSelect() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
 	filter := sqlplugin.BufferedEventsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -132,13 +139,14 @@ func (s *historyExecutionBufferSuite) TestDeleteSelect() {
 func (s *historyExecutionBufferSuite) TestInsertDelete() {
 	numBufferedEvents := 20
 
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
 	var buffers []sqlplugin.BufferedEventsRow
 	for range numBufferedEvents {
-		buffer := s.newRandomExecutionBufferRow(namespaceID, workflowID, runID)
+		buffer := s.newRandomExecutionBufferRow(shardID, namespaceID, workflowID, runID)
 		buffers = append(buffers, buffer)
 	}
 	result, err := s.store.InsertIntoBufferedEvents(newExecutionContext(), buffers)
@@ -148,6 +156,7 @@ func (s *historyExecutionBufferSuite) TestInsertDelete() {
 	s.Equal(numBufferedEvents, int(rowsAffected))
 
 	filter := sqlplugin.BufferedEventsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -164,11 +173,13 @@ func (s *historyExecutionBufferSuite) TestInsertDelete() {
 }
 
 func (s *historyExecutionBufferSuite) newRandomExecutionBufferRow(
+	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) sqlplugin.BufferedEventsRow {
 	return sqlplugin.BufferedEventsRow{
+		ShardID:      shardID,
 		NamespaceID:  namespaceID,
 		WorkflowID:   workflowID,
 		RunID:        runID,

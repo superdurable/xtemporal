@@ -95,6 +95,7 @@ func (m *sqlExecutionStore) createWorkflowExecutionTx(
 	var currentRow *sqlplugin.CurrentExecutionsRow
 	if currentRow, err = lockCurrentExecutionIfExists(ctx,
 		tx,
+		shardID,
 		namespaceID,
 		workflowID,
 		request.ArchetypeID,
@@ -177,6 +178,7 @@ func (m *sqlExecutionStore) createWorkflowExecutionTx(
 	}
 
 	row := sqlplugin.CurrentExecutionsRow{
+		ShardID:          shardID,
 		NamespaceID:      namespaceID,
 		WorkflowID:       workflowID,
 		RunID:            runID,
@@ -213,6 +215,7 @@ func (m *sqlExecutionStore) GetWorkflowExecution(
 	workflowID := request.WorkflowID
 	runID := primitives.MustParseUUID(request.RunID)
 	executionsRow, err := m.DB.SelectFromExecutions(ctx, sqlplugin.ExecutionsFilter{
+		ShardID:     request.ShardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -236,6 +239,7 @@ func (m *sqlExecutionStore) GetWorkflowExecution(
 
 	state.ActivityInfos, err = getActivityInfoMap(ctx,
 		m.DB,
+		request.ShardID,
 		namespaceID,
 		workflowID,
 		runID,
@@ -246,6 +250,7 @@ func (m *sqlExecutionStore) GetWorkflowExecution(
 
 	state.TimerInfos, err = getTimerInfoMap(ctx,
 		m.DB,
+		request.ShardID,
 		namespaceID,
 		workflowID,
 		runID,
@@ -256,6 +261,7 @@ func (m *sqlExecutionStore) GetWorkflowExecution(
 
 	state.ChildExecutionInfos, err = getChildExecutionInfoMap(ctx,
 		m.DB,
+		request.ShardID,
 		namespaceID,
 		workflowID,
 		runID,
@@ -266,6 +272,7 @@ func (m *sqlExecutionStore) GetWorkflowExecution(
 
 	state.RequestCancelInfos, err = getRequestCancelInfoMap(ctx,
 		m.DB,
+		request.ShardID,
 		namespaceID,
 		workflowID,
 		runID,
@@ -276,6 +283,7 @@ func (m *sqlExecutionStore) GetWorkflowExecution(
 
 	state.SignalInfos, err = getSignalInfoMap(ctx,
 		m.DB,
+		request.ShardID,
 		namespaceID,
 		workflowID,
 		runID,
@@ -286,6 +294,7 @@ func (m *sqlExecutionStore) GetWorkflowExecution(
 
 	state.BufferedEvents, err = getBufferedEvents(ctx,
 		m.DB,
+		request.ShardID,
 		namespaceID,
 		workflowID,
 		runID,
@@ -296,6 +305,7 @@ func (m *sqlExecutionStore) GetWorkflowExecution(
 
 	state.ChasmNodes, err = getChasmNodeMap(ctx,
 		m.DB,
+		request.ShardID,
 		namespaceID,
 		workflowID,
 		runID,
@@ -306,6 +316,7 @@ func (m *sqlExecutionStore) GetWorkflowExecution(
 
 	state.SignalRequestedIDs, err = getSignalsRequested(ctx,
 		m.DB,
+		request.ShardID,
 		namespaceID,
 		workflowID,
 		runID,
@@ -368,6 +379,7 @@ func (m *sqlExecutionStore) updateWorkflowExecutionTx(
 	case p.UpdateWorkflowModeBypassCurrent:
 		if err := assertNotCurrentExecution(ctx,
 			tx,
+			shardID,
 			namespaceID,
 			workflowID,
 			runID,
@@ -379,6 +391,7 @@ func (m *sqlExecutionStore) updateWorkflowExecutionTx(
 
 	case p.UpdateWorkflowModeUpdateCurrent:
 		row := sqlplugin.CurrentExecutionsRow{
+			ShardID:     shardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  workflowID,
 			ArchetypeID: request.ArchetypeID,
@@ -479,6 +492,7 @@ func (m *sqlExecutionStore) conflictResolveWorkflowExecutionTx(
 	case p.ConflictResolveWorkflowModeBypassCurrent:
 		if err := assertNotCurrentExecution(ctx,
 			tx,
+			shardID,
 			namespaceID,
 			workflowID,
 			primitives.MustParseUUID(resetWorkflow.ExecutionState.RunId),
@@ -503,6 +517,7 @@ func (m *sqlExecutionStore) conflictResolveWorkflowExecutionTx(
 		status := executionState.Status
 
 		row := sqlplugin.CurrentExecutionsRow{
+			ShardID:          shardID,
 			NamespaceID:      namespaceID,
 			WorkflowID:       workflowID,
 			RunID:            runID,
@@ -568,6 +583,7 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 	runID := primitives.MustParseUUID(request.RunID)
 	return m.txExecute(ctx, "DeleteWorkflowExecution", func(tx sqlplugin.Tx) error {
 		_, err := tx.DeleteAllFromChildExecutionInfoMaps(ctx, sqlplugin.ChildExecutionInfoMapsAllFilter{
+			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -576,6 +592,7 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteAllFromChildExecutionInfoMaps: %w", err)
 		}
 		_, err = tx.DeleteAllFromActivityInfoMaps(ctx, sqlplugin.ActivityInfoMapsAllFilter{
+			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -584,6 +601,7 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteAllFromActivityInfoMaps: %w", err)
 		}
 		_, err = tx.DeleteAllFromRequestCancelInfoMaps(ctx, sqlplugin.RequestCancelInfoMapsAllFilter{
+			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -592,6 +610,7 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteAllFromRequestCancelInfoMaps: %w", err)
 		}
 		_, err = tx.DeleteAllFromSignalInfoMaps(ctx, sqlplugin.SignalInfoMapsAllFilter{
+			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -600,6 +619,7 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteAllFromSignalInfoMaps: %w", err)
 		}
 		_, err = tx.DeleteAllFromTimerInfoMaps(ctx, sqlplugin.TimerInfoMapsAllFilter{
+			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -608,6 +628,7 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteAllFromTimerInfoMaps: %w", err)
 		}
 		_, err = tx.DeleteAllFromSignalsRequestedSets(ctx, sqlplugin.SignalsRequestedSetsAllFilter{
+			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -616,6 +637,7 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteAllFromSignalsRequestedSets: %w", err)
 		}
 		_, err = tx.DeleteFromBufferedEvents(ctx, sqlplugin.BufferedEventsFilter{
+			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -624,6 +646,7 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteFromBufferedEvents: %w", err)
 		}
 		_, err = tx.DeleteFromExecutions(ctx, sqlplugin.ExecutionsFilter{
+			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -646,6 +669,7 @@ func (m *sqlExecutionStore) DeleteCurrentWorkflowExecution(
 	namespaceID := primitives.MustParseUUID(request.NamespaceID)
 	runID := primitives.MustParseUUID(request.RunID)
 	_, err := m.DB.DeleteFromCurrentExecutions(ctx, sqlplugin.CurrentExecutionsFilter{
+		ShardID:     request.ShardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  request.WorkflowID,
 		RunID:       runID,
@@ -659,6 +683,7 @@ func (m *sqlExecutionStore) GetCurrentExecution(
 	request *p.GetCurrentExecutionRequest,
 ) (*p.InternalGetCurrentExecutionResponse, error) {
 	row, err := m.DB.SelectFromCurrentExecutions(ctx, sqlplugin.CurrentExecutionsFilter{
+		ShardID:     request.ShardID,
 		NamespaceID: primitives.MustParseUUID(request.NamespaceID),
 		WorkflowID:  request.WorkflowID,
 		ArchetypeID: request.ArchetypeID,

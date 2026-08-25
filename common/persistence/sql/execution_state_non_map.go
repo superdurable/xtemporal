@@ -17,6 +17,7 @@ func updateSignalsRequested(
 	tx sqlplugin.Tx,
 	signalRequestedIDs map[string]struct{},
 	deleteIDs map[string]struct{},
+	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
@@ -26,6 +27,7 @@ func updateSignalsRequested(
 		rows := make([]sqlplugin.SignalsRequestedSetsRow, 0, len(signalRequestedIDs))
 		for signalRequestedID := range signalRequestedIDs {
 			rows = append(rows, sqlplugin.SignalsRequestedSetsRow{
+				ShardID:     shardID,
 				NamespaceID: namespaceID,
 				WorkflowID:  workflowID,
 				RunID:       runID,
@@ -39,6 +41,7 @@ func updateSignalsRequested(
 
 	if len(deleteIDs) > 0 {
 		if _, err := tx.DeleteFromSignalsRequestedSets(ctx, sqlplugin.SignalsRequestedSetsFilter{
+			ShardID:     shardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  workflowID,
 			RunID:       runID,
@@ -53,12 +56,14 @@ func updateSignalsRequested(
 func getSignalsRequested(
 	ctx context.Context,
 	db sqlplugin.DB,
+	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) ([]string, error) {
 
 	rows, err := db.SelectAllFromSignalsRequestedSets(ctx, sqlplugin.SignalsRequestedSetsAllFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -76,12 +81,14 @@ func getSignalsRequested(
 func deleteSignalsRequestedSet(
 	ctx context.Context,
 	tx sqlplugin.Tx,
+	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) error {
 
 	if _, err := tx.DeleteAllFromSignalsRequestedSets(ctx, sqlplugin.SignalsRequestedSetsAllFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -95,6 +102,7 @@ func updateBufferedEvents(
 	ctx context.Context,
 	tx sqlplugin.Tx,
 	batch *commonpb.DataBlob,
+	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
@@ -104,6 +112,7 @@ func updateBufferedEvents(
 		return nil
 	}
 	row := sqlplugin.BufferedEventsRow{
+		ShardID:      shardID,
 		NamespaceID:  namespaceID,
 		WorkflowID:   workflowID,
 		RunID:        runID,
@@ -120,12 +129,14 @@ func updateBufferedEvents(
 func getBufferedEvents(
 	ctx context.Context,
 	db sqlplugin.DB,
+	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) ([]*commonpb.DataBlob, error) {
 
 	rows, err := db.SelectFromBufferedEvents(ctx, sqlplugin.BufferedEventsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -143,12 +154,14 @@ func getBufferedEvents(
 func deleteBufferedEvents(
 	ctx context.Context,
 	tx sqlplugin.Tx,
+	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 ) error {
 
 	if _, err := tx.DeleteFromBufferedEvents(ctx, sqlplugin.BufferedEventsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,

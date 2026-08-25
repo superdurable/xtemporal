@@ -25,10 +25,11 @@ run_id = ?`
 	// So that this query can be used with BindNamed
 	// %[5]v should be the name of the key associated with the map
 	// e.g. for ActivityInfo it is "schedule_id"
-	setKeyInMapQryTemplate = `REPLACE INTO %[1]v
-(namespace_id, workflow_id, run_id, %[5]v, %[2]v)
+	setKeyInMapQryTemplate = `INSERT INTO %[1]v
+(shard_id, namespace_id, workflow_id, run_id, %[5]v, %[2]v)
 VALUES
-(:namespace_id, :workflow_id, :run_id, :%[5]v, %[3]v);`
+(:shard_id, :namespace_id, :workflow_id, :run_id, :%[5]v, %[3]v)
+ON CONFLICT(namespace_id, workflow_id, run_id, %[5]v) DO UPDATE SET %[4]v;`
 
 	// %[2]v is the name of the key
 	deleteKeyInMapQryTemplate = `DELETE FROM %[1]v
@@ -41,7 +42,7 @@ run_id = ? AND
 	// %[1]v is the name of the table
 	// %[2]v is the name of the key
 	// %[3]v is the value columns, separated by commas
-	getMapQryTemplate = `SELECT %[2]v, %[3]v FROM %[1]v
+	getMapQryTemplate = `SELECT shard_id, %[2]v, %[3]v FROM %[1]v
 WHERE
 namespace_id = ? AND
 workflow_id = ? AND
@@ -68,7 +69,7 @@ func makeSetKeyInMapQry(tableName string, nonPrimaryKeyColumns []string, mapKeyN
 			return ":" + x
 		}), ","),
 		strings.Join(stringMap(nonPrimaryKeyColumns, func(x string) string {
-			return x + "=" + x
+			return x + "=excluded." + x
 		}), ","),
 		mapKeyName)
 }
@@ -87,7 +88,7 @@ func makeGetMapQryTemplate(tableName string, nonPrimaryKeyColumns []string, mapK
 }
 
 var (
-	// Omit run_id, namespace_id, workflow_id, schedule_id since they're in the primary key
+	// Omit shard_id, run_id, namespace_id, workflow_id, schedule_id since they're in the primary key
 	activityInfoColumns = []string{
 		"data",
 		"data_encoding",
@@ -504,9 +505,10 @@ workflow_id = ? AND
 run_id = ?
 `
 
-	replaceSignalsRequestedSetQry = `REPLACE INTO signals_requested_sets
-(namespace_id, workflow_id, run_id, signal_id) VALUES
-(:namespace_id, :workflow_id, :run_id, :signal_id)`
+	replaceSignalsRequestedSetQry = `INSERT INTO signals_requested_sets
+(shard_id, namespace_id, workflow_id, run_id, signal_id) VALUES
+(:shard_id, :namespace_id, :workflow_id, :run_id, :signal_id)
+ON CONFLICT(namespace_id, workflow_id, run_id, signal_id) DO NOTHING`
 
 	deleteSignalsRequestedSetQry = `DELETE FROM signals_requested_sets
 WHERE
@@ -515,7 +517,7 @@ workflow_id = ? AND
 run_id = ? AND
 signal_id IN ( ? )`
 
-	getSignalsRequestedSetQry = `SELECT signal_id FROM signals_requested_sets
+	getSignalsRequestedSetQry = `SELECT shard_id, signal_id FROM signals_requested_sets
 WHERE
 namespace_id = ? AND
 workflow_id = ? AND

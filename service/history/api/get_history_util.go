@@ -185,7 +185,7 @@ func GetHistory(
 
 	var size int
 	isFirstPage := len(nextPageToken) == 0
-	shardID := common.WorkflowIDToHistoryShard(namespaceID.String(), execution.GetWorkflowId(), shardContext.GetConfig().NumberOfShards())
+	shardID := common.WorkflowIDToHistoryShard(namespaceID.String(), execution.GetWorkflowId(), shardContext.GetConfig().NumberOfShards)
 	var err error
 	var historyEvents []*historypb.HistoryEvent
 	historyEvents, size, nextPageToken, err = persistence.ReadFullPageEvents(ctx, shardContext.GetExecutionManager(), &persistence.ReadHistoryBranchRequest{
@@ -305,7 +305,7 @@ func GetHistoryReverse(
 	}()
 
 	var size int
-	shardID := common.WorkflowIDToHistoryShard(namespaceID.String(), execution.GetWorkflowId(), shardContext.GetConfig().NumberOfShards())
+	shardID := common.WorkflowIDToHistoryShard(namespaceID.String(), execution.GetWorkflowId(), shardContext.GetConfig().NumberOfShards)
 	var historyEvents []*historypb.HistoryEvent
 
 	historyEvents, size, nextPageToken, err = persistence.ReadFullPageEventsReverse(ctx, shardContext.GetExecutionManager(), &persistence.ReadHistoryBranchReverseRequest{

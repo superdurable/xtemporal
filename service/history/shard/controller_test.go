@@ -148,7 +148,7 @@ func (s *controllerSuite) TearDownTest() {
 
 func (s *controllerSuite) TestAcquireShardSuccess() {
 	numShards := int32(8)
-	s.config.NumberOfShards = cluster.StaticShardCount(numShards)
+	s.config.NumberOfShards = numShards
 
 	var myShards []int32
 	historyEngines := make(map[int32]*historyi.MockEngine)
@@ -181,7 +181,7 @@ func (s *controllerSuite) TestAcquireShardSuccess() {
 
 func (s *controllerSuite) TestAcquireShardsConcurrently() {
 	numShards := int32(10)
-	s.config.NumberOfShards = cluster.StaticShardCount(numShards)
+	s.config.NumberOfShards = numShards
 	s.config.AcquireShardConcurrency = func() int {
 		return 10
 	}
@@ -219,7 +219,7 @@ func (s *controllerSuite) TestAcquireShardsConcurrently() {
 
 func (s *controllerSuite) TestAcquireShardLookupFailure() {
 	numShards := int32(2)
-	s.config.NumberOfShards = cluster.StaticShardCount(numShards)
+	s.config.NumberOfShards = numShards
 	for shardID := int32(1); shardID <= numShards; shardID++ {
 		s.mockServiceResolver.EXPECT().Lookup(convert.Int32ToString(shardID)).Return(nil, errors.New("ring failure"))
 	}
@@ -235,7 +235,7 @@ func (s *controllerSuite) TestAcquireShardLookupFailure() {
 
 func (s *controllerSuite) TestAcquireShardRenewSuccess() {
 	numShards := int32(2)
-	s.config.NumberOfShards = cluster.StaticShardCount(numShards)
+	s.config.NumberOfShards = numShards
 
 	historyEngines := make(map[int32]*historyi.MockEngine)
 	for shardID := int32(1); shardID <= numShards; shardID++ {
@@ -265,7 +265,7 @@ func (s *controllerSuite) TestAcquireShardRenewSuccess() {
 
 func (s *controllerSuite) TestAcquireShardRenewLookupFailed() {
 	numShards := int32(2)
-	s.config.NumberOfShards = cluster.StaticShardCount(numShards)
+	s.config.NumberOfShards = numShards
 
 	historyEngines := make(map[int32]*historyi.MockEngine)
 	for shardID := int32(1); shardID <= numShards; shardID++ {
@@ -295,7 +295,7 @@ func (s *controllerSuite) TestAcquireShardRenewLookupFailed() {
 
 func (s *controllerSuite) TestHistoryEngineClosed() {
 	numShards := int32(4)
-	s.config.NumberOfShards = cluster.StaticShardCount(numShards)
+	s.config.NumberOfShards = numShards
 	s.shardController = NewTestController(
 		s.mockEngineFactory,
 		s.config,
@@ -396,7 +396,7 @@ func (s *controllerSuite) TestHistoryEngineClosed() {
 
 func (s *controllerSuite) TestShardControllerClosed() {
 	numShards := int32(4)
-	s.config.NumberOfShards = cluster.StaticShardCount(numShards)
+	s.config.NumberOfShards = numShards
 	s.shardController = NewTestController(
 		s.mockEngineFactory,
 		s.config,
@@ -448,7 +448,7 @@ func (s *controllerSuite) TestShardControllerClosed() {
 }
 
 func (s *controllerSuite) TestShardExplicitUnload() {
-	s.config.NumberOfShards = cluster.StaticShardCount(1)
+	s.config.NumberOfShards = 1
 
 	mockEngine := historyi.NewMockEngine(s.controller)
 	mockEngine.EXPECT().Stop().AnyTimes()
@@ -469,7 +469,7 @@ func (s *controllerSuite) TestShardExplicitUnload() {
 }
 
 func (s *controllerSuite) TestShardExplicitUnloadCancelGetOrCreate() {
-	s.config.NumberOfShards = cluster.StaticShardCount(1)
+	s.config.NumberOfShards = 1
 
 	mockEngine := historyi.NewMockEngine(s.controller)
 	mockEngine.EXPECT().Stop().AnyTimes()
@@ -510,7 +510,7 @@ func (s *controllerSuite) TestShardExplicitUnloadCancelGetOrCreate() {
 }
 
 func (s *controllerSuite) TestShardExplicitUnloadCancelAcquire() {
-	s.config.NumberOfShards = cluster.StaticShardCount(1)
+	s.config.NumberOfShards = 1
 
 	mockEngine := historyi.NewMockEngine(s.controller)
 	mockEngine.EXPECT().Stop().AnyTimes()
@@ -564,7 +564,7 @@ func (s *controllerSuite) TestShardExplicitUnloadCancelAcquire() {
 // Tests random concurrent sequence of shard load/acquire/unload to catch any race conditions
 // that were not covered by specific tests.
 func (s *controllerSuite) TestShardControllerFuzz() {
-	s.config.NumberOfShards = cluster.StaticShardCount(10)
+	s.config.NumberOfShards = 10
 
 	s.mockServiceResolver.EXPECT().AddListener(shardControllerMembershipUpdateListenerName, gomock.Any()).Return(nil).AnyTimes()
 	s.mockServiceResolver.EXPECT().RemoveListener(shardControllerMembershipUpdateListenerName).Return(nil).AnyTimes()
@@ -575,7 +575,7 @@ func (s *controllerSuite) TestShardControllerFuzz() {
 	var engineStarts, engineStops atomic.Int64
 	var getShards, closeContexts atomic.Int64
 
-	for shardID := int32(1); shardID <= s.config.NumberOfShards(); shardID++ {
+	for shardID := int32(1); shardID <= s.config.NumberOfShards; shardID++ {
 		shardID := shardID
 		queueStates := s.queueStates()
 
@@ -645,7 +645,7 @@ func (s *controllerSuite) TestShardControllerFuzz() {
 
 	worker := func(ctx context.Context) error {
 		for ctx.Err() == nil {
-			shardID := int32(rand.Intn(int(s.config.NumberOfShards()))) + 1
+			shardID := int32(rand.Intn(int(s.config.NumberOfShards))) + 1
 			switch rand.Intn(5) {
 			case 0:
 				_, _ = s.shardController.GetShardByID(shardID)
@@ -700,7 +700,7 @@ func (s *controllerSuite) TestShardControllerFuzz() {
 
 func (s *controllerSuite) Test_GetOrCreateShard_InvalidShardID() {
 	numShards := int32(2)
-	s.config.NumberOfShards = cluster.StaticShardCount(numShards)
+	s.config.NumberOfShards = numShards
 
 	_, err := s.shardController.getOrCreateShardContext(0)
 	s.ErrorIs(err, invalidShardIdLowerBound)
@@ -711,7 +711,7 @@ func (s *controllerSuite) Test_GetOrCreateShard_InvalidShardID() {
 
 func (s *controllerSuite) TestShardLingerTimeout() {
 	shardID := int32(1)
-	s.config.NumberOfShards = cluster.StaticShardCount(1)
+	s.config.NumberOfShards = 1
 	timeLimit := 1 * time.Second
 	s.config.ShardLingerTimeLimit = dynamicconfig.GetDurationPropertyFn(timeLimit)
 
@@ -751,7 +751,7 @@ func (s *controllerSuite) TestShardLingerTimeout() {
 
 func (s *controllerSuite) TestShardLingerSuccess() {
 	shardID := int32(1)
-	s.config.NumberOfShards = cluster.StaticShardCount(1)
+	s.config.NumberOfShards = 1
 	timeLimit := 1 * time.Second
 	s.config.ShardLingerTimeLimit = dynamicconfig.GetDurationPropertyFn(timeLimit)
 
@@ -829,7 +829,7 @@ func (s *controllerSuite) TestShardLingerSuccess() {
 // unsubscribe from the updates when needed.
 func (s *controllerSuite) TestShardCounter() {
 	const totalShards = 5
-	s.config.NumberOfShards = cluster.StaticShardCount(totalShards)
+	s.config.NumberOfShards = totalShards
 
 	var ownedShards atomic.Int32
 	s.mockServiceResolver.EXPECT().Lookup(gomock.Any()).DoAndReturn(func(key string) (membership.HostInfo, error) {
@@ -888,7 +888,7 @@ func (s *controllerSuite) setupMocksForReadiness() *readinessMockState {
 	state.ownership.Store(3, true)
 	state.ownership.Store(5, true)
 
-	s.config.NumberOfShards = cluster.StaticShardCount(5)
+	s.config.NumberOfShards = 5
 
 	s.mockServiceResolver.EXPECT().Lookup(gomock.Any()).DoAndReturn(func(key string) (membership.HostInfo, error) {
 		if i, err := strconv.Atoi(key); err != nil {

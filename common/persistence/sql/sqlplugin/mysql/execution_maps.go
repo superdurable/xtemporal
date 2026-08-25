@@ -26,9 +26,9 @@ run_id = ?`
 	// %[5]v should be the name of the key associated with the map
 	// e.g. for ActivityInfo it is "schedule_id"
 	setKeyInMapQryTemplate = `INSERT INTO %[1]v
-(namespace_id, workflow_id, run_id, %[5]v, %[2]v)
+(shard_id, namespace_id, workflow_id, run_id, %[5]v, %[2]v)
 VALUES
-(:namespace_id, :workflow_id, :run_id, :%[5]v, %[3]v)
+(:shard_id, :namespace_id, :workflow_id, :run_id, :%[5]v, %[3]v)
 ON DUPLICATE KEY UPDATE %[5]v=VALUES(%[5]v), %[4]v;`
 
 	// %[2]v is the name of the key
@@ -42,7 +42,7 @@ run_id = ? AND
 	// %[1]v is the name of the table
 	// %[2]v is the name of the key
 	// %[3]v is the value columns, separated by commas
-	getMapQryTemplate = `SELECT %[2]v, %[3]v FROM %[1]v
+	getMapQryTemplate = `SELECT shard_id, %[2]v, %[3]v FROM %[1]v
 WHERE
 namespace_id = ? AND
 workflow_id = ? AND
@@ -88,7 +88,7 @@ func makeGetMapQryTemplate(tableName string, nonPrimaryKeyColumns []string, mapK
 }
 
 var (
-	// Omit run_id, namespace_id, workflow_id, schedule_id since they're in the primary key
+	// Omit shard_id, run_id, namespace_id, workflow_id, schedule_id since they're in the primary key
 	activityInfoColumns = []string{
 		"data",
 		"data_encoding",
@@ -506,8 +506,8 @@ run_id = ?
 `
 
 	createSignalsRequestedSetQry = `INSERT INTO signals_requested_sets
-(namespace_id, workflow_id, run_id, signal_id) VALUES
-(:namespace_id, :workflow_id, :run_id, :signal_id)
+(shard_id, namespace_id, workflow_id, run_id, signal_id) VALUES
+(:shard_id, :namespace_id, :workflow_id, :run_id, :signal_id)
 ON DUPLICATE KEY UPDATE signal_id = VALUES (signal_id)`
 
 	deleteSignalsRequestedSetQry = `DELETE FROM signals_requested_sets
@@ -517,7 +517,7 @@ workflow_id = ? AND
 run_id = ? AND
 signal_id IN ( ? )`
 
-	getSignalsRequestedSetQry = `SELECT signal_id FROM signals_requested_sets WHERE
+	getSignalsRequestedSetQry = `SELECT shard_id, signal_id FROM signals_requested_sets WHERE
 namespace_id = ? AND
 workflow_id = ? AND
 run_id = ?`

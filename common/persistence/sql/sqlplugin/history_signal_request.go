@@ -10,6 +10,7 @@ import (
 type (
 	// SignalsRequestedSetsRow represents a row in signals_requested_sets table
 	SignalsRequestedSetsRow struct {
+		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID
@@ -17,6 +18,7 @@ type (
 	}
 
 	SignalsRequestedSetsFilter struct {
+		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID
@@ -24,6 +26,7 @@ type (
 	}
 
 	SignalsRequestedSetsAllFilter struct {
+		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID

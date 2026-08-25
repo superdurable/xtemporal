@@ -10,21 +10,21 @@ import (
 const (
 	// below are templates for history_node table
 	addHistoryNodesQuery = `INSERT INTO history_node (` +
-		`tree_id, branch_id, node_id, prev_txn_id, txn_id, data, data_encoding) ` +
-		`VALUES (:tree_id, :branch_id, :node_id, :prev_txn_id, :txn_id, :data, :data_encoding) ` +
+		`shard_id, tree_id, branch_id, node_id, prev_txn_id, txn_id, data, data_encoding) ` +
+		`VALUES (:shard_id, :tree_id, :branch_id, :node_id, :prev_txn_id, :txn_id, :data, :data_encoding) ` +
 		`ON DUPLICATE KEY UPDATE prev_txn_id=:prev_txn_id, data=:data, data_encoding=:data_encoding `
 
-	getHistoryNodesQuery = `SELECT node_id, prev_txn_id, txn_id, data, data_encoding FROM history_node ` +
+	getHistoryNodesQuery = `SELECT shard_id, node_id, prev_txn_id, txn_id, data, data_encoding FROM history_node ` +
 		`WHERE tree_id = ? AND branch_id = ? AND ((node_id = ? AND txn_id > ?) OR node_id > ?) AND node_id < ? ` +
-		`ORDER BY tree_id, branch_id, node_id, txn_id LIMIT ? `
+		`ORDER BY node_id, txn_id LIMIT ? `
 
-	getHistoryNodesReverseQuery = `SELECT node_id, prev_txn_id, txn_id, data, data_encoding FROM history_node ` +
+	getHistoryNodesReverseQuery = `SELECT shard_id, node_id, prev_txn_id, txn_id, data, data_encoding FROM history_node ` +
 		`WHERE tree_id = ? AND branch_id = ? AND node_id >= ? AND ((node_id = ? AND txn_id < ?) OR node_id < ?) ` +
-		`ORDER BY tree_id, branch_id DESC, node_id DESC, txn_id DESC LIMIT ? `
+		`ORDER BY node_id DESC, txn_id DESC LIMIT ? `
 
-	getHistoryNodeMetadataQuery = `SELECT node_id, prev_txn_id, txn_id FROM history_node ` +
+	getHistoryNodeMetadataQuery = `SELECT shard_id, node_id, prev_txn_id, txn_id FROM history_node ` +
 		`WHERE tree_id = ? AND branch_id = ? AND ((node_id = ? AND txn_id > ?) OR node_id > ?) AND node_id < ? ` +
-		`ORDER BY tree_id, branch_id, node_id, txn_id LIMIT ? `
+		`ORDER BY node_id, txn_id LIMIT ? `
 
 	deleteHistoryNodeQuery = `DELETE FROM history_node WHERE tree_id = ? AND branch_id = ? AND node_id = ? AND txn_id = ? `
 
@@ -32,18 +32,18 @@ const (
 
 	// below are templates for history_tree table
 	addHistoryTreeQuery = `INSERT INTO history_tree (` +
-		`tree_id, branch_id, data, data_encoding) ` +
-		`VALUES (:tree_id, :branch_id, :data, :data_encoding) ` +
+		`shard_id, tree_id, branch_id, data, data_encoding) ` +
+		`VALUES (:shard_id, :tree_id, :branch_id, :data, :data_encoding) ` +
 		`ON DUPLICATE KEY UPDATE data=VALUES(data), data_encoding=VALUES(data_encoding)`
 
-	getHistoryTreeQuery = `SELECT branch_id, data, data_encoding FROM history_tree WHERE tree_id = ? `
+	getHistoryTreeQuery = `SELECT shard_id, branch_id, data, data_encoding FROM history_tree WHERE tree_id = ? `
 
-	// conceptually this query is WHERE (tree_id, branch_id) > (?, ?)
+	// conceptually this query is WHERE (shard_id, tree_id, branch_id) > (?, ?, ?)
 	// but mysql doesn't execute it efficiently unless it's spelled out like this
-	paginateBranchesQuery = `SELECT tree_id, branch_id, data, data_encoding
+	paginateBranchesQuery = `SELECT shard_id, tree_id, branch_id, data, data_encoding
 		FROM history_tree
-		WHERE (tree_id = ? AND branch_id > ?) OR tree_id > ?
-		ORDER BY tree_id, branch_id
+		WHERE (shard_id = ? AND ((tree_id = ? AND branch_id > ?) OR tree_id > ?)) OR shard_id > ?
+		ORDER BY shard_id, tree_id, branch_id
 		LIMIT ?`
 
 	deleteHistoryTreeQuery = `DELETE FROM history_tree WHERE tree_id = ? AND branch_id = ? `
@@ -180,9 +180,11 @@ func (mdb *db) PaginateBranchesFromHistoryTree(
 		ctx,
 		&rows,
 		paginateBranchesQuery,
+		page.ShardID,
 		page.TreeID,
 		page.BranchID,
 		page.TreeID,
+		page.ShardID,
 		page.Limit,
 	)
 	return rows, err

@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -55,12 +56,13 @@ func (s *historyExecutionTimerSuite) TearDownTest() {
 }
 
 func (s *historyExecutionTimerSuite) TestReplace_Single() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	timerID := shuffle.String(testHistoryExecutionTimerID)
 
-	timer := s.newRandomExecutionTimerRow(namespaceID, workflowID, runID, timerID)
+	timer := s.newRandomExecutionTimerRow(shardID, namespaceID, workflowID, runID, timerID)
 	result, err := s.store.ReplaceIntoTimerInfoMaps(newExecutionContext(), []sqlplugin.TimerInfoMapsRow{timer})
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -69,12 +71,13 @@ func (s *historyExecutionTimerSuite) TestReplace_Single() {
 }
 
 func (s *historyExecutionTimerSuite) TestReplace_Multiple() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
-	timer1 := s.newRandomExecutionTimerRow(namespaceID, workflowID, runID, shuffle.String(testHistoryExecutionTimerID))
-	timer2 := s.newRandomExecutionTimerRow(namespaceID, workflowID, runID, shuffle.String(testHistoryExecutionTimerID))
+	timer1 := s.newRandomExecutionTimerRow(shardID, namespaceID, workflowID, runID, shuffle.String(testHistoryExecutionTimerID))
+	timer2 := s.newRandomExecutionTimerRow(shardID, namespaceID, workflowID, runID, shuffle.String(testHistoryExecutionTimerID))
 	result, err := s.store.ReplaceIntoTimerInfoMaps(newExecutionContext(), []sqlplugin.TimerInfoMapsRow{timer1, timer2})
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -83,12 +86,13 @@ func (s *historyExecutionTimerSuite) TestReplace_Multiple() {
 }
 
 func (s *historyExecutionTimerSuite) TestReplaceSelect_Single() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	timerID := shuffle.String(testHistoryExecutionTimerID)
 
-	timer := s.newRandomExecutionTimerRow(namespaceID, workflowID, runID, timerID)
+	timer := s.newRandomExecutionTimerRow(shardID, namespaceID, workflowID, runID, timerID)
 	result, err := s.store.ReplaceIntoTimerInfoMaps(newExecutionContext(), []sqlplugin.TimerInfoMapsRow{timer})
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -96,6 +100,7 @@ func (s *historyExecutionTimerSuite) TestReplaceSelect_Single() {
 	s.Equal(1, int(rowsAffected))
 
 	selectFilter := sqlplugin.TimerInfoMapsAllFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -114,13 +119,14 @@ func (s *historyExecutionTimerSuite) TestReplaceSelect_Single() {
 func (s *historyExecutionTimerSuite) TestReplaceSelect_Multiple() {
 	numTimers := 20
 
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
 	var timers []sqlplugin.TimerInfoMapsRow
 	for range numTimers {
-		timer := s.newRandomExecutionTimerRow(namespaceID, workflowID, runID, shuffle.String(testHistoryExecutionTimerID))
+		timer := s.newRandomExecutionTimerRow(shardID, namespaceID, workflowID, runID, shuffle.String(testHistoryExecutionTimerID))
 		timers = append(timers, timer)
 	}
 	result, err := s.store.ReplaceIntoTimerInfoMaps(newExecutionContext(), timers)
@@ -130,6 +136,7 @@ func (s *historyExecutionTimerSuite) TestReplaceSelect_Multiple() {
 	s.Equal(numTimers, int(rowsAffected))
 
 	selectFilter := sqlplugin.TimerInfoMapsAllFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -148,12 +155,14 @@ func (s *historyExecutionTimerSuite) TestReplaceSelect_Multiple() {
 }
 
 func (s *historyExecutionTimerSuite) TestDeleteSelect_Single() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	timerID := shuffle.String(testHistoryExecutionTimerID)
 
 	deletFilter := sqlplugin.TimerInfoMapsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -166,6 +175,7 @@ func (s *historyExecutionTimerSuite) TestDeleteSelect_Single() {
 	s.Equal(0, int(rowsAffected))
 
 	selectFilter := sqlplugin.TimerInfoMapsAllFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -176,11 +186,13 @@ func (s *historyExecutionTimerSuite) TestDeleteSelect_Single() {
 }
 
 func (s *historyExecutionTimerSuite) TestDeleteSelect_Multiple() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
 	deleteFilter := sqlplugin.TimerInfoMapsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -193,6 +205,7 @@ func (s *historyExecutionTimerSuite) TestDeleteSelect_Multiple() {
 	s.Equal(0, int(rowsAffected))
 
 	selectFilter := sqlplugin.TimerInfoMapsAllFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -203,11 +216,13 @@ func (s *historyExecutionTimerSuite) TestDeleteSelect_Multiple() {
 }
 
 func (s *historyExecutionTimerSuite) TestDeleteSelect_All() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
 	deleteFilter := sqlplugin.TimerInfoMapsAllFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -219,6 +234,7 @@ func (s *historyExecutionTimerSuite) TestDeleteSelect_All() {
 	s.Equal(0, int(rowsAffected))
 
 	selectFilter := sqlplugin.TimerInfoMapsAllFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -229,12 +245,13 @@ func (s *historyExecutionTimerSuite) TestDeleteSelect_All() {
 }
 
 func (s *historyExecutionTimerSuite) TestReplaceDeleteSelect_Single() {
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	timerID := shuffle.String(testHistoryExecutionTimerID)
 
-	timer := s.newRandomExecutionTimerRow(namespaceID, workflowID, runID, timerID)
+	timer := s.newRandomExecutionTimerRow(shardID, namespaceID, workflowID, runID, timerID)
 	result, err := s.store.ReplaceIntoTimerInfoMaps(newExecutionContext(), []sqlplugin.TimerInfoMapsRow{timer})
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -242,6 +259,7 @@ func (s *historyExecutionTimerSuite) TestReplaceDeleteSelect_Single() {
 	s.Equal(1, int(rowsAffected))
 
 	deleteFilter := sqlplugin.TimerInfoMapsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -254,6 +272,7 @@ func (s *historyExecutionTimerSuite) TestReplaceDeleteSelect_Single() {
 	s.Equal(1, int(rowsAffected))
 
 	selectFilter := sqlplugin.TimerInfoMapsAllFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -266,6 +285,7 @@ func (s *historyExecutionTimerSuite) TestReplaceDeleteSelect_Single() {
 func (s *historyExecutionTimerSuite) TestReplaceDeleteSelect_Multiple() {
 	numTimers := 20
 
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
@@ -274,7 +294,7 @@ func (s *historyExecutionTimerSuite) TestReplaceDeleteSelect_Multiple() {
 	var timerIDs []string
 	for range numTimers {
 		timerID := shuffle.String(testHistoryExecutionTimerID)
-		timer := s.newRandomExecutionTimerRow(namespaceID, workflowID, runID, timerID)
+		timer := s.newRandomExecutionTimerRow(shardID, namespaceID, workflowID, runID, timerID)
 		timerIDs = append(timerIDs, timerID)
 		timers = append(timers, timer)
 	}
@@ -285,6 +305,7 @@ func (s *historyExecutionTimerSuite) TestReplaceDeleteSelect_Multiple() {
 	s.Equal(numTimers, int(rowsAffected))
 
 	deleteFilter := sqlplugin.TimerInfoMapsFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -297,6 +318,7 @@ func (s *historyExecutionTimerSuite) TestReplaceDeleteSelect_Multiple() {
 	s.Equal(numTimers, int(rowsAffected))
 
 	selectFilter := sqlplugin.TimerInfoMapsAllFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -309,13 +331,14 @@ func (s *historyExecutionTimerSuite) TestReplaceDeleteSelect_Multiple() {
 func (s *historyExecutionTimerSuite) TestReplaceDeleteSelect_All() {
 	numTimers := 20
 
+	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
 	var timers []sqlplugin.TimerInfoMapsRow
 	for range numTimers {
-		timer := s.newRandomExecutionTimerRow(namespaceID, workflowID, runID, shuffle.String(testHistoryExecutionTimerID))
+		timer := s.newRandomExecutionTimerRow(shardID, namespaceID, workflowID, runID, shuffle.String(testHistoryExecutionTimerID))
 		timers = append(timers, timer)
 	}
 	result, err := s.store.ReplaceIntoTimerInfoMaps(newExecutionContext(), timers)
@@ -325,6 +348,7 @@ func (s *historyExecutionTimerSuite) TestReplaceDeleteSelect_All() {
 	s.Equal(numTimers, int(rowsAffected))
 
 	deleteFilter := sqlplugin.TimerInfoMapsAllFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -336,6 +360,7 @@ func (s *historyExecutionTimerSuite) TestReplaceDeleteSelect_All() {
 	s.Equal(numTimers, int(rowsAffected))
 
 	selectFilter := sqlplugin.TimerInfoMapsAllFilter{
+		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -346,12 +371,14 @@ func (s *historyExecutionTimerSuite) TestReplaceDeleteSelect_All() {
 }
 
 func (s *historyExecutionTimerSuite) newRandomExecutionTimerRow(
+	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 	timerID string,
 ) sqlplugin.TimerInfoMapsRow {
 	return sqlplugin.TimerInfoMapsRow{
+		ShardID:      shardID,
 		NamespaceID:  namespaceID,
 		WorkflowID:   workflowID,
 		RunID:        runID,

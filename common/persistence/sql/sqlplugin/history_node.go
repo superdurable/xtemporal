@@ -10,6 +10,7 @@ import (
 type (
 	// HistoryNodeRow represents a row in history_node table
 	HistoryNodeRow struct {
+		ShardID      int32
 		TreeID       primitives.UUID
 		BranchID     primitives.UUID
 		NodeID       int64
@@ -22,6 +23,7 @@ type (
 	// HistoryNodeSelectFilter contains the column names within history_node table that
 	// can be used to filter results through a WHERE clause
 	HistoryNodeSelectFilter struct {
+		ShardID      int32
 		TreeID       primitives.UUID
 		BranchID     primitives.UUID
 		MinNodeID    int64
@@ -36,6 +38,7 @@ type (
 	// HistoryNodeDeleteFilter contains the column names within history_node table that
 	// can be used to filter results through a WHERE clause
 	HistoryNodeDeleteFilter struct {
+		ShardID   int32
 		TreeID    primitives.UUID
 		BranchID  primitives.UUID
 		MinNodeID int64

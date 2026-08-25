@@ -96,20 +96,6 @@ func (mr *MockMetadataMockRecorder) GetCurrentClusterName() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrentClusterName", reflect.TypeOf((*MockMetadata)(nil).GetCurrentClusterName))
 }
 
-// GetCurrentShardCount mocks base method.
-func (m *MockMetadata) GetCurrentShardCount() ShardCount {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCurrentShardCount")
-	ret0, _ := ret[0].(ShardCount)
-	return ret0
-}
-
-// GetCurrentShardCount indicates an expected call of GetCurrentShardCount.
-func (mr *MockMetadataMockRecorder) GetCurrentShardCount() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrentShardCount", reflect.TypeOf((*MockMetadata)(nil).GetCurrentShardCount))
-}
-
 // GetFailoverVersionIncrement mocks base method.
 func (m *MockMetadata) GetFailoverVersionIncrement() int64 {
 	m.ctrl.T.Helper()

@@ -10,6 +10,7 @@ import (
 type (
 	// ActivityInfoMapsRow represents a row in activity_info_maps table
 	ActivityInfoMapsRow struct {
+		ShardID      int32
 		NamespaceID  primitives.UUID
 		WorkflowID   string
 		RunID        primitives.UUID
@@ -19,6 +20,7 @@ type (
 	}
 
 	ActivityInfoMapsFilter struct {
+		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID
@@ -26,6 +28,7 @@ type (
 	}
 
 	ActivityInfoMapsAllFilter struct {
+		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID

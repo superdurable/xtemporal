@@ -67,14 +67,14 @@ func TestUpdateCurrentClusterMetadataRecord(t *testing.T) {
 			require.Equal(t, cfg.ClusterMetadata.ClusterInformation[cfg.ClusterMetadata.CurrentClusterName].RPCAddress, request.ClusterAddress)
 			require.Equal(t, cfg.ClusterMetadata.ClusterInformation[cfg.ClusterMetadata.CurrentClusterName].HTTPAddress, request.HttpAddress)
 			require.Equal(t, cfg.ClusterMetadata.ClusterInformation[cfg.ClusterMetadata.CurrentClusterName].InitialFailoverVersion, request.InitialFailoverVersion)
-			require.Equal(t, int32(0), request.HistoryShardCount)
+			require.Equal(t, cfg.Persistence.NumHistoryShards, request.HistoryShardCount)
 			require.Equal(t, cfg.ClusterMetadata.FailoverVersionIncrement, request.FailoverVersionIncrement)
 			require.Equal(t, int64(1), request.Version)
 			return true, nil
 		},
 	)
 	updateRecord := &persistence.GetClusterMetadataResponse{
-		ClusterMetadata: &persistencespb.ClusterMetadata{},
+		ClusterMetadata: &persistencespb.ClusterMetadata{HistoryShardCount: cfg.Persistence.NumHistoryShards},
 		Version:         1,
 	}
 	err = updateCurrentClusterMetadataRecord(
@@ -83,57 +83,55 @@ func TestUpdateCurrentClusterMetadataRecord(t *testing.T) {
 		cfg,
 		nil,
 		updateRecord,
-		log.NewNoopLogger(),
 	)
 	require.NoError(t, err)
 }
 
-func TestUpdateCurrentClusterMetadataRecord_ShardCount(t *testing.T) {
+func TestUpdateCurrentClusterMetadataRecord_HistoryShardCount(t *testing.T) {
 	configDir := path.Join(testutils.GetRepoRootDirectory(), "config")
-
-	for _, tc := range []struct {
-		name          string
-		persisted     int32
-		configured    int32
-		expectedSaved int32
+	testCases := []struct {
+		name       string
+		env        string
+		persisted  int32
+		configured int32
+		wantErr    string
 	}{
-		{name: "power of two growth is adopted", persisted: 4, configured: 16, expectedSaved: 16},
-		{name: "non power of two growth is refused", persisted: 4, configured: 12, expectedSaved: 4},
-		{name: "shrink is refused", persisted: 8, configured: 4, expectedSaved: 8},
-	} {
+		{name: "SQL increase", env: "development-mysql8", persisted: 4, configured: 8},
+		{name: "SQL non-power-of-two multiple", env: "development-mysql8", persisted: 4, configured: 12},
+		{name: "SQL non-multiple", env: "development-mysql8", persisted: 4, configured: 6, wantErr: "must be a multiple"},
+		{name: "SQL decrease", env: "development-mysql8", persisted: 8, configured: 4, wantErr: "can only increase"},
+		{name: "Cassandra", env: "development-cass-es", persisted: 4, configured: 8, wantErr: "requires SQL persistence"},
+	}
+
+	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			cfg, err := config.Load(
-				config.WithEnv("development-cluster-a"),
-				config.WithConfigDir(configDir),
-			)
+			cfg, err := config.Load(config.WithEnv(tc.env), config.WithConfigDir(configDir))
 			require.NoError(t, err)
 			cfg.Persistence.NumHistoryShards = tc.configured
 
 			controller := gomock.NewController(t)
-			mockClusterMetadataManager := persistence.NewMockClusterMetadataManager(controller)
-			mockClusterMetadataManager.EXPECT().SaveClusterMetadata(gomock.Any(), gomock.Any()).DoAndReturn(
-				func(_ context.Context, request *persistence.SaveClusterMetadataRequest) (bool, error) {
-					require.Equal(t, tc.expectedSaved, request.HistoryShardCount)
-					return true, nil
-				},
-			)
+			manager := persistence.NewMockClusterMetadataManager(controller)
+			if tc.wantErr == "" {
+				manager.EXPECT().SaveClusterMetadata(gomock.Any(), gomock.Any()).DoAndReturn(
+					func(_ context.Context, request *persistence.SaveClusterMetadataRequest) (bool, error) {
+						require.Equal(t, tc.configured, request.HistoryShardCount)
+						return true, nil
+					},
+				)
+			}
 
-			updateRecord := &persistence.GetClusterMetadataResponse{
+			record := &persistence.GetClusterMetadataResponse{
 				ClusterMetadata: &persistencespb.ClusterMetadata{HistoryShardCount: tc.persisted},
 				Version:         1,
 			}
-			require.NoError(t, updateCurrentClusterMetadataRecord(
-				context.TODO(),
-				mockClusterMetadataManager,
-				cfg,
-				nil,
-				updateRecord,
-				log.NewNoopLogger(),
-			))
-
-			// A refused count must not leak into the running config.
-			overwriteCurrentClusterMetadataWithDBRecord(cfg, updateRecord, log.NewNoopLogger())
-			require.Equal(t, tc.expectedSaved, cfg.Persistence.NumHistoryShards)
+			err = updateCurrentClusterMetadataRecord(context.Background(), manager, cfg, nil, record)
+			if tc.wantErr != "" {
+				require.ErrorContains(t, err, tc.wantErr)
+				require.Equal(t, tc.persisted, record.HistoryShardCount)
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, tc.configured, record.HistoryShardCount)
 		})
 	}
 }

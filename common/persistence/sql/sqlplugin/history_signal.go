@@ -10,6 +10,7 @@ import (
 type (
 	// SignalInfoMapsRow represents a row in signal_info_maps table
 	SignalInfoMapsRow struct {
+		ShardID      int32
 		NamespaceID  primitives.UUID
 		WorkflowID   string
 		RunID        primitives.UUID
@@ -19,6 +20,7 @@ type (
 	}
 
 	SignalInfoMapsFilter struct {
+		ShardID      int32
 		NamespaceID  primitives.UUID
 		WorkflowID   string
 		RunID        primitives.UUID
@@ -26,6 +28,7 @@ type (
 	}
 
 	SignalInfoMapsAllFilter struct {
+		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID
