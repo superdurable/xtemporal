@@ -264,6 +264,19 @@ type (
 		// NumHistoryShards is the desired number of history shards. This config doesn't
 		// belong here, needs refactoring
 		NumHistoryShards int32 `yaml:"numHistoryShards" validate:"nonzero"`
+		// AllowHistoryShardCountIncrease permits NumHistoryShards to be raised above the count
+		// already recorded in cluster metadata, adopting the configured value and persisting it.
+		//
+		// Raising the shard count is not a config edit that can be rolled out incrementally: while
+		// two hosts disagree on the count they compute different owning shards for the same
+		// workflow, hold valid range_id leases on different rows of the shards table, and so lose
+		// write exclusion over that workflow without any error surfacing. The whole cluster must be
+		// stopped for the change, and any pending history tasks must be rewritten to their new
+		// shard before it is started again.
+		//
+		// This flag exists so that reaching that state requires saying so, rather than following
+		// from editing a single number.
+		AllowHistoryShardCountIncrease bool `yaml:"allowHistoryShardCountIncrease"`
 		// DataStores contains the configuration for all datastores
 		DataStores map[string]DataStore `yaml:"datastores"`
 		// TransactionSizeLimit is the largest allowed transaction size
