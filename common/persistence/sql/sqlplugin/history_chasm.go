@@ -10,7 +10,6 @@ import (
 type (
 	// ChasmNodeMapsRow represents a row in the chasm_node_maps table.
 	ChasmNodeMapsRow struct {
-		ShardID          int32
 		NamespaceID      primitives.UUID
 		WorkflowID       string
 		RunID            primitives.UUID
@@ -24,7 +23,6 @@ type (
 	// ChasmNodeMapsFilter represents parameters to selecting a particular subset of
 	// a workflow's CHASM nodes.
 	ChasmNodeMapsFilter struct {
-		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID
@@ -34,7 +32,6 @@ type (
 	// ChasmNodeMapsAllFilter represents parameters to selecting all of a workflow's
 	// CHASM nodes.
 	ChasmNodeMapsAllFilter struct {
-		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID

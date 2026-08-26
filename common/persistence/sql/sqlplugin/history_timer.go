@@ -10,7 +10,6 @@ import (
 type (
 	// TimerInfoMapsRow represents a row in timer_info_maps table
 	TimerInfoMapsRow struct {
-		ShardID      int32
 		NamespaceID  primitives.UUID
 		WorkflowID   string
 		RunID        primitives.UUID
@@ -20,7 +19,6 @@ type (
 	}
 
 	TimerInfoMapsFilter struct {
-		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID
@@ -28,7 +26,6 @@ type (
 	}
 
 	TimerInfoMapsAllFilter struct {
-		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID

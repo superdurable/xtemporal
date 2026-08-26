@@ -146,13 +146,13 @@ ORDER BY task_id LIMIT ?`
 	deleteVisibilityTaskQuery      = `DELETE FROM visibility_tasks WHERE shard_id = ? AND task_id = ?`
 	rangeDeleteVisibilityTaskQuery = `DELETE FROM visibility_tasks WHERE shard_id = ? AND task_id >= ? AND task_id < ?`
 
-	bufferedEventsColumns     = `shard_id, namespace_id, workflow_id, run_id, data, data_encoding`
+	bufferedEventsColumns     = `namespace_id, workflow_id, run_id, data, data_encoding`
 	createBufferedEventsQuery = `INSERT INTO buffered_events(` + bufferedEventsColumns + `)
-VALUES (:shard_id, :namespace_id, :workflow_id, :run_id, :data, :data_encoding)`
+VALUES (:namespace_id, :workflow_id, :run_id, :data, :data_encoding)`
 
-	deleteBufferedEventsQuery = `DELETE FROM buffered_events WHERE shard_id=? AND namespace_id=? AND workflow_id=? AND run_id=?`
+	deleteBufferedEventsQuery = `DELETE FROM buffered_events WHERE namespace_id=? AND workflow_id=? AND run_id=?`
 	getBufferedEventsQuery    = `SELECT data, data_encoding FROM buffered_events WHERE
-shard_id=? AND namespace_id=? AND workflow_id=? AND run_id=? ORDER BY id`
+namespace_id=? AND workflow_id=? AND run_id=? ORDER BY id`
 
 	insertReplicationTaskDLQQuery = `
 INSERT INTO replication_tasks_dlq 
@@ -724,7 +724,6 @@ func (mdb *db) SelectFromBufferedEvents(
 	if err := mdb.conn.SelectContext(ctx,
 		&rows,
 		getBufferedEventsQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -735,7 +734,6 @@ func (mdb *db) SelectFromBufferedEvents(
 		rows[i].NamespaceID = filter.NamespaceID
 		rows[i].WorkflowID = filter.WorkflowID
 		rows[i].RunID = filter.RunID
-		rows[i].ShardID = filter.ShardID
 	}
 	return rows, nil
 }
@@ -747,7 +745,6 @@ func (mdb *db) DeleteFromBufferedEvents(
 ) (sql.Result, error) {
 	return mdb.conn.ExecContext(ctx,
 		deleteBufferedEventsQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
