@@ -583,7 +583,6 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 	runID := primitives.MustParseUUID(request.RunID)
 	return m.txExecute(ctx, "DeleteWorkflowExecution", func(tx sqlplugin.Tx) error {
 		_, err := tx.DeleteAllFromChildExecutionInfoMaps(ctx, sqlplugin.ChildExecutionInfoMapsAllFilter{
-			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -592,7 +591,6 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteAllFromChildExecutionInfoMaps: %w", err)
 		}
 		_, err = tx.DeleteAllFromActivityInfoMaps(ctx, sqlplugin.ActivityInfoMapsAllFilter{
-			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -601,7 +599,6 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteAllFromActivityInfoMaps: %w", err)
 		}
 		_, err = tx.DeleteAllFromRequestCancelInfoMaps(ctx, sqlplugin.RequestCancelInfoMapsAllFilter{
-			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -610,7 +607,6 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteAllFromRequestCancelInfoMaps: %w", err)
 		}
 		_, err = tx.DeleteAllFromSignalInfoMaps(ctx, sqlplugin.SignalInfoMapsAllFilter{
-			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -619,7 +615,6 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteAllFromSignalInfoMaps: %w", err)
 		}
 		_, err = tx.DeleteAllFromTimerInfoMaps(ctx, sqlplugin.TimerInfoMapsAllFilter{
-			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -628,7 +623,6 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteAllFromTimerInfoMaps: %w", err)
 		}
 		_, err = tx.DeleteAllFromSignalsRequestedSets(ctx, sqlplugin.SignalsRequestedSetsAllFilter{
-			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -637,7 +631,6 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteAllFromSignalsRequestedSets: %w", err)
 		}
 		_, err = tx.DeleteFromBufferedEvents(ctx, sqlplugin.BufferedEventsFilter{
-			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,

@@ -10,7 +10,6 @@ import (
 type (
 	// RequestCancelInfoMapsRow represents a row in request_cancel_info_maps table
 	RequestCancelInfoMapsRow struct {
-		ShardID      int32
 		NamespaceID  primitives.UUID
 		WorkflowID   string
 		RunID        primitives.UUID
@@ -20,7 +19,6 @@ type (
 	}
 
 	RequestCancelInfoMapsFilter struct {
-		ShardID      int32
 		NamespaceID  primitives.UUID
 		WorkflowID   string
 		RunID        primitives.UUID
@@ -28,7 +26,6 @@ type (
 	}
 
 	RequestCancelInfoMapsAllFilter struct {
-		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID

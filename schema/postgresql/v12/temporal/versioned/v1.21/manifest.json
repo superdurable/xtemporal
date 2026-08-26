@@ -1,0 +1,8 @@
+{
+  "CurrVersion": "1.21",
+  "MinCompatibleVersion": "1.21",
+  "Description": "Drop shard_id from the per-workflow execution map tables and buffered_events",
+  "SchemaUpdateCqlFiles": [
+    "drop_execution_map_shard_id.sql"
+  ]
+}

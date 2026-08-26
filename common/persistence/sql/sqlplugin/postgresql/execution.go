@@ -146,12 +146,12 @@ ORDER BY task_id LIMIT $5`
 	deleteVisibilityTaskQuery      = `DELETE FROM visibility_tasks WHERE shard_id = $1 AND task_id = $2`
 	rangeDeleteVisibilityTaskQuery = `DELETE FROM visibility_tasks WHERE shard_id = $1 AND task_id >= $2 AND task_id < $3`
 
-	bufferedEventsColumns     = `shard_id, namespace_id, workflow_id, run_id, data, data_encoding`
+	bufferedEventsColumns     = `namespace_id, workflow_id, run_id, data, data_encoding`
 	createBufferedEventsQuery = `INSERT INTO buffered_events(` + bufferedEventsColumns + `)
-VALUES (:shard_id, :namespace_id, :workflow_id, :run_id, :data, :data_encoding)`
+VALUES (:namespace_id, :workflow_id, :run_id, :data, :data_encoding)`
 
-	deleteBufferedEventsQuery = `DELETE FROM buffered_events WHERE shard_id = $1 AND namespace_id = $2 AND workflow_id = $3 AND run_id = $4`
-	getBufferedEventsQuery    = `SELECT data, data_encoding FROM buffered_events WHERE shard_id = $1 AND namespace_id = $2 AND workflow_id = $3 AND run_id = $4 ORDER BY id`
+	deleteBufferedEventsQuery = `DELETE FROM buffered_events WHERE namespace_id = $1 AND workflow_id = $2 AND run_id = $3`
+	getBufferedEventsQuery    = `SELECT data, data_encoding FROM buffered_events WHERE namespace_id = $1 AND workflow_id = $2 AND run_id = $3 ORDER BY id`
 
 	insertReplicationTaskDLQQuery = `
 INSERT INTO replication_tasks_dlq 
@@ -726,7 +726,6 @@ func (pdb *db) SelectFromBufferedEvents(
 	if err := pdb.SelectContext(ctx,
 		&rows,
 		getBufferedEventsQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -737,7 +736,6 @@ func (pdb *db) SelectFromBufferedEvents(
 		rows[i].NamespaceID = filter.NamespaceID
 		rows[i].WorkflowID = filter.WorkflowID
 		rows[i].RunID = filter.RunID
-		rows[i].ShardID = filter.ShardID
 	}
 	return rows, nil
 }
@@ -749,7 +747,6 @@ func (pdb *db) DeleteFromBufferedEvents(
 ) (sql.Result, error) {
 	return pdb.ExecContext(ctx,
 		deleteBufferedEventsQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,

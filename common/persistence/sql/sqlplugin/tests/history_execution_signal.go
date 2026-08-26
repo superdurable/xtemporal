@@ -55,13 +55,12 @@ func (s *historyExecutionSignalSuite) TearDownTest() {
 }
 
 func (s *historyExecutionSignalSuite) TestReplace_Single() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	initiatedID := rand.Int63()
 
-	signal := s.newRandomExecutionSignalRow(shardID, namespaceID, workflowID, runID, initiatedID)
+	signal := s.newRandomExecutionSignalRow(namespaceID, workflowID, runID, initiatedID)
 	result, err := s.store.ReplaceIntoSignalInfoMaps(newExecutionContext(), []sqlplugin.SignalInfoMapsRow{signal})
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -70,13 +69,12 @@ func (s *historyExecutionSignalSuite) TestReplace_Single() {
 }
 
 func (s *historyExecutionSignalSuite) TestReplace_Multiple() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
-	signal1 := s.newRandomExecutionSignalRow(shardID, namespaceID, workflowID, runID, rand.Int63())
-	signal2 := s.newRandomExecutionSignalRow(shardID, namespaceID, workflowID, runID, rand.Int63())
+	signal1 := s.newRandomExecutionSignalRow(namespaceID, workflowID, runID, rand.Int63())
+	signal2 := s.newRandomExecutionSignalRow(namespaceID, workflowID, runID, rand.Int63())
 	result, err := s.store.ReplaceIntoSignalInfoMaps(newExecutionContext(), []sqlplugin.SignalInfoMapsRow{signal1, signal2})
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -85,13 +83,12 @@ func (s *historyExecutionSignalSuite) TestReplace_Multiple() {
 }
 
 func (s *historyExecutionSignalSuite) TestReplaceSelect_Single() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	initiatedID := rand.Int63()
 
-	signal := s.newRandomExecutionSignalRow(shardID, namespaceID, workflowID, runID, initiatedID)
+	signal := s.newRandomExecutionSignalRow(namespaceID, workflowID, runID, initiatedID)
 	result, err := s.store.ReplaceIntoSignalInfoMaps(newExecutionContext(), []sqlplugin.SignalInfoMapsRow{signal})
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -99,7 +96,6 @@ func (s *historyExecutionSignalSuite) TestReplaceSelect_Single() {
 	s.Equal(1, int(rowsAffected))
 
 	selectFilter := sqlplugin.SignalInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -118,14 +114,13 @@ func (s *historyExecutionSignalSuite) TestReplaceSelect_Single() {
 func (s *historyExecutionSignalSuite) TestReplaceSelect_Multiple() {
 	numSignals := 20
 
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
 	var signals []sqlplugin.SignalInfoMapsRow
 	for range numSignals {
-		signal := s.newRandomExecutionSignalRow(shardID, namespaceID, workflowID, runID, rand.Int63())
+		signal := s.newRandomExecutionSignalRow(namespaceID, workflowID, runID, rand.Int63())
 		signals = append(signals, signal)
 	}
 	result, err := s.store.ReplaceIntoSignalInfoMaps(newExecutionContext(), signals)
@@ -135,7 +130,6 @@ func (s *historyExecutionSignalSuite) TestReplaceSelect_Multiple() {
 	s.Equal(numSignals, int(rowsAffected))
 
 	selectFilter := sqlplugin.SignalInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -154,14 +148,12 @@ func (s *historyExecutionSignalSuite) TestReplaceSelect_Multiple() {
 }
 
 func (s *historyExecutionSignalSuite) TestDeleteSelect_Single() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	initiatedID := rand.Int63()
 
 	deleteFilter := sqlplugin.SignalInfoMapsFilter{
-		ShardID:      shardID,
 		NamespaceID:  namespaceID,
 		WorkflowID:   workflowID,
 		RunID:        runID,
@@ -174,7 +166,6 @@ func (s *historyExecutionSignalSuite) TestDeleteSelect_Single() {
 	s.Equal(0, int(rowsAffected))
 
 	selectFilter := sqlplugin.SignalInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -185,13 +176,11 @@ func (s *historyExecutionSignalSuite) TestDeleteSelect_Single() {
 }
 
 func (s *historyExecutionSignalSuite) TestDeleteSelect_Multiple() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
 	deleteFilter := sqlplugin.SignalInfoMapsFilter{
-		ShardID:      shardID,
 		NamespaceID:  namespaceID,
 		WorkflowID:   workflowID,
 		RunID:        runID,
@@ -204,7 +193,6 @@ func (s *historyExecutionSignalSuite) TestDeleteSelect_Multiple() {
 	s.Equal(0, int(rowsAffected))
 
 	selectFilter := sqlplugin.SignalInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -215,13 +203,11 @@ func (s *historyExecutionSignalSuite) TestDeleteSelect_Multiple() {
 }
 
 func (s *historyExecutionSignalSuite) TestDeleteSelect_All() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
 	deleteFilter := sqlplugin.SignalInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -233,7 +219,6 @@ func (s *historyExecutionSignalSuite) TestDeleteSelect_All() {
 	s.Equal(0, int(rowsAffected))
 
 	selectFilter := sqlplugin.SignalInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -244,13 +229,12 @@ func (s *historyExecutionSignalSuite) TestDeleteSelect_All() {
 }
 
 func (s *historyExecutionSignalSuite) TestReplaceDeleteSelect_Single() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	initiatedID := rand.Int63()
 
-	signal := s.newRandomExecutionSignalRow(shardID, namespaceID, workflowID, runID, initiatedID)
+	signal := s.newRandomExecutionSignalRow(namespaceID, workflowID, runID, initiatedID)
 	result, err := s.store.ReplaceIntoSignalInfoMaps(newExecutionContext(), []sqlplugin.SignalInfoMapsRow{signal})
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -258,7 +242,6 @@ func (s *historyExecutionSignalSuite) TestReplaceDeleteSelect_Single() {
 	s.Equal(1, int(rowsAffected))
 
 	deleteFilter := sqlplugin.SignalInfoMapsFilter{
-		ShardID:      shardID,
 		NamespaceID:  namespaceID,
 		WorkflowID:   workflowID,
 		RunID:        runID,
@@ -271,7 +254,6 @@ func (s *historyExecutionSignalSuite) TestReplaceDeleteSelect_Single() {
 	s.Equal(1, int(rowsAffected))
 
 	selectFilter := sqlplugin.SignalInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -284,7 +266,6 @@ func (s *historyExecutionSignalSuite) TestReplaceDeleteSelect_Single() {
 func (s *historyExecutionSignalSuite) TestReplaceDeleteSelect_Multiple() {
 	numSignals := 20
 
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
@@ -293,7 +274,7 @@ func (s *historyExecutionSignalSuite) TestReplaceDeleteSelect_Multiple() {
 	var signalInitiatedIDs []int64
 	for range numSignals {
 		signalInitiatedID := rand.Int63()
-		signal := s.newRandomExecutionSignalRow(shardID, namespaceID, workflowID, runID, signalInitiatedID)
+		signal := s.newRandomExecutionSignalRow(namespaceID, workflowID, runID, signalInitiatedID)
 		signalInitiatedIDs = append(signalInitiatedIDs, signalInitiatedID)
 		signals = append(signals, signal)
 	}
@@ -304,7 +285,6 @@ func (s *historyExecutionSignalSuite) TestReplaceDeleteSelect_Multiple() {
 	s.Equal(numSignals, int(rowsAffected))
 
 	deleteFilter := sqlplugin.SignalInfoMapsFilter{
-		ShardID:      shardID,
 		NamespaceID:  namespaceID,
 		WorkflowID:   workflowID,
 		RunID:        runID,
@@ -317,7 +297,6 @@ func (s *historyExecutionSignalSuite) TestReplaceDeleteSelect_Multiple() {
 	s.Equal(numSignals, int(rowsAffected))
 
 	selectFilter := sqlplugin.SignalInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -330,14 +309,13 @@ func (s *historyExecutionSignalSuite) TestReplaceDeleteSelect_Multiple() {
 func (s *historyExecutionSignalSuite) TestReplaceDeleteSelect_All() {
 	numSignals := 20
 
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 
 	var signals []sqlplugin.SignalInfoMapsRow
 	for range numSignals {
-		signal := s.newRandomExecutionSignalRow(shardID, namespaceID, workflowID, runID, rand.Int63())
+		signal := s.newRandomExecutionSignalRow(namespaceID, workflowID, runID, rand.Int63())
 		signals = append(signals, signal)
 	}
 	result, err := s.store.ReplaceIntoSignalInfoMaps(newExecutionContext(), signals)
@@ -347,7 +325,6 @@ func (s *historyExecutionSignalSuite) TestReplaceDeleteSelect_All() {
 	s.Equal(numSignals, int(rowsAffected))
 
 	deleteFilter := sqlplugin.SignalInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -359,7 +336,6 @@ func (s *historyExecutionSignalSuite) TestReplaceDeleteSelect_All() {
 	s.Equal(numSignals, int(rowsAffected))
 
 	selectFilter := sqlplugin.SignalInfoMapsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -370,14 +346,12 @@ func (s *historyExecutionSignalSuite) TestReplaceDeleteSelect_All() {
 }
 
 func (s *historyExecutionSignalSuite) newRandomExecutionSignalRow(
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
 	initiatedID int64,
 ) sqlplugin.SignalInfoMapsRow {
 	return sqlplugin.SignalInfoMapsRow{
-		ShardID:      shardID,
 		NamespaceID:  namespaceID,
 		WorkflowID:   workflowID,
 		RunID:        runID,
