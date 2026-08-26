@@ -28,7 +28,6 @@ CREATE TABLE shards (
 );
 
 CREATE TABLE executions(
-	shard_id INT NOT NULL,
 	namespace_id BINARY(16) NOT NULL,
 	workflow_id VARCHAR(255) NOT NULL,
 	run_id BINARY(16) NOT NULL,
@@ -40,11 +39,10 @@ CREATE TABLE executions(
 	state MEDIUMBLOB NOT NULL,
 	state_encoding VARCHAR(16) NOT NULL,
 	db_record_version BIGINT NOT NULL DEFAULT 0,
-	PRIMARY KEY (shard_id, namespace_id, workflow_id, run_id)
+	PRIMARY KEY (namespace_id, workflow_id, run_id)
 );
 
 CREATE TABLE current_executions(
-	shard_id INT NOT NULL,
 	namespace_id BINARY(16) NOT NULL,
 	workflow_id VARCHAR(255) NOT NULL,
 	--
@@ -57,11 +55,10 @@ CREATE TABLE current_executions(
 	-- `data` contains the WorkflowExecutionState (same as in `executions.state` above)
 	data MEDIUMBLOB NOT NULL,
 	data_encoding VARCHAR(16) NOT NULL DEFAULT '',
-	PRIMARY KEY (shard_id, namespace_id, workflow_id)
+	PRIMARY KEY (namespace_id, workflow_id)
 );
 
 CREATE TABLE current_chasm_executions(
-	shard_id INT NOT NULL,
 	namespace_id BINARY(16) NOT NULL,
 	business_id VARCHAR(255) NOT NULL,
 	archetype_id BIGINT NOT NULL,
@@ -75,7 +72,7 @@ CREATE TABLE current_chasm_executions(
 	-- `data` contains the ExecutionState (same as in `executions.state` above)
 	data MEDIUMBLOB NOT NULL,
 	data_encoding VARCHAR(16) NOT NULL DEFAULT '',
-	PRIMARY KEY (shard_id, namespace_id, business_id, archetype_id)
+	PRIMARY KEY (namespace_id, business_id, archetype_id)
 );
 
 CREATE TABLE buffered_events (

@@ -581,7 +581,6 @@ func lockCurrentExecutionIfExists(
 	archetypeID chasm.ArchetypeID,
 ) (*sqlplugin.CurrentExecutionsRow, error) {
 	rows, err := tx.LockCurrentExecutionsJoinExecutions(ctx, sqlplugin.CurrentExecutionsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		ArchetypeID: archetypeID,
@@ -674,7 +673,6 @@ func lockExecution(
 ) (int64, int64, error) {
 
 	dbRecordVersion, nextEventID, err := tx.WriteLockExecutions(ctx, sqlplugin.ExecutionsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -948,7 +946,6 @@ func assertNotCurrentExecution(
 	serializer serialization.Serializer,
 ) error {
 	currentRow, err := tx.LockCurrentExecutions(ctx, sqlplugin.CurrentExecutionsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		ArchetypeID: archetypeID,
@@ -996,7 +993,6 @@ func assertRunIDAndUpdateCurrentExecution(
 	}
 	if err := assertCurrentExecution(ctx,
 		tx,
-		row.ShardID,
 		row.NamespaceID,
 		row.WorkflowID,
 		row.ArchetypeID,
@@ -1011,7 +1007,6 @@ func assertRunIDAndUpdateCurrentExecution(
 func assertCurrentExecution(
 	ctx context.Context,
 	tx sqlplugin.Tx,
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	archetypeID chasm.ArchetypeID,
@@ -1019,7 +1014,6 @@ func assertCurrentExecution(
 ) error {
 
 	currentRow, err := tx.LockCurrentExecutions(ctx, sqlplugin.CurrentExecutionsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		ArchetypeID: archetypeID,
@@ -1104,7 +1098,6 @@ func (m *sqlExecutionStore) buildExecutionRow(
 	}
 
 	return &sqlplugin.ExecutionsRow{
-		ShardID:          shardID,
 		NamespaceID:      nsBytes,
 		WorkflowID:       workflowID,
 		RunID:            ridBytes,
