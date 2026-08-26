@@ -45,5 +45,7 @@ type (
 		// RangeDeleteFromTimerTasks deletes one or more rows from timer_tasks table
 		//  TimerTasksRangeFilter - {TaskID, PageSize} will be ignored
 		RangeDeleteFromTimerTasks(ctx context.Context, filter TimerTasksRangeFilter) (sql.Result, error)
+		// UpdateShardIDOfTimerTask reassigns one row of timer_tasks to newShardID.
+		UpdateShardIDOfTimerTask(ctx context.Context, filter TimerTasksFilter, newShardID int32) (sql.Result, error)
 	}
 )

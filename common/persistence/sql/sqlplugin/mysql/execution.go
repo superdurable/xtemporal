@@ -83,8 +83,9 @@ namespace_id = :namespace_id
 	getHistoryImmediateTasksQuery = `SELECT task_id, data, data_encoding 
  FROM history_immediate_tasks WHERE shard_id = ? AND category_id = ? AND task_id >= ? AND task_id < ? ORDER BY task_id LIMIT ?`
 
-	deleteHistoryImmediateTaskQuery       = `DELETE FROM history_immediate_tasks WHERE shard_id = ? AND category_id = ? AND task_id = ?`
-	rangeDeleteHistoryImmediateTasksQuery = `DELETE FROM history_immediate_tasks WHERE shard_id = ? AND category_id = ? AND task_id >= ? AND task_id < ?`
+	deleteHistoryImmediateTaskQuery          = `DELETE FROM history_immediate_tasks WHERE shard_id = ? AND category_id = ? AND task_id = ?`
+	rangeDeleteHistoryImmediateTasksQuery    = `DELETE FROM history_immediate_tasks WHERE shard_id = ? AND category_id = ? AND task_id >= ? AND task_id < ?`
+	updateShardIDOfHistoryImmediateTaskQuery = `UPDATE history_immediate_tasks SET shard_id = ? WHERE shard_id = ? AND category_id = ? AND task_id = ?`
 
 	createHistoryScheduledTasksQuery = `INSERT INTO history_scheduled_tasks (shard_id, category_id, visibility_timestamp, task_id, data, data_encoding)
   VALUES (:shard_id, :category_id, :visibility_timestamp, :task_id, :data, :data_encoding)`
@@ -96,8 +97,9 @@ namespace_id = :namespace_id
   AND visibility_timestamp < ?
   ORDER BY visibility_timestamp,task_id LIMIT ?`
 
-	deleteHistoryScheduledTaskQuery       = `DELETE FROM history_scheduled_tasks WHERE shard_id = ? AND category_id = ? AND visibility_timestamp = ? AND task_id = ?`
-	rangeDeleteHistoryScheduledTasksQuery = `DELETE FROM history_scheduled_tasks WHERE shard_id = ? AND category_id = ? AND visibility_timestamp >= ? AND visibility_timestamp < ?`
+	deleteHistoryScheduledTaskQuery          = `DELETE FROM history_scheduled_tasks WHERE shard_id = ? AND category_id = ? AND visibility_timestamp = ? AND task_id = ?`
+	rangeDeleteHistoryScheduledTasksQuery    = `DELETE FROM history_scheduled_tasks WHERE shard_id = ? AND category_id = ? AND visibility_timestamp >= ? AND visibility_timestamp < ?`
+	updateShardIDOfHistoryScheduledTaskQuery = `UPDATE history_scheduled_tasks SET shard_id = ? WHERE shard_id = ? AND category_id = ? AND visibility_timestamp = ? AND task_id = ?`
 
 	createTransferTasksQuery = `INSERT INTO transfer_tasks(shard_id, task_id, data, data_encoding) 
  VALUES(:shard_id, :task_id, :data, :data_encoding)`
@@ -105,8 +107,9 @@ namespace_id = :namespace_id
 	getTransferTasksQuery = `SELECT task_id, data, data_encoding 
  FROM transfer_tasks WHERE shard_id = ? AND task_id >= ? AND task_id < ? ORDER BY task_id LIMIT ?`
 
-	deleteTransferTaskQuery      = `DELETE FROM transfer_tasks WHERE shard_id = ? AND task_id = ?`
-	rangeDeleteTransferTaskQuery = `DELETE FROM transfer_tasks WHERE shard_id = ? AND task_id >= ? AND task_id < ?`
+	deleteTransferTaskQuery          = `DELETE FROM transfer_tasks WHERE shard_id = ? AND task_id = ?`
+	rangeDeleteTransferTaskQuery     = `DELETE FROM transfer_tasks WHERE shard_id = ? AND task_id >= ? AND task_id < ?`
+	updateShardIDOfTransferTaskQuery = `UPDATE transfer_tasks SET shard_id = ? WHERE shard_id = ? AND task_id = ?`
 
 	createTimerTasksQuery = `INSERT INTO timer_tasks (shard_id, visibility_timestamp, task_id, data, data_encoding)
   VALUES (:shard_id, :visibility_timestamp, :task_id, :data, :data_encoding)`
@@ -117,8 +120,9 @@ namespace_id = :namespace_id
   AND visibility_timestamp < ?
   ORDER BY visibility_timestamp,task_id LIMIT ?`
 
-	deleteTimerTaskQuery      = `DELETE FROM timer_tasks WHERE shard_id = ? AND visibility_timestamp = ? AND task_id = ?`
-	rangeDeleteTimerTaskQuery = `DELETE FROM timer_tasks WHERE shard_id = ? AND visibility_timestamp >= ? AND visibility_timestamp < ?`
+	deleteTimerTaskQuery          = `DELETE FROM timer_tasks WHERE shard_id = ? AND visibility_timestamp = ? AND task_id = ?`
+	rangeDeleteTimerTaskQuery     = `DELETE FROM timer_tasks WHERE shard_id = ? AND visibility_timestamp >= ? AND visibility_timestamp < ?`
+	updateShardIDOfTimerTaskQuery = `UPDATE timer_tasks SET shard_id = ? WHERE shard_id = ? AND visibility_timestamp = ? AND task_id = ?`
 
 	createReplicationTasksQuery = `INSERT INTO replication_tasks (shard_id, task_id, data, data_encoding) 
   VALUES(:shard_id, :task_id, :data, :data_encoding)`
@@ -126,8 +130,9 @@ namespace_id = :namespace_id
 	getReplicationTasksQuery = `SELECT task_id, data, data_encoding FROM replication_tasks WHERE 
 shard_id = ? AND task_id >= ? AND task_id < ? ORDER BY task_id LIMIT ?`
 
-	deleteReplicationTaskQuery      = `DELETE FROM replication_tasks WHERE shard_id = ? AND task_id = ?`
-	rangeDeleteReplicationTaskQuery = `DELETE FROM replication_tasks WHERE shard_id = ? AND task_id >= ? AND task_id < ?`
+	deleteReplicationTaskQuery          = `DELETE FROM replication_tasks WHERE shard_id = ? AND task_id = ?`
+	rangeDeleteReplicationTaskQuery     = `DELETE FROM replication_tasks WHERE shard_id = ? AND task_id >= ? AND task_id < ?`
+	updateShardIDOfReplicationTaskQuery = `UPDATE replication_tasks SET shard_id = ? WHERE shard_id = ? AND task_id = ?`
 
 	getReplicationTasksDLQQuery = `SELECT task_id, data, data_encoding FROM replication_tasks_dlq WHERE 
 source_cluster_name = ? AND
@@ -142,8 +147,9 @@ ORDER BY task_id LIMIT ?`
 	getVisibilityTasksQuery = `SELECT task_id, data, data_encoding 
  FROM visibility_tasks WHERE shard_id = ? AND task_id >= ? AND task_id < ? ORDER BY task_id LIMIT ?`
 
-	deleteVisibilityTaskQuery      = `DELETE FROM visibility_tasks WHERE shard_id = ? AND task_id = ?`
-	rangeDeleteVisibilityTaskQuery = `DELETE FROM visibility_tasks WHERE shard_id = ? AND task_id >= ? AND task_id < ?`
+	deleteVisibilityTaskQuery          = `DELETE FROM visibility_tasks WHERE shard_id = ? AND task_id = ?`
+	rangeDeleteVisibilityTaskQuery     = `DELETE FROM visibility_tasks WHERE shard_id = ? AND task_id >= ? AND task_id < ?`
+	updateShardIDOfVisibilityTaskQuery = `UPDATE visibility_tasks SET shard_id = ? WHERE shard_id = ? AND task_id = ?`
 
 	bufferedEventsColumns     = `namespace_id, workflow_id, run_id, data, data_encoding`
 	createBufferedEventsQuery = `INSERT INTO buffered_events(` + bufferedEventsColumns + `)
@@ -493,6 +499,21 @@ func (mdb *db) RangeDeleteFromHistoryImmediateTasks(
 	)
 }
 
+// UpdateShardIDOfHistoryImmediateTask reassigns one row of history_immediate_tasks to newShardID.
+func (mdb *db) UpdateShardIDOfHistoryImmediateTask(
+	ctx context.Context,
+	filter sqlplugin.HistoryImmediateTasksFilter,
+	newShardID int32,
+) (sql.Result, error) {
+	return mdb.ExecContext(ctx,
+		updateShardIDOfHistoryImmediateTaskQuery,
+		newShardID,
+		filter.ShardID,
+		filter.CategoryID,
+		filter.TaskID,
+	)
+}
+
 // InsertIntoHistoryScheduledTasks inserts one or more rows into timer_tasks table
 func (mdb *db) InsertIntoHistoryScheduledTasks(
 	ctx context.Context,
@@ -566,6 +587,22 @@ func (mdb *db) RangeDeleteFromHistoryScheduledTasks(
 	)
 }
 
+// UpdateShardIDOfHistoryScheduledTask reassigns one row of history_scheduled_tasks to newShardID.
+func (mdb *db) UpdateShardIDOfHistoryScheduledTask(
+	ctx context.Context,
+	filter sqlplugin.HistoryScheduledTasksFilter,
+	newShardID int32,
+) (sql.Result, error) {
+	return mdb.ExecContext(ctx,
+		updateShardIDOfHistoryScheduledTaskQuery,
+		newShardID,
+		filter.ShardID,
+		filter.CategoryID,
+		filter.VisibilityTimestamp,
+		filter.TaskID,
+	)
+}
+
 // InsertIntoTransferTasks inserts one or more rows into transfer_tasks table
 func (mdb *db) InsertIntoTransferTasks(
 	ctx context.Context,
@@ -618,6 +655,20 @@ func (mdb *db) RangeDeleteFromTransferTasks(
 		filter.ShardID,
 		filter.InclusiveMinTaskID,
 		filter.ExclusiveMaxTaskID,
+	)
+}
+
+// UpdateShardIDOfTransferTask reassigns one row of transfer_tasks to newShardID.
+func (mdb *db) UpdateShardIDOfTransferTask(
+	ctx context.Context,
+	filter sqlplugin.TransferTasksFilter,
+	newShardID int32,
+) (sql.Result, error) {
+	return mdb.ExecContext(ctx,
+		updateShardIDOfTransferTaskQuery,
+		newShardID,
+		filter.ShardID,
+		filter.TaskID,
 	)
 }
 
@@ -688,6 +739,21 @@ func (mdb *db) RangeDeleteFromTimerTasks(
 		filter.ShardID,
 		filter.InclusiveMinVisibilityTimestamp,
 		filter.ExclusiveMaxVisibilityTimestamp,
+	)
+}
+
+// UpdateShardIDOfTimerTask reassigns one row of timer_tasks to newShardID.
+func (mdb *db) UpdateShardIDOfTimerTask(
+	ctx context.Context,
+	filter sqlplugin.TimerTasksFilter,
+	newShardID int32,
+) (sql.Result, error) {
+	return mdb.ExecContext(ctx,
+		updateShardIDOfTimerTaskQuery,
+		newShardID,
+		filter.ShardID,
+		filter.VisibilityTimestamp,
+		filter.TaskID,
 	)
 }
 
@@ -788,6 +854,20 @@ func (mdb *db) RangeDeleteFromReplicationTasks(
 		filter.ShardID,
 		filter.InclusiveMinTaskID,
 		filter.ExclusiveMaxTaskID,
+	)
+}
+
+// UpdateShardIDOfReplicationTask reassigns one row of replication_tasks to newShardID.
+func (mdb *db) UpdateShardIDOfReplicationTask(
+	ctx context.Context,
+	filter sqlplugin.ReplicationTasksFilter,
+	newShardID int32,
+) (sql.Result, error) {
+	return mdb.ExecContext(ctx,
+		updateShardIDOfReplicationTaskQuery,
+		newShardID,
+		filter.ShardID,
+		filter.TaskID,
 	)
 }
 
@@ -900,6 +980,20 @@ func (mdb *db) RangeDeleteFromVisibilityTasks(
 		filter.ShardID,
 		filter.InclusiveMinTaskID,
 		filter.ExclusiveMaxTaskID,
+	)
+}
+
+// UpdateShardIDOfVisibilityTask reassigns one row of visibility_tasks to newShardID.
+func (mdb *db) UpdateShardIDOfVisibilityTask(
+	ctx context.Context,
+	filter sqlplugin.VisibilityTasksFilter,
+	newShardID int32,
+) (sql.Result, error) {
+	return mdb.ExecContext(ctx,
+		updateShardIDOfVisibilityTaskQuery,
+		newShardID,
+		filter.ShardID,
+		filter.TaskID,
 	)
 }
 

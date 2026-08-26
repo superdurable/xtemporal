@@ -44,5 +44,7 @@ type (
 		// RangeDeleteFromHistoryImmediateTasks deletes one or more rows from history_immediate_tasks table.
 		//  HistoryImmediateTasksRangeFilter - {PageSize} will be ignored
 		RangeDeleteFromHistoryImmediateTasks(ctx context.Context, filter HistoryImmediateTasksRangeFilter) (sql.Result, error)
+		// UpdateShardIDOfHistoryImmediateTask reassigns one row of history_immediate_tasks to newShardID.
+		UpdateShardIDOfHistoryImmediateTask(ctx context.Context, filter HistoryImmediateTasksFilter, newShardID int32) (sql.Result, error)
 	}
 )

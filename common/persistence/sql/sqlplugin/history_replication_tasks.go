@@ -41,5 +41,7 @@ type (
 		// DeleteFromReplicationTasks deletes multi rows from replication_tasks table
 		//  ReplicationTasksRangeFilter - {PageSize} will be ignored
 		RangeDeleteFromReplicationTasks(ctx context.Context, filter ReplicationTasksRangeFilter) (sql.Result, error)
+		// UpdateShardIDOfReplicationTask reassigns one row of replication_tasks to newShardID.
+		UpdateShardIDOfReplicationTask(ctx context.Context, filter ReplicationTasksFilter, newShardID int32) (sql.Result, error)
 	}
 )

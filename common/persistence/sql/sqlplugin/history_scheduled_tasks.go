@@ -48,5 +48,7 @@ type (
 		// RangeDeleteFromScheduledTasks deletes one or more rows from history_scheduled_tasks table
 		//  ScheduledTasksRangeFilter - {TaskID, PageSize} will be ignored
 		RangeDeleteFromHistoryScheduledTasks(ctx context.Context, filter HistoryScheduledTasksRangeFilter) (sql.Result, error)
+		// UpdateShardIDOfHistoryScheduledTask reassigns one row of history_scheduled_tasks to newShardID.
+		UpdateShardIDOfHistoryScheduledTask(ctx context.Context, filter HistoryScheduledTasksFilter, newShardID int32) (sql.Result, error)
 	}
 )

@@ -41,5 +41,7 @@ type (
 		// RangeDeleteFromVisibilityTasks deletes one or more rows from visibility_tasks table.
 		//  VisibilityTasksRangeFilter - {PageSize} will be ignored
 		RangeDeleteFromVisibilityTasks(ctx context.Context, filter VisibilityTasksRangeFilter) (sql.Result, error)
+		// UpdateShardIDOfVisibilityTask reassigns one row of visibility_tasks to newShardID.
+		UpdateShardIDOfVisibilityTask(ctx context.Context, filter VisibilityTasksFilter, newShardID int32) (sql.Result, error)
 	}
 )
