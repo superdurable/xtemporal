@@ -412,6 +412,42 @@ func (m *metadataImpl) refreshLoop(ctx context.Context) error {
 	}
 }
 
+// assertCurrentClusterShardCountUnchanged terminates the process if the current cluster's history
+// shard count has moved since this process loaded it.
+//
+// Startup validation alone cannot make raising the shard count safe: it only sees hosts as they
+// boot, so during a rolling restart a freshly started host runs on the new count while every host
+// that has not restarted yet keeps serving on the old one. Those two hosts compute different owning
+// shards for the same workflow and hold valid range_id leases on different rows of the shards table,
+// so nothing rejects either writer and the workflow's mutable state is corrupted silently.
+//
+// A stale host cannot fix itself — its in-memory shard count is baked into routing decisions
+// throughout the process — so the only safe response is to stop serving. This bounds the window of
+// divergence to one refresh interval rather than eliminating it; the cluster is still expected to be
+// stopped for the change.
+func (m *metadataImpl) assertCurrentClusterShardCountUnchanged(
+	loaded map[string]ClusterInformation,
+	fromDB map[string]*ClusterInformation,
+) {
+	current, ok := loaded[m.currentClusterName]
+	if !ok {
+		return
+	}
+	fresh, ok := fromDB[m.currentClusterName]
+	if !ok || fresh.ShardCount == 0 || current.ShardCount == 0 {
+		return
+	}
+	if fresh.ShardCount != current.ShardCount {
+		m.logger.Fatal(
+			"History shard count for the current cluster changed underneath a running process. "+
+				"This host is routing workflows using a stale shard count and cannot continue.",
+			tag.ClusterName(m.currentClusterName),
+			tag.IgnoredValue(current.ShardCount),
+			tag.Value(fresh.ShardCount),
+		)
+	}
+}
+
 func (m *metadataImpl) refreshClusterMetadata(ctx context.Context) error {
 	clusterMetadataMap, err := m.listAllClusterMetadataFromDB(ctx)
 	if err != nil {
@@ -422,6 +458,7 @@ func (m *metadataImpl) refreshClusterMetadata(ctx context.Context) error {
 	newEntries := make(map[string]*ClusterInformation)
 
 	clusterInfoMap := m.GetAllClusterInfo()
+	m.assertCurrentClusterShardCountUnchanged(clusterInfoMap, clusterMetadataMap)
 	for clusterName, newClusterInfo := range clusterMetadataMap {
 		oldClusterInfo, ok := clusterInfoMap[clusterName]
 		if !ok {
