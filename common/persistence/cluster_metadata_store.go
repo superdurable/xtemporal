@@ -200,11 +200,41 @@ func (m *clusterMetadataManagerImpl) convertInternalGetClusterMetadataResponse(
 	}, nil
 }
 
+// ValidateHistoryShardCountTransition reports whether a cluster's history shard count may move from
+// old to cur.
+//
+// A workflow's shard is hash%N+1 (see common.WorkflowIDToHistoryShard), so when N grows to k*N every
+// old shard s splits deterministically into {s, s+N, ..., s+(k-1)N}: no workflow can land outside
+// that set, which is what makes the change tractable. When k is not an integer the mapping is
+// arbitrary, and common.MapShardID / common.VerifyShardIDMapping — which replication relies on to
+// pair shards across clusters — panic outright on counts that do not divide evenly.
+//
+// Shrinking is rejected: merging two shards would collide their independent task ID sequences, which
+// needs task rewriting rather than just a different modulus.
+func ValidateHistoryShardCountTransition(old int32, cur int32) error {
+	switch {
+	case old == cur:
+		return nil
+	case old == 0 || cur == 0:
+		return serviceerror.NewInvalidArgumentf(
+			"history shard count must be non-zero, got %v -> %v", old, cur)
+	case cur < old:
+		return serviceerror.NewInvalidArgumentf(
+			"history shard count cannot be decreased (%v -> %v)", old, cur)
+	case cur%old != 0:
+		return serviceerror.NewInvalidArgumentf(
+			"history shard count can only be increased to an integer multiple of the current count (%v -> %v)",
+			old, cur)
+	default:
+		return nil
+	}
+}
+
 // immutableFieldsChanged returns true if any of immutable fields changed.
 func immutableFieldsChanged(old *persistencespb.ClusterMetadata, cur *persistencespb.ClusterMetadata) bool {
 	if (old.ClusterName != "" && old.ClusterName != cur.ClusterName) ||
 		(old.ClusterId != "" && old.ClusterId != cur.ClusterId) ||
-		(old.HistoryShardCount != 0 && old.HistoryShardCount != cur.HistoryShardCount) ||
+		(old.HistoryShardCount != 0 && ValidateHistoryShardCountTransition(old.HistoryShardCount, cur.HistoryShardCount) != nil) ||
 		(old.IsGlobalNamespaceEnabled && !cur.IsGlobalNamespaceEnabled) {
 		return true
 	}

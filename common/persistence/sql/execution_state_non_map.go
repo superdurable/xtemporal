@@ -27,7 +27,6 @@ func updateSignalsRequested(
 		rows := make([]sqlplugin.SignalsRequestedSetsRow, 0, len(signalRequestedIDs))
 		for signalRequestedID := range signalRequestedIDs {
 			rows = append(rows, sqlplugin.SignalsRequestedSetsRow{
-				ShardID:     shardID,
 				NamespaceID: namespaceID,
 				WorkflowID:  workflowID,
 				RunID:       runID,
@@ -41,7 +40,6 @@ func updateSignalsRequested(
 
 	if len(deleteIDs) > 0 {
 		if _, err := tx.DeleteFromSignalsRequestedSets(ctx, sqlplugin.SignalsRequestedSetsFilter{
-			ShardID:     shardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  workflowID,
 			RunID:       runID,
@@ -63,7 +61,6 @@ func getSignalsRequested(
 ) ([]string, error) {
 
 	rows, err := db.SelectAllFromSignalsRequestedSets(ctx, sqlplugin.SignalsRequestedSetsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -88,7 +85,6 @@ func deleteSignalsRequestedSet(
 ) error {
 
 	if _, err := tx.DeleteAllFromSignalsRequestedSets(ctx, sqlplugin.SignalsRequestedSetsAllFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -112,7 +108,6 @@ func updateBufferedEvents(
 		return nil
 	}
 	row := sqlplugin.BufferedEventsRow{
-		ShardID:      shardID,
 		NamespaceID:  namespaceID,
 		WorkflowID:   workflowID,
 		RunID:        runID,
@@ -136,7 +131,6 @@ func getBufferedEvents(
 ) ([]*commonpb.DataBlob, error) {
 
 	rows, err := db.SelectFromBufferedEvents(ctx, sqlplugin.BufferedEventsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -161,7 +155,6 @@ func deleteBufferedEvents(
 ) error {
 
 	if _, err := tx.DeleteFromBufferedEvents(ctx, sqlplugin.BufferedEventsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,

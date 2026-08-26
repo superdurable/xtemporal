@@ -14,7 +14,6 @@ import (
 type (
 	// ExecutionsRow represents a row in executions table
 	ExecutionsRow struct {
-		ShardID          int32
 		NamespaceID      primitives.UUID
 		WorkflowID       string
 		RunID            primitives.UUID
@@ -30,7 +29,6 @@ type (
 	// ExecutionsFilter contains the column names within executions table that
 	// can be used to filter results through a WHERE clause
 	ExecutionsFilter struct {
-		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID
@@ -38,7 +36,6 @@ type (
 
 	// CurrentExecutionsRow represents a row in current_executions table
 	CurrentExecutionsRow struct {
-		ShardID          int32
 		NamespaceID      primitives.UUID
 		WorkflowID       string
 		RunID            primitives.UUID
@@ -55,7 +52,6 @@ type (
 	// CurrentExecutionsFilter contains the column names within current_executions table that
 	// can be used to filter results through a WHERE clause
 	CurrentExecutionsFilter struct {
-		ShardID     int32
 		NamespaceID primitives.UUID
 		WorkflowID  string
 		RunID       primitives.UUID
