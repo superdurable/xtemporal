@@ -808,6 +808,14 @@ func updateCurrentClusterMetadataRecord(
 		updateDBRecord = true
 	}
 
+	shardCountChanged, err := reconcileHistoryShardCount(svc, currentClusterDBRecord)
+	if err != nil {
+		return err
+	}
+	if shardCountChanged {
+		updateDBRecord = true
+	}
+
 	if !updateDBRecord {
 		return nil
 	}
@@ -824,6 +832,50 @@ func updateCurrentClusterMetadataRecord(
 	return nil
 }
 
+// reconcileHistoryShardCount compares the configured history shard count against the one recorded in
+// cluster metadata and reports whether the record needs updating.
+//
+// The configured value wins, which is the opposite of how the rest of the cluster metadata
+// reconciliation works: every workflow's owning shard is derived from this number, so a host that
+// quietly adopted a different count than it was configured with would route workflows to shards its
+// operator did not intend. A mismatch is therefore refused rather than papered over.
+//
+// The one accepted mismatch is a deliberate increase, which requires persistence.allowHistoryShardCountIncrease
+// as well. See that field for why raising the count is not a rolling change.
+func reconcileHistoryShardCount(
+	svc *config.Config,
+	currentClusterDBRecord *persistence.GetClusterMetadataResponse,
+) (bool, error) {
+	configured := svc.Persistence.NumHistoryShards
+	persisted := currentClusterDBRecord.HistoryShardCount
+
+	if configured == persisted {
+		return false, nil
+	}
+	if persisted == 0 {
+		// Predates the field, or a record written without it. Nothing has been sharded under a
+		// different count, so adopting the configured one is just filling in the blank.
+		currentClusterDBRecord.HistoryShardCount = configured
+		return true, nil
+	}
+	if err := persistence.ValidateHistoryShardCountTransition(persisted, configured); err != nil {
+		return false, fmt.Errorf(
+			"persistence.numHistoryShards is %v but cluster metadata records %v: %w",
+			configured, persisted, err)
+	}
+	if !svc.Persistence.AllowHistoryShardCountIncrease {
+		return false, fmt.Errorf(
+			"persistence.numHistoryShards is %v but cluster metadata records %v; "+
+				"set persistence.allowHistoryShardCountIncrease to adopt the configured count. "+
+				"The whole cluster must be stopped for this change and pending history tasks must be "+
+				"rewritten to their new shard first",
+			configured, persisted)
+	}
+
+	currentClusterDBRecord.HistoryShardCount = configured
+	return true, nil
+}
+
 func overwriteCurrentClusterMetadataWithDBRecord(
 	svc *config.Config,
 	currentClusterDBRecord *persistence.GetClusterMetadataResponse,
@@ -837,15 +889,6 @@ func overwriteCurrentClusterMetadataWithDBRecord(
 			tag.IgnoredValue(clusterMetadata.EnableGlobalNamespace),
 			tag.Value(currentClusterDBRecord.IsGlobalNamespaceEnabled))
 		svc.ClusterMetadata.EnableGlobalNamespace = currentClusterDBRecord.IsGlobalNamespaceEnabled
-	}
-	persistedShardCount := currentClusterDBRecord.HistoryShardCount
-	if svc.Persistence.NumHistoryShards != persistedShardCount {
-		logger.Warn(
-			mismatchLogMessage,
-			tag.Key("persistence.numHistoryShards"),
-			tag.IgnoredValue(svc.Persistence.NumHistoryShards),
-			tag.Value(persistedShardCount))
-		svc.Persistence.NumHistoryShards = persistedShardCount
 	}
 	if currentClusterDBRecord.FailoverVersionIncrement != clusterMetadata.FailoverVersionIncrement {
 		logger.Warn(
