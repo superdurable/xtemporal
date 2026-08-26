@@ -308,7 +308,6 @@ CREATE TABLE chasm_node_maps (
 
 -- history eventsV2: history_node stores history event data
 CREATE TABLE history_node (
-	shard_id INT NOT NULL,
 	tree_id BINARY(16) NOT NULL,
 	branch_id BINARY(16) NOT NULL,
 	node_id BIGINT NOT NULL,
@@ -317,18 +316,17 @@ CREATE TABLE history_node (
 	prev_txn_id BIGINT NOT NULL DEFAULT 0,
 	data MEDIUMBLOB NOT NULL,
 	data_encoding VARCHAR(16) NOT NULL,
-	PRIMARY KEY (shard_id, tree_id, branch_id, node_id, txn_id)
+	PRIMARY KEY (tree_id, branch_id, node_id, txn_id)
 );
 
 -- history eventsV2: history_tree stores branch metadata
 CREATE TABLE history_tree (
-	shard_id INT NOT NULL,
 	tree_id BINARY(16) NOT NULL,
 	branch_id BINARY(16) NOT NULL,
 	--
 	data MEDIUMBLOB NOT NULL,
 	data_encoding VARCHAR(16) NOT NULL,
-	PRIMARY KEY (shard_id, tree_id, branch_id)
+	PRIMARY KEY (tree_id, branch_id)
 );
 
 CREATE TABLE queue (

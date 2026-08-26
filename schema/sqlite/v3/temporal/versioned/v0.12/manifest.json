@@ -1,0 +1,8 @@
+{
+  "CurrVersion": "0.12",
+  "MinCompatibleVersion": "0.12",
+  "Description": "Drop shard_id from history_node and history_tree so history data is independent of the history shard count",
+  "SchemaUpdateCqlFiles": [
+    "drop_history_shard_id.sql"
+  ]
+}
