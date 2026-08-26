@@ -148,4 +148,3 @@ INSERT INTO chasm_node_maps_new (namespace_id, workflow_id, run_id, chasm_path, 
 DROP TABLE chasm_node_maps;
 
 ALTER TABLE chasm_node_maps_new RENAME TO chasm_node_maps;
-

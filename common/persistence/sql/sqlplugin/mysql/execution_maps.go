@@ -28,7 +28,7 @@ run_id = ?`
 	setKeyInMapQryTemplate = `INSERT INTO %[1]v
 (namespace_id, workflow_id, run_id, %[5]v, %[2]v)
 VALUES
-(:namespace_id, :workflow_id, :run_id, :%[5]v, %[3]v) 
+(:namespace_id, :workflow_id, :run_id, :%[5]v, %[3]v)
 ON DUPLICATE KEY UPDATE %[5]v=VALUES(%[5]v), %[4]v;`
 
 	// %[2]v is the name of the key

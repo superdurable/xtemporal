@@ -31,7 +31,7 @@ VALUES
 (:namespace_id, :workflow_id, :run_id, :%[4]v, %[3]v)
 ON CONFLICT (namespace_id, workflow_id, run_id, %[4]v) DO UPDATE
 	SET (namespace_id, workflow_id, run_id, %[4]v, %[2]v)
-  	  = (excluded.namespace_id, excluded.workflow_id, excluded.run_id, excluded.%[4]v, %[5]v)`
+	  = (excluded.namespace_id, excluded.workflow_id, excluded.run_id, excluded.%[4]v, %[5]v)`
 
 	// %[2]v is the name of the key
 	// NOTE: sqlx only support ? when doing `sqlx.In` expanding query

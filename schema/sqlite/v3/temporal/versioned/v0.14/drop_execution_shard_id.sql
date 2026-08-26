@@ -77,4 +77,3 @@ INSERT INTO current_chasm_executions_new (namespace_id, business_id, archetype_i
 DROP TABLE current_chasm_executions;
 
 ALTER TABLE current_chasm_executions_new RENAME TO current_chasm_executions;
-
