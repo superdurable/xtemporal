@@ -80,14 +80,13 @@ func (s *historyCurrentExecutionSuite) TearDownTest() {
 }
 
 func (s *historyCurrentExecutionSuite) TestInsert_Success() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	requestID := primitives.NewUUID().String()
 	lastWriteVersion := rand.Int63()
 
-	currentExecution := s.newRandomCurrentExecutionRow(shardID, namespaceID, workflowID, runID, requestID, lastWriteVersion)
+	currentExecution := s.newRandomCurrentExecutionRow(namespaceID, workflowID, runID, requestID, lastWriteVersion)
 	result, err := s.store.InsertIntoCurrentExecutions(newExecutionContext(), &currentExecution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -96,34 +95,32 @@ func (s *historyCurrentExecutionSuite) TestInsert_Success() {
 }
 
 func (s *historyCurrentExecutionSuite) TestInsert_Fail_Duplicate() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	requestID := primitives.NewUUID().String()
 	lastWriteVersion := rand.Int63()
 
-	currentExecution := s.newRandomCurrentExecutionRow(shardID, namespaceID, workflowID, runID, requestID, lastWriteVersion)
+	currentExecution := s.newRandomCurrentExecutionRow(namespaceID, workflowID, runID, requestID, lastWriteVersion)
 	result, err := s.store.InsertIntoCurrentExecutions(newExecutionContext(), &currentExecution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
 	s.NoError(err)
 	s.Equal(1, int(rowsAffected))
 
-	currentExecution = s.newRandomCurrentExecutionRow(shardID, namespaceID, workflowID, runID, requestID, lastWriteVersion)
+	currentExecution = s.newRandomCurrentExecutionRow(namespaceID, workflowID, runID, requestID, lastWriteVersion)
 	_, err = s.store.InsertIntoCurrentExecutions(newExecutionContext(), &currentExecution)
 	s.Error(err) // TODO persistence layer should do proper error translation
 }
 
 func (s *historyCurrentExecutionSuite) TestInsertSelect() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	requestID := primitives.NewUUID().String()
 	lastWriteVersion := rand.Int63()
 
-	currentExecution := s.newRandomCurrentExecutionRow(shardID, namespaceID, workflowID, runID, requestID, lastWriteVersion)
+	currentExecution := s.newRandomCurrentExecutionRow(namespaceID, workflowID, runID, requestID, lastWriteVersion)
 	result, err := s.store.InsertIntoCurrentExecutions(newExecutionContext(), &currentExecution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -131,7 +128,6 @@ func (s *historyCurrentExecutionSuite) TestInsertSelect() {
 	s.Equal(1, int(rowsAffected))
 
 	filter := sqlplugin.CurrentExecutionsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       nil,
@@ -143,21 +139,20 @@ func (s *historyCurrentExecutionSuite) TestInsertSelect() {
 }
 
 func (s *historyCurrentExecutionSuite) TestInsertUpdate_Success() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	requestID := primitives.NewUUID().String()
 	lastWriteVersion := rand.Int63()
 
-	currentExecution := s.newRandomCurrentExecutionRow(shardID, namespaceID, workflowID, runID, requestID, lastWriteVersion)
+	currentExecution := s.newRandomCurrentExecutionRow(namespaceID, workflowID, runID, requestID, lastWriteVersion)
 	result, err := s.store.InsertIntoCurrentExecutions(newExecutionContext(), &currentExecution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
 	s.NoError(err)
 	s.Equal(1, int(rowsAffected))
 
-	currentExecution = s.newRandomCurrentExecutionRow(shardID, namespaceID, workflowID, runID, primitives.NewUUID().String(), rand.Int63())
+	currentExecution = s.newRandomCurrentExecutionRow(namespaceID, workflowID, runID, primitives.NewUUID().String(), rand.Int63())
 	result, err = s.store.UpdateCurrentExecutions(newExecutionContext(), &currentExecution)
 	s.NoError(err)
 	rowsAffected, err = result.RowsAffected()
@@ -166,14 +161,13 @@ func (s *historyCurrentExecutionSuite) TestInsertUpdate_Success() {
 }
 
 func (s *historyCurrentExecutionSuite) TestUpdate_Fail() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	requestID := primitives.NewUUID().String()
 	lastWriteVersion := rand.Int63()
 
-	currentExecution := s.newRandomCurrentExecutionRow(shardID, namespaceID, workflowID, runID, requestID, lastWriteVersion)
+	currentExecution := s.newRandomCurrentExecutionRow(namespaceID, workflowID, runID, requestID, lastWriteVersion)
 	result, err := s.store.UpdateCurrentExecutions(newExecutionContext(), &currentExecution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -182,21 +176,20 @@ func (s *historyCurrentExecutionSuite) TestUpdate_Fail() {
 }
 
 func (s *historyCurrentExecutionSuite) TestInsertUpdateSelect() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	requestID := primitives.NewUUID().String()
 	lastWriteVersion := rand.Int63()
 
-	currentExecution := s.newRandomCurrentExecutionRow(shardID, namespaceID, workflowID, runID, requestID, lastWriteVersion)
+	currentExecution := s.newRandomCurrentExecutionRow(namespaceID, workflowID, runID, requestID, lastWriteVersion)
 	result, err := s.store.InsertIntoCurrentExecutions(newExecutionContext(), &currentExecution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
 	s.NoError(err)
 	s.Equal(1, int(rowsAffected))
 
-	currentExecution = s.newRandomCurrentExecutionRow(shardID, namespaceID, workflowID, runID, primitives.NewUUID().String(), rand.Int63())
+	currentExecution = s.newRandomCurrentExecutionRow(namespaceID, workflowID, runID, primitives.NewUUID().String(), rand.Int63())
 	result, err = s.store.UpdateCurrentExecutions(newExecutionContext(), &currentExecution)
 	s.NoError(err)
 	rowsAffected, err = result.RowsAffected()
@@ -204,7 +197,6 @@ func (s *historyCurrentExecutionSuite) TestInsertUpdateSelect() {
 	s.Equal(1, int(rowsAffected))
 
 	filter := sqlplugin.CurrentExecutionsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       nil,
@@ -216,14 +208,13 @@ func (s *historyCurrentExecutionSuite) TestInsertUpdateSelect() {
 }
 
 func (s *historyCurrentExecutionSuite) TestInsertDeleteSelect_Success() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	requestID := primitives.NewUUID().String()
 	lastWriteVersion := rand.Int63()
 
-	currentExecution := s.newRandomCurrentExecutionRow(shardID, namespaceID, workflowID, runID, requestID, lastWriteVersion)
+	currentExecution := s.newRandomCurrentExecutionRow(namespaceID, workflowID, runID, requestID, lastWriteVersion)
 	result, err := s.store.InsertIntoCurrentExecutions(newExecutionContext(), &currentExecution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -231,7 +222,6 @@ func (s *historyCurrentExecutionSuite) TestInsertDeleteSelect_Success() {
 	s.Equal(1, int(rowsAffected))
 
 	filter := sqlplugin.CurrentExecutionsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -249,14 +239,13 @@ func (s *historyCurrentExecutionSuite) TestInsertDeleteSelect_Success() {
 }
 
 func (s *historyCurrentExecutionSuite) TestInsertDeleteSelect_Fail() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	requestID := primitives.NewUUID().String()
 	lastWriteVersion := rand.Int63()
 
-	currentExecution := s.newRandomCurrentExecutionRow(shardID, namespaceID, workflowID, runID, requestID, lastWriteVersion)
+	currentExecution := s.newRandomCurrentExecutionRow(namespaceID, workflowID, runID, requestID, lastWriteVersion)
 	result, err := s.store.InsertIntoCurrentExecutions(newExecutionContext(), &currentExecution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -264,7 +253,6 @@ func (s *historyCurrentExecutionSuite) TestInsertDeleteSelect_Fail() {
 	s.Equal(1, int(rowsAffected))
 
 	filter := sqlplugin.CurrentExecutionsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       primitives.NewUUID(),
@@ -283,14 +271,13 @@ func (s *historyCurrentExecutionSuite) TestInsertDeleteSelect_Fail() {
 }
 
 func (s *historyCurrentExecutionSuite) TestLock() {
-	shardID := rand.Int31()
 	namespaceID := primitives.NewUUID()
 	workflowID := shuffle.String(testHistoryExecutionWorkflowID)
 	runID := primitives.NewUUID()
 	requestID := primitives.NewUUID().String()
 	lastWriteVersion := rand.Int63()
 
-	currentExecution := s.newRandomCurrentExecutionRow(shardID, namespaceID, workflowID, runID, requestID, lastWriteVersion)
+	currentExecution := s.newRandomCurrentExecutionRow(namespaceID, workflowID, runID, requestID, lastWriteVersion)
 	result, err := s.store.InsertIntoCurrentExecutions(newExecutionContext(), &currentExecution)
 	s.NoError(err)
 	rowsAffected, err := result.RowsAffected()
@@ -300,7 +287,6 @@ func (s *historyCurrentExecutionSuite) TestLock() {
 	// NOTE: lock without transaction is equivalent to select
 	//  this test only test the select functionality
 	filter := sqlplugin.CurrentExecutionsFilter{
-		ShardID:     shardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       nil,
@@ -312,7 +298,6 @@ func (s *historyCurrentExecutionSuite) TestLock() {
 }
 
 func (s *historyCurrentExecutionSuite) newRandomCurrentExecutionRow(
-	shardID int32,
 	namespaceID primitives.UUID,
 	workflowID string,
 	runID primitives.UUID,
@@ -335,7 +320,6 @@ func (s *historyCurrentExecutionSuite) newRandomCurrentExecutionRow(
 	}
 	executionStateBlob, _ := serialization.NewSerializer().WorkflowExecutionStateToBlob(executionState)
 	return sqlplugin.CurrentExecutionsRow{
-		ShardID:          shardID,
 		NamespaceID:      namespaceID,
 		WorkflowID:       workflowID,
 		RunID:            runID,
