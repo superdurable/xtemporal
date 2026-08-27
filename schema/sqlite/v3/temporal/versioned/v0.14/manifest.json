@@ -1,0 +1,8 @@
+{
+  "CurrVersion": "0.14",
+  "MinCompatibleVersion": "0.14",
+  "Description": "Drop shard_id from executions, current_executions and current_chasm_executions",
+  "SchemaUpdateCqlFiles": [
+    "drop_execution_shard_id.sql"
+  ]
+}

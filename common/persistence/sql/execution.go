@@ -178,7 +178,6 @@ func (m *sqlExecutionStore) createWorkflowExecutionTx(
 	}
 
 	row := sqlplugin.CurrentExecutionsRow{
-		ShardID:          shardID,
 		NamespaceID:      namespaceID,
 		WorkflowID:       workflowID,
 		RunID:            runID,
@@ -215,7 +214,6 @@ func (m *sqlExecutionStore) GetWorkflowExecution(
 	workflowID := request.WorkflowID
 	runID := primitives.MustParseUUID(request.RunID)
 	executionsRow, err := m.DB.SelectFromExecutions(ctx, sqlplugin.ExecutionsFilter{
-		ShardID:     request.ShardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  workflowID,
 		RunID:       runID,
@@ -391,7 +389,6 @@ func (m *sqlExecutionStore) updateWorkflowExecutionTx(
 
 	case p.UpdateWorkflowModeUpdateCurrent:
 		row := sqlplugin.CurrentExecutionsRow{
-			ShardID:     shardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  workflowID,
 			ArchetypeID: request.ArchetypeID,
@@ -517,7 +514,6 @@ func (m *sqlExecutionStore) conflictResolveWorkflowExecutionTx(
 		status := executionState.Status
 
 		row := sqlplugin.CurrentExecutionsRow{
-			ShardID:          shardID,
 			NamespaceID:      namespaceID,
 			WorkflowID:       workflowID,
 			RunID:            runID,
@@ -639,7 +635,6 @@ func (m *sqlExecutionStore) DeleteWorkflowExecution(
 			return fmt.Errorf("failed to execute DeleteFromBufferedEvents: %w", err)
 		}
 		_, err = tx.DeleteFromExecutions(ctx, sqlplugin.ExecutionsFilter{
-			ShardID:     request.ShardID,
 			NamespaceID: namespaceID,
 			WorkflowID:  request.WorkflowID,
 			RunID:       runID,
@@ -662,7 +657,6 @@ func (m *sqlExecutionStore) DeleteCurrentWorkflowExecution(
 	namespaceID := primitives.MustParseUUID(request.NamespaceID)
 	runID := primitives.MustParseUUID(request.RunID)
 	_, err := m.DB.DeleteFromCurrentExecutions(ctx, sqlplugin.CurrentExecutionsFilter{
-		ShardID:     request.ShardID,
 		NamespaceID: namespaceID,
 		WorkflowID:  request.WorkflowID,
 		RunID:       runID,
@@ -676,7 +670,6 @@ func (m *sqlExecutionStore) GetCurrentExecution(
 	request *p.GetCurrentExecutionRequest,
 ) (*p.InternalGetCurrentExecutionResponse, error) {
 	row, err := m.DB.SelectFromCurrentExecutions(ctx, sqlplugin.CurrentExecutionsFilter{
-		ShardID:     request.ShardID,
 		NamespaceID: primitives.MustParseUUID(request.NamespaceID),
 		WorkflowID:  request.WorkflowID,
 		ArchetypeID: request.ArchetypeID,
