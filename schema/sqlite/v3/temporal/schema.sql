@@ -28,7 +28,6 @@ CREATE TABLE shards (
 );
 
 CREATE TABLE executions(
-	shard_id INT NOT NULL,
 	namespace_id BINARY(16) NOT NULL,
 	workflow_id VARCHAR(255) NOT NULL,
 	run_id BINARY(16) NOT NULL,
@@ -40,11 +39,10 @@ CREATE TABLE executions(
 	state MEDIUMBLOB NOT NULL,
 	state_encoding VARCHAR(16) NOT NULL,
 	db_record_version BIGINT NOT NULL DEFAULT 0,
-	PRIMARY KEY (shard_id, namespace_id, workflow_id, run_id)
+	PRIMARY KEY (namespace_id, workflow_id, run_id)
 );
 
 CREATE TABLE current_executions(
-	shard_id INT NOT NULL,
 	namespace_id BINARY(16) NOT NULL,
 	workflow_id VARCHAR(255) NOT NULL,
 	--
@@ -57,11 +55,10 @@ CREATE TABLE current_executions(
 	-- `data` contains the WorkflowExecutionState (same as in `executions.state` above)
 	data MEDIUMBLOB NOT NULL,
 	data_encoding VARCHAR(16) NOT NULL DEFAULT '',
-	PRIMARY KEY (shard_id, namespace_id, workflow_id)
+	PRIMARY KEY (namespace_id, workflow_id)
 );
 
 CREATE TABLE current_chasm_executions(
-	shard_id INT NOT NULL,
 	namespace_id BINARY(16) NOT NULL,
 	business_id VARCHAR(255) NOT NULL,
 	archetype_id BIGINT NOT NULL,
@@ -75,11 +72,10 @@ CREATE TABLE current_chasm_executions(
 	-- `data` contains the ExecutionState (same as in `executions.state` above)
 	data MEDIUMBLOB NOT NULL,
 	data_encoding VARCHAR(16) NOT NULL DEFAULT '',
-	PRIMARY KEY (shard_id, namespace_id, business_id, archetype_id)
+	PRIMARY KEY (namespace_id, business_id, archetype_id)
 );
 
 CREATE TABLE buffered_events (
-	shard_id INT NOT NULL,
 	namespace_id BINARY(16) NOT NULL,
 	workflow_id VARCHAR(255) NOT NULL,
 	run_id BINARY(16) NOT NULL,
@@ -87,7 +83,7 @@ CREATE TABLE buffered_events (
 	--
 	data MEDIUMBLOB NOT NULL,
 	data_encoding VARCHAR(16) NOT NULL,
-	PRIMARY KEY (shard_id, namespace_id, workflow_id, run_id, id)
+	PRIMARY KEY (namespace_id, workflow_id, run_id, id)
 );
 
 CREATE TABLE tasks (
@@ -223,7 +219,6 @@ CREATE TABLE visibility_tasks(
 
 CREATE TABLE activity_info_maps (
 -- each row corresponds to one key of one map<string, ActivityInfo>
-	shard_id INT NOT NULL,
 	namespace_id BINARY(16) NOT NULL,
 	workflow_id VARCHAR(255) NOT NULL,
 	run_id BINARY(16) NOT NULL,
@@ -231,11 +226,10 @@ CREATE TABLE activity_info_maps (
 --
 	data MEDIUMBLOB NOT NULL,
 	data_encoding VARCHAR(16),
-	PRIMARY KEY (shard_id, namespace_id, workflow_id, run_id, schedule_id)
+	PRIMARY KEY (namespace_id, workflow_id, run_id, schedule_id)
 );
 
 CREATE TABLE timer_info_maps (
-	shard_id INT NOT NULL,
 	namespace_id BINARY(16) NOT NULL,
 	workflow_id VARCHAR(255) NOT NULL,
 	run_id BINARY(16) NOT NULL,
@@ -243,11 +237,10 @@ CREATE TABLE timer_info_maps (
 --
 	data MEDIUMBLOB NOT NULL,
 	data_encoding VARCHAR(16),
-	PRIMARY KEY (shard_id, namespace_id, workflow_id, run_id, timer_id)
+	PRIMARY KEY (namespace_id, workflow_id, run_id, timer_id)
 );
 
 CREATE TABLE child_execution_info_maps (
-	shard_id INT NOT NULL,
 	namespace_id BINARY(16) NOT NULL,
 	workflow_id VARCHAR(255) NOT NULL,
 	run_id BINARY(16) NOT NULL,
@@ -255,11 +248,10 @@ CREATE TABLE child_execution_info_maps (
 --
 	data MEDIUMBLOB NOT NULL,
 	data_encoding VARCHAR(16),
-	PRIMARY KEY (shard_id, namespace_id, workflow_id, run_id, initiated_id)
+	PRIMARY KEY (namespace_id, workflow_id, run_id, initiated_id)
 );
 
 CREATE TABLE request_cancel_info_maps (
-	shard_id INT NOT NULL,
 	namespace_id BINARY(16) NOT NULL,
 	workflow_id VARCHAR(255) NOT NULL,
 	run_id BINARY(16) NOT NULL,
@@ -267,11 +259,10 @@ CREATE TABLE request_cancel_info_maps (
 --
 	data MEDIUMBLOB NOT NULL,
 	data_encoding VARCHAR(16),
-	PRIMARY KEY (shard_id, namespace_id, workflow_id, run_id, initiated_id)
+	PRIMARY KEY (namespace_id, workflow_id, run_id, initiated_id)
 );
 
 CREATE TABLE signal_info_maps (
-	shard_id INT NOT NULL,
 	namespace_id BINARY(16) NOT NULL,
 	workflow_id VARCHAR(255) NOT NULL,
 	run_id BINARY(16) NOT NULL,
@@ -279,21 +270,19 @@ CREATE TABLE signal_info_maps (
 --
 	data MEDIUMBLOB NOT NULL,
 	data_encoding VARCHAR(16),
-	PRIMARY KEY (shard_id, namespace_id, workflow_id, run_id, initiated_id)
+	PRIMARY KEY (namespace_id, workflow_id, run_id, initiated_id)
 );
 
 CREATE TABLE signals_requested_sets (
-	shard_id INT NOT NULL,
 	namespace_id BINARY(16) NOT NULL,
 	workflow_id VARCHAR(255) NOT NULL,
 	run_id BINARY(16) NOT NULL,
 	signal_id VARCHAR(255) NOT NULL,
 	--
-	PRIMARY KEY (shard_id, namespace_id, workflow_id, run_id, signal_id)
+	PRIMARY KEY (namespace_id, workflow_id, run_id, signal_id)
 );
 
 CREATE TABLE chasm_node_maps (
-  shard_id INT NOT NULL,
   namespace_id BINARY(16) NOT NULL,
   workflow_id VARCHAR(255) NOT NULL,
   run_id BINARY(16) NOT NULL,
@@ -303,7 +292,7 @@ CREATE TABLE chasm_node_maps (
   metadata_encoding VARCHAR(16),
   data MEDIUMBLOB,
   data_encoding VARCHAR(16),
-  PRIMARY KEY (shard_id, namespace_id, workflow_id, run_id, chasm_path)
+  PRIMARY KEY (namespace_id, workflow_id, run_id, chasm_path)
 );
 
 -- history eventsV2: history_node stores history event data

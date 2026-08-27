@@ -10,54 +10,54 @@ import (
 )
 
 const (
-	executionsColumns = `shard_id, namespace_id, workflow_id, run_id, next_event_id, last_write_version, data, data_encoding, state, state_encoding, db_record_version`
+	executionsColumns = `namespace_id, workflow_id, run_id, next_event_id, last_write_version, data, data_encoding, state, state_encoding, db_record_version`
 
 	createExecutionQuery = `INSERT INTO executions(` + executionsColumns + `)
- VALUES(:shard_id, :namespace_id, :workflow_id, :run_id, :next_event_id, :last_write_version, :data, :data_encoding, :state, :state_encoding, :db_record_version)`
+ VALUES(:namespace_id, :workflow_id, :run_id, :next_event_id, :last_write_version, :data, :data_encoding, :state, :state_encoding, :db_record_version)`
 
 	updateExecutionQuery = `UPDATE executions SET
  db_record_version = :db_record_version, next_event_id = :next_event_id, last_write_version = :last_write_version, data = :data, data_encoding = :data_encoding, state = :state, state_encoding = :state_encoding
- WHERE shard_id = :shard_id AND namespace_id = :namespace_id AND workflow_id = :workflow_id AND run_id = :run_id`
+ WHERE namespace_id = :namespace_id AND workflow_id = :workflow_id AND run_id = :run_id`
 
 	getExecutionQuery = `SELECT ` + executionsColumns + ` FROM executions
- WHERE shard_id = ? AND namespace_id = ? AND workflow_id = ? AND run_id = ?`
+ WHERE namespace_id = ? AND workflow_id = ? AND run_id = ?`
 
 	deleteExecutionQuery = `DELETE FROM executions 
- WHERE shard_id = ? AND namespace_id = ? AND workflow_id = ? AND run_id = ?`
+ WHERE namespace_id = ? AND workflow_id = ? AND run_id = ?`
 
 	lockExecutionQueryBase = `SELECT db_record_version, next_event_id FROM executions 
- WHERE shard_id = ? AND namespace_id = ? AND workflow_id = ? AND run_id = ?`
+ WHERE namespace_id = ? AND workflow_id = ? AND run_id = ?`
 
 	writeLockExecutionQuery = lockExecutionQueryBase
 	readLockExecutionQuery  = lockExecutionQueryBase
 
 	createCurrentExecutionQuery = `INSERT INTO current_executions
-(shard_id, namespace_id, workflow_id, run_id, create_request_id, state, status, start_time, last_write_version, data, data_encoding) VALUES
-(:shard_id, :namespace_id, :workflow_id, :run_id, :create_request_id, :state, :status, :start_time, :last_write_version, :data, :data_encoding)`
+(namespace_id, workflow_id, run_id, create_request_id, state, status, start_time, last_write_version, data, data_encoding) VALUES
+(:namespace_id, :workflow_id, :run_id, :create_request_id, :state, :status, :start_time, :last_write_version, :data, :data_encoding)`
 	createCurrentChasmExecutionQuery = `INSERT INTO current_chasm_executions
-(shard_id, namespace_id, business_id, archetype_id, run_id, create_request_id, state, status, start_time, last_write_version, data, data_encoding) VALUES
-(:shard_id, :namespace_id, :workflow_id, :archetype_id, :run_id, :create_request_id, :state, :status, :start_time, :last_write_version, :data, :data_encoding)`
+(namespace_id, business_id, archetype_id, run_id, create_request_id, state, status, start_time, last_write_version, data, data_encoding) VALUES
+(:namespace_id, :workflow_id, :archetype_id, :run_id, :create_request_id, :state, :status, :start_time, :last_write_version, :data, :data_encoding)`
 
-	deleteCurrentExecutionQuery      = "DELETE FROM current_executions WHERE shard_id = ? AND namespace_id = ? AND workflow_id = ? AND run_id = ?"
-	deleteCurrentChasmExecutionQuery = "DELETE FROM current_chasm_executions WHERE shard_id = ? AND namespace_id = ? AND business_id = ? AND archetype_id = ? AND run_id = ?"
+	deleteCurrentExecutionQuery      = "DELETE FROM current_executions WHERE namespace_id = ? AND workflow_id = ? AND run_id = ?"
+	deleteCurrentChasmExecutionQuery = "DELETE FROM current_chasm_executions WHERE namespace_id = ? AND business_id = ? AND archetype_id = ? AND run_id = ?"
 
 	getCurrentExecutionQuery = `SELECT
-shard_id, namespace_id, workflow_id, run_id, create_request_id, state, status, start_time, last_write_version, data, data_encoding
-FROM current_executions WHERE shard_id = ? AND namespace_id = ? AND workflow_id = ?`
+namespace_id, workflow_id, run_id, create_request_id, state, status, start_time, last_write_version, data, data_encoding
+FROM current_executions WHERE namespace_id = ? AND workflow_id = ?`
 	getCurrentChasmExecutionQuery = `SELECT
-shard_id, namespace_id, business_id as workflow_id, run_id, create_request_id, state, status, start_time, last_write_version, data, data_encoding
-FROM current_chasm_executions WHERE shard_id = ? AND namespace_id = ? AND business_id = ? AND archetype_id = ?`
+namespace_id, business_id as workflow_id, run_id, create_request_id, state, status, start_time, last_write_version, data, data_encoding
+FROM current_chasm_executions WHERE namespace_id = ? AND business_id = ? AND archetype_id = ?`
 
 	lockCurrentExecutionJoinExecutionsQuery = `SELECT
-ce.shard_id, ce.namespace_id, ce.workflow_id, ce.run_id, ce.create_request_id, ce.state, ce.status, ce.start_time, e.last_write_version, ce.data, ce.data_encoding
+ce.namespace_id, ce.workflow_id, ce.run_id, ce.create_request_id, ce.state, ce.status, ce.start_time, e.last_write_version, ce.data, ce.data_encoding
 FROM current_executions ce
-INNER JOIN executions e ON e.shard_id = ce.shard_id AND e.namespace_id = ce.namespace_id AND e.workflow_id = ce.workflow_id AND e.run_id = ce.run_id
-WHERE ce.shard_id = ? AND ce.namespace_id = ? AND ce.workflow_id = ?`
+INNER JOIN executions e ON e.namespace_id = ce.namespace_id AND e.workflow_id = ce.workflow_id AND e.run_id = ce.run_id
+WHERE ce.namespace_id = ? AND ce.workflow_id = ?`
 	lockCurrentChasmExecutionJoinExecutionsQuery = `SELECT
-ce.shard_id, ce.namespace_id, ce.business_id as workflow_id, ce.run_id, ce.create_request_id, ce.state, ce.status, ce.start_time, e.last_write_version, ce.data, ce.data_encoding
+ce.namespace_id, ce.business_id as workflow_id, ce.run_id, ce.create_request_id, ce.state, ce.status, ce.start_time, e.last_write_version, ce.data, ce.data_encoding
 FROM current_chasm_executions ce
-INNER JOIN executions e ON e.shard_id = ce.shard_id AND e.namespace_id = ce.namespace_id AND e.workflow_id = ce.business_id AND e.run_id = ce.run_id
-WHERE ce.shard_id = ? AND ce.namespace_id = ? AND ce.business_id = ? AND ce.archetype_id = ?`
+INNER JOIN executions e ON e.namespace_id = ce.namespace_id AND e.workflow_id = ce.business_id AND e.run_id = ce.run_id
+WHERE ce.namespace_id = ? AND ce.business_id = ? AND ce.archetype_id = ?`
 
 	lockCurrentExecutionQuery      = getCurrentExecutionQuery
 	lockCurrentChasmExecutionQuery = getCurrentChasmExecutionQuery
@@ -72,7 +72,6 @@ last_write_version = :last_write_version,
 data = :data,
 data_encoding = :data_encoding
 WHERE
-shard_id = :shard_id AND
 namespace_id = :namespace_id
 `
 	updateCurrentExecutionsQuery      = `UPDATE current_executions` + updateCurrentExecutionsBase + ` AND workflow_id = :workflow_id`
@@ -146,13 +145,13 @@ ORDER BY task_id LIMIT ?`
 	deleteVisibilityTaskQuery      = `DELETE FROM visibility_tasks WHERE shard_id = ? AND task_id = ?`
 	rangeDeleteVisibilityTaskQuery = `DELETE FROM visibility_tasks WHERE shard_id = ? AND task_id >= ? AND task_id < ?`
 
-	bufferedEventsColumns     = `shard_id, namespace_id, workflow_id, run_id, data, data_encoding`
+	bufferedEventsColumns     = `namespace_id, workflow_id, run_id, data, data_encoding`
 	createBufferedEventsQuery = `INSERT INTO buffered_events(` + bufferedEventsColumns + `)
-VALUES (:shard_id, :namespace_id, :workflow_id, :run_id, :data, :data_encoding)`
+VALUES (:namespace_id, :workflow_id, :run_id, :data, :data_encoding)`
 
-	deleteBufferedEventsQuery = `DELETE FROM buffered_events WHERE shard_id=? AND namespace_id=? AND workflow_id=? AND run_id=?`
+	deleteBufferedEventsQuery = `DELETE FROM buffered_events WHERE namespace_id=? AND workflow_id=? AND run_id=?`
 	getBufferedEventsQuery    = `SELECT data, data_encoding FROM buffered_events WHERE
-shard_id=? AND namespace_id=? AND workflow_id=? AND run_id=? ORDER BY id`
+namespace_id=? AND workflow_id=? AND run_id=? ORDER BY id`
 
 	insertReplicationTaskDLQQuery = `
 INSERT INTO replication_tasks_dlq 
@@ -211,7 +210,6 @@ func (mdb *db) SelectFromExecutions(
 	var row sqlplugin.ExecutionsRow
 	err := mdb.conn.GetContext(ctx,
 		&row, getExecutionQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -229,7 +227,6 @@ func (mdb *db) DeleteFromExecutions(
 ) (sql.Result, error) {
 	return mdb.conn.ExecContext(ctx,
 		deleteExecutionQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -245,7 +242,6 @@ func (mdb *db) ReadLockExecutions(
 	err := mdb.conn.GetContext(ctx,
 		&executionVersion,
 		readLockExecutionQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -262,7 +258,6 @@ func (mdb *db) WriteLockExecutions(
 	err := mdb.conn.GetContext(ctx,
 		&executionVersion,
 		writeLockExecutionQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -330,7 +325,6 @@ func (mdb *db) SelectFromCurrentExecutions(
 		err = mdb.conn.GetContext(ctx,
 			&row,
 			getCurrentExecutionQuery,
-			filter.ShardID,
 			filter.NamespaceID,
 			filter.WorkflowID,
 		)
@@ -338,7 +332,6 @@ func (mdb *db) SelectFromCurrentExecutions(
 		err = mdb.conn.GetContext(ctx,
 			&row,
 			getCurrentChasmExecutionQuery,
-			filter.ShardID,
 			filter.NamespaceID,
 			filter.WorkflowID,
 			filter.ArchetypeID,
@@ -361,7 +354,6 @@ func (mdb *db) DeleteFromCurrentExecutions(
 	if filter.ArchetypeID == chasm.WorkflowArchetypeID {
 		return mdb.conn.ExecContext(ctx,
 			deleteCurrentExecutionQuery,
-			filter.ShardID,
 			filter.NamespaceID,
 			filter.WorkflowID,
 			filter.RunID,
@@ -370,7 +362,6 @@ func (mdb *db) DeleteFromCurrentExecutions(
 
 	return mdb.conn.ExecContext(ctx,
 		deleteCurrentChasmExecutionQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.ArchetypeID,
@@ -394,7 +385,6 @@ func (mdb *db) LockCurrentExecutions(
 		err = mdb.conn.GetContext(ctx,
 			&row,
 			lockCurrentExecutionQuery,
-			filter.ShardID,
 			filter.NamespaceID,
 			filter.WorkflowID,
 		)
@@ -402,7 +392,6 @@ func (mdb *db) LockCurrentExecutions(
 		err = mdb.conn.GetContext(ctx,
 			&row,
 			lockCurrentChasmExecutionQuery,
-			filter.ShardID,
 			filter.NamespaceID,
 			filter.WorkflowID,
 			filter.ArchetypeID,
@@ -427,7 +416,6 @@ func (mdb *db) LockCurrentExecutionsJoinExecutions(
 		err = mdb.conn.SelectContext(ctx,
 			&rows,
 			lockCurrentExecutionJoinExecutionsQuery,
-			filter.ShardID,
 			filter.NamespaceID,
 			filter.WorkflowID,
 		)
@@ -435,7 +423,6 @@ func (mdb *db) LockCurrentExecutionsJoinExecutions(
 		err = mdb.conn.SelectContext(ctx,
 			&rows,
 			lockCurrentChasmExecutionJoinExecutionsQuery,
-			filter.ShardID,
 			filter.NamespaceID,
 			filter.WorkflowID,
 			filter.ArchetypeID,
@@ -724,7 +711,6 @@ func (mdb *db) SelectFromBufferedEvents(
 	if err := mdb.conn.SelectContext(ctx,
 		&rows,
 		getBufferedEventsQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
@@ -735,7 +721,6 @@ func (mdb *db) SelectFromBufferedEvents(
 		rows[i].NamespaceID = filter.NamespaceID
 		rows[i].WorkflowID = filter.WorkflowID
 		rows[i].RunID = filter.RunID
-		rows[i].ShardID = filter.ShardID
 	}
 	return rows, nil
 }
@@ -747,7 +732,6 @@ func (mdb *db) DeleteFromBufferedEvents(
 ) (sql.Result, error) {
 	return mdb.conn.ExecContext(ctx,
 		deleteBufferedEventsQuery,
-		filter.ShardID,
 		filter.NamespaceID,
 		filter.WorkflowID,
 		filter.RunID,
