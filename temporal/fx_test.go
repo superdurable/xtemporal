@@ -67,7 +67,8 @@ func TestUpdateCurrentClusterMetadataRecord(t *testing.T) {
 			require.Equal(t, cfg.ClusterMetadata.ClusterInformation[cfg.ClusterMetadata.CurrentClusterName].RPCAddress, request.ClusterAddress)
 			require.Equal(t, cfg.ClusterMetadata.ClusterInformation[cfg.ClusterMetadata.CurrentClusterName].HTTPAddress, request.HttpAddress)
 			require.Equal(t, cfg.ClusterMetadata.ClusterInformation[cfg.ClusterMetadata.CurrentClusterName].InitialFailoverVersion, request.InitialFailoverVersion)
-			require.Equal(t, int32(0), request.HistoryShardCount)
+			// The record carries no shard count, so the configured one fills it in.
+			require.Equal(t, cfg.Persistence.NumHistoryShards, request.HistoryShardCount)
 			require.Equal(t, cfg.ClusterMetadata.FailoverVersionIncrement, request.FailoverVersionIncrement)
 			require.Equal(t, int64(1), request.Version)
 			return true, nil
@@ -95,6 +96,8 @@ func TestOverwriteCurrentClusterMetadataWithDBRecord(t *testing.T) {
 	)
 	require.NoError(t, err)
 
+	configuredShardCount := cfg.Persistence.NumHistoryShards
+
 	dbRecord := &persistence.GetClusterMetadataResponse{
 		ClusterMetadata: &persistencespb.ClusterMetadata{
 			HistoryShardCount:        1024,
@@ -110,7 +113,58 @@ func TestOverwriteCurrentClusterMetadataWithDBRecord(t *testing.T) {
 	)
 	require.Equal(t, int64(10000), cfg.ClusterMetadata.FailoverVersionIncrement)
 	require.True(t, cfg.ClusterMetadata.EnableGlobalNamespace)
-	require.Equal(t, int32(1024), cfg.Persistence.NumHistoryShards)
+	// The shard count is deliberately not adopted from the DB record here: every workflow's owning
+	// shard derives from it, so a mismatch is resolved by reconcileHistoryShardCount, which either
+	// persists the configured value or refuses to start.
+	require.Equal(t, configuredShardCount, cfg.Persistence.NumHistoryShards)
+}
+
+func TestReconcileHistoryShardCount(t *testing.T) {
+	newRecord := func(persisted int32) *persistence.GetClusterMetadataResponse {
+		return &persistence.GetClusterMetadataResponse{
+			ClusterMetadata: &persistencespb.ClusterMetadata{HistoryShardCount: persisted},
+			Version:         1,
+		}
+	}
+
+	testCases := []struct {
+		name          string
+		persisted     int32
+		configured    int32
+		allowIncrease bool
+		wantChanged   bool
+		wantErr       bool
+	}{
+		{name: "unchanged", persisted: 512, configured: 512},
+		{name: "backfills empty record", persisted: 0, configured: 512, wantChanged: true},
+		{name: "doubling with opt-in", persisted: 512, configured: 1024, allowIncrease: true, wantChanged: true},
+		{name: "quadrupling with opt-in", persisted: 512, configured: 2048, allowIncrease: true, wantChanged: true},
+		{name: "increase without opt-in is refused", persisted: 512, configured: 1024, wantErr: true},
+		{name: "non-multiple is refused", persisted: 512, configured: 768, allowIncrease: true, wantErr: true},
+		{name: "decrease is refused", persisted: 1024, configured: 512, allowIncrease: true, wantErr: true},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			cfg := &config.Config{}
+			cfg.Persistence.NumHistoryShards = tc.configured
+			cfg.Persistence.AllowHistoryShardCountIncrease = tc.allowIncrease
+			record := newRecord(tc.persisted)
+
+			changed, err := reconcileHistoryShardCount(cfg, record)
+			if tc.wantErr {
+				require.Error(t, err)
+				// A refused transition must leave the persisted count alone.
+				require.Equal(t, tc.persisted, record.HistoryShardCount)
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, tc.wantChanged, changed)
+			if tc.wantChanged {
+				require.Equal(t, tc.configured, record.HistoryShardCount)
+			}
+		})
+	}
 }
 
 func TestUpdateIndexSearchAttributes(t *testing.T) {
