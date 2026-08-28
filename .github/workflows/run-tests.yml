@@ -109,7 +109,16 @@ jobs:
     runs-on: ${{ 'linux-dind-heavy' }}
     strategy:
       fail-fast: false
-      max-parallel: 1
+      # Two of the three shards at a time. Upstream runs them fully in
+      # parallel on GitHub-hosted runners and has no max-parallel at all; the
+      # limit of 1 here was a local accommodation for a self-hosted heavy pool
+      # of two. The pool is three now, and two concurrent shards is the step
+      # that needs no new assumptions — each shard starts its own PostgreSQL,
+      # and the third runner has not yet run one of these.
+      #
+      # Raise to 3, or drop this line to match upstream, once a shard has been
+      # observed to pass on every runner in the heavy pool.
+      max-parallel: 2
       matrix:
         include:
           - name: functional
