@@ -41,5 +41,7 @@ type (
 		// RangeDeleteFromTransferTasks deletes one or more rows from transfer_tasks table.
 		//  TransferTasksRangeFilter - {PageSize} will be ignored
 		RangeDeleteFromTransferTasks(ctx context.Context, filter TransferTasksRangeFilter) (sql.Result, error)
+		// UpdateShardIDOfTransferTask reassigns one row of transfer_tasks to newShardID.
+		UpdateShardIDOfTransferTask(ctx context.Context, filter TransferTasksFilter, newShardID int32) (sql.Result, error)
 	}
 )
