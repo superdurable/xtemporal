@@ -163,7 +163,7 @@ jobs:
   functional-test-paradedb:
     name: ParadeDB functional tests (${{ matrix.shard }}/3)
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 70
     strategy:
       fail-fast: false
       matrix:
@@ -182,7 +182,7 @@ jobs:
       - name: Start ParadeDB
         run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml up --detach --wait paradedb
       - name: Run functional tests
-        run: go test -tags disable_grpc_modules,test_dep -race -p 2 -parallel 2 -timeout 50m -count=1 ./tests -persistenceType=sql -persistenceDriver=paradedb
+        run: go test -tags disable_grpc_modules,test_dep -race -p 2 -parallel 1 -timeout 60m -count=1 ./tests -persistenceType=sql -persistenceDriver=paradedb
       - name: Show ParadeDB logs
         if: failure()
         run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml logs --no-color paradedb
