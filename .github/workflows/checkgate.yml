@@ -15,7 +15,7 @@ jobs:
   required-checks:
     name: required-checks
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 55
+    timeout-minutes: 90
     steps:
       - name: Wait for required checks
         uses: actions/github-script@v7
@@ -23,7 +23,7 @@ jobs:
           script: |
             const requiredChecks = new Set(["All Linters Succeed", "All Tests Succeed"]);
             const headSHA = context.payload.pull_request.head.sha;
-            const deadline = Date.now() + 50 * 60 * 1000;
+            const deadline = Date.now() + 85 * 60 * 1000;
 
             while (Date.now() < deadline) {
               let checks;
