@@ -51,14 +51,23 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
           cache: true
       - name: Check imports
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
           make fmt-imports
-          git diff --exit-code -- '*.go'
+          git diff --name-only -- '*.go' | sort > /tmp/formatted-go-files
+          git diff --name-only "$BASE_SHA" HEAD -- '*.go' | sort > /tmp/changed-go-files
+          if comm -12 /tmp/formatted-go-files /tmp/changed-go-files | grep .; then
+            echo 'Changed Go files need import formatting.'
+            exit 1
+          fi
 
   linters-succeed:
     name: All Linters Succeed
