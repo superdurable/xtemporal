@@ -29,7 +29,6 @@ import (
 	"sync"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/backoff"
 	"github.com/superdurable/xtemporal/common/cache"
 	"github.com/superdurable/xtemporal/common/channel"
@@ -43,6 +42,7 @@ import (
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/pingable"
+	"go.temporal.io/api/serviceerror"
 	expmaps "golang.org/x/exp/maps"
 )
 

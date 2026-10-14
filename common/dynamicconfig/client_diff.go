@@ -5,9 +5,9 @@ import (
 	"reflect"
 	"strings"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/log"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // DiffAndLogConfigs computes the difference between two ConfigValueMaps. The result is

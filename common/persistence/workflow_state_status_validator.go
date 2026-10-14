@@ -1,9 +1,9 @@
 package persistence
 
 import (
+	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/serviceerror"
-	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 )
 
 var (

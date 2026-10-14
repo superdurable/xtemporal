@@ -13,8 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	taskqueuespb "github.com/superdurable/xtemporal/api/taskqueue/v1"
@@ -25,6 +23,8 @@ import (
 	"github.com/superdurable/xtemporal/common/softassert"
 	"github.com/superdurable/xtemporal/common/testing/testlogger"
 	"github.com/superdurable/xtemporal/common/tqid"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

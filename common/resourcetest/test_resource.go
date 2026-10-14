@@ -3,8 +3,6 @@ package resourcetest
 import (
 	"net"
 
-	"github.com/uber-go/tally/v4"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/superdurable/xtemporal/api/adminservicemock/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
@@ -28,6 +26,8 @@ import (
 	"github.com/superdurable/xtemporal/common/sdk"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/testing/mockapi/workflowservicemock/v1"
+	"github.com/uber-go/tally/v4"
+	"go.temporal.io/api/workflowservice/v1"
 	"go.uber.org/mock/gomock"
 )
 

@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	commandpb "go.temporal.io/api/command/v1"
-	enumspb "go.temporal.io/api/enums/v1"
 	chasmworkflow "github.com/superdurable/xtemporal/chasm/lib/workflow"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	commandpb "go.temporal.io/api/command/v1"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // ErrDuplicateRegistration is returned by a [CommandHandlerRegistry] when it detects duplicate registration.

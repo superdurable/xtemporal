@@ -3,8 +3,8 @@
 package matching
 
 import (
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/namespace"
+	enumspb "go.temporal.io/api/enums/v1"
 	"google.golang.org/protobuf/types/known/anypb"
 )
 

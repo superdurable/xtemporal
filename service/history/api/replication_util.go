@@ -1,8 +1,8 @@
 package api
 
 import (
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/cluster"
+	"go.temporal.io/api/serviceerror"
 )
 
 func ValidateReplicationConfig(

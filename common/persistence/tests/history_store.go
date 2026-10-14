@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	historypb "go.temporal.io/api/history/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/debug"
@@ -18,6 +17,7 @@ import (
 	p "github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/persistence/serialization"
 	"github.com/superdurable/xtemporal/common/testing/protorequire"
+	historypb "go.temporal.io/api/history/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

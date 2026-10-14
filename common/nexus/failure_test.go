@@ -5,12 +5,12 @@ import (
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/common/nexus/nexusrpc"
+	"github.com/superdurable/xtemporal/common/testing/protorequire"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	failurepb "go.temporal.io/api/failure/v1"
 	"go.temporal.io/sdk/temporal"
-	"github.com/superdurable/xtemporal/common/nexus/nexusrpc"
-	"github.com/superdurable/xtemporal/common/testing/protorequire"
 )
 
 func TestRoundTrip_ApplicationFailure(t *testing.T) {

@@ -3,11 +3,11 @@ package executions
 import (
 	"context"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/persistence/versionhistory"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

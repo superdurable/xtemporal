@@ -6,11 +6,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/sdk/testsuite"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservicemock/v1"
 	"github.com/superdurable/xtemporal/client"
@@ -21,6 +16,11 @@ import (
 	"github.com/superdurable/xtemporal/common/primitives"
 	"github.com/superdurable/xtemporal/common/testing/mockapi/workflowservicemock/v1"
 	"github.com/superdurable/xtemporal/service/history/tests"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
+	"go.temporal.io/api/workflowservice/v1"
+	"go.temporal.io/sdk/testsuite"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc"
 )

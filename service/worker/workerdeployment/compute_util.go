@@ -1,9 +1,9 @@
 package workerdeployment
 
 import (
+	wciiface "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	computepb "go.temporal.io/api/compute/v1"
 	deploymentpb "go.temporal.io/api/deployment/v1"
-	wciiface "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	"go.temporal.io/sdk/workflow"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

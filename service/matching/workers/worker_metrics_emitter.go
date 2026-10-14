@@ -1,12 +1,12 @@
 package workers
 
 import (
-	enumspb "go.temporal.io/api/enums/v1"
-	workerpb "go.temporal.io/api/worker/v1"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/tqid"
+	enumspb "go.temporal.io/api/enums/v1"
+	workerpb "go.temporal.io/api/worker/v1"
 )
 
 // WorkerMetricsConfig contains dynamic config flags for worker-related metrics.

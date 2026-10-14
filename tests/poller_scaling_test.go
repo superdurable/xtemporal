@@ -8,6 +8,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/common/payloads"
+	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
+	"github.com/superdurable/xtemporal/common/testing/testvars"
+	"github.com/superdurable/xtemporal/common/util"
+	"github.com/superdurable/xtemporal/tests/testcore"
 	commandpb "go.temporal.io/api/command/v1"
 	commonpb "go.temporal.io/api/common/v1"
 	deploymentpb "go.temporal.io/api/deployment/v1"
@@ -17,12 +23,6 @@ import (
 	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"go.temporal.io/api/workflowservice/v1"
 	sdkclient "go.temporal.io/sdk/client"
-	"github.com/superdurable/xtemporal/common/dynamicconfig"
-	"github.com/superdurable/xtemporal/common/payloads"
-	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
-	"github.com/superdurable/xtemporal/common/testing/testvars"
-	"github.com/superdurable/xtemporal/common/util"
-	"github.com/superdurable/xtemporal/tests/testcore"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

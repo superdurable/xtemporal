@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/goro"
@@ -16,6 +15,7 @@ import (
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/membership"
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/grpc/connectivity"
 )
 

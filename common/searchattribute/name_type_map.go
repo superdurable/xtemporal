@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"maps"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 const (

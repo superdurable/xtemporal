@@ -8,12 +8,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/common/log"
+	"github.com/superdurable/xtemporal/service/worker/scheduler"
 	historypb "go.temporal.io/api/history/v1"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
-	"github.com/superdurable/xtemporal/common/log"
-	"github.com/superdurable/xtemporal/service/worker/scheduler"
 )
 
 // TestReplays tests workflow logic backwards compatibility from previous versions.

@@ -12,9 +12,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/temporalio/ringpop-go"
-	"github.com/temporalio/ringpop-go/discovery/statichosts"
-	"github.com/temporalio/ringpop-go/swim"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/backoff"
 	"github.com/superdurable/xtemporal/common/config"
@@ -26,6 +23,9 @@ import (
 	"github.com/superdurable/xtemporal/common/membership"
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/primitives"
+	"github.com/temporalio/ringpop-go"
+	"github.com/temporalio/ringpop-go/discovery/statichosts"
+	"github.com/temporalio/ringpop-go/swim"
 )
 
 const (

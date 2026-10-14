@@ -4,8 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/cluster"
 	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
@@ -21,6 +19,8 @@ import (
 	"github.com/superdurable/xtemporal/common/quotas"
 	"github.com/superdurable/xtemporal/common/resolver"
 	otel "github.com/superdurable/xtemporal/common/telemetry"
+	"go.opentelemetry.io/otel/trace"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/fx"
 )
 

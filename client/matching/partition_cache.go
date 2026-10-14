@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/goro"
 	"github.com/superdurable/xtemporal/common/metrics"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // Shards should be a power of 2.

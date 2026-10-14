@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/debug"
 	"github.com/superdurable/xtemporal/common/log"
@@ -19,6 +18,7 @@ import (
 	queueserrors "github.com/superdurable/xtemporal/service/history/queues/errors"
 	"github.com/superdurable/xtemporal/service/history/tasks"
 	wcache "github.com/superdurable/xtemporal/service/history/workflow/cache"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 const (

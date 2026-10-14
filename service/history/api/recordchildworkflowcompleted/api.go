@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common"
@@ -14,6 +12,8 @@ import (
 	"github.com/superdurable/xtemporal/service/history/api"
 	"github.com/superdurable/xtemporal/service/history/consts"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // maxResetRedirectCount is the number of times we follow the reset run ID to forward the request to the new parent.

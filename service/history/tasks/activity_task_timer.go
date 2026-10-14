@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/definition"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 var _ Task = (*ActivityTimeoutTask)(nil)

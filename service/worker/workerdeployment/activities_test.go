@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/sdk/testsuite"
 	deploymentspb "github.com/superdurable/xtemporal/api/deployment/v1"
 	"github.com/superdurable/xtemporal/api/historyservicemock/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
@@ -13,6 +11,8 @@ import (
 	"github.com/superdurable/xtemporal/common/metrics/metricstest"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/testing/testvars"
+	"go.temporal.io/api/serviceerror"
+	"go.temporal.io/sdk/testsuite"
 	"go.uber.org/mock/gomock"
 )
 

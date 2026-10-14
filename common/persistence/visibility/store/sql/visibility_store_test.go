@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/temporalio/sqlparser"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
@@ -13,6 +12,7 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin/postgresql"
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin/sqlite"
 	"github.com/superdurable/xtemporal/common/searchattribute"
+	"github.com/temporalio/sqlparser"
 	"go.uber.org/mock/gomock"
 )
 

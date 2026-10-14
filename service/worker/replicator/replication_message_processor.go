@@ -6,7 +6,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
@@ -22,6 +21,7 @@ import (
 	"github.com/superdurable/xtemporal/common/namespace/nsreplication"
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/rpc"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

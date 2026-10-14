@@ -9,12 +9,12 @@ import (
 	"regexp"
 	"slices"
 
-	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	"github.com/superdurable/xtemporal/cmd/tools/codegen"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 const maxMessageDepth = 5

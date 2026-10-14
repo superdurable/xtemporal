@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	tokenspb "github.com/superdurable/xtemporal/api/token/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 func TestCallbackTokenGenerator_DecodeCompletion(t *testing.T) {

@@ -3,12 +3,12 @@ package activity
 import (
 	"context"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/chasm/lib/activity/gen/activitypb/v1"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/resource"
 	"github.com/superdurable/xtemporal/common/util"
+	enumspb "go.temporal.io/api/enums/v1"
 	"go.uber.org/fx"
 )
 

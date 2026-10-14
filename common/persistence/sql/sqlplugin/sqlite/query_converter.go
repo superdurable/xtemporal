@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/temporalio/sqlparser"
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store/query"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	"github.com/temporalio/sqlparser"
 )
 
 var maxDatetime = time.Date(9999, 12, 31, 23, 59, 59, 0, time.UTC)

@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	commonclock "github.com/superdurable/xtemporal/common/clock"
 	hlc "github.com/superdurable/xtemporal/common/clock/hybrid_logical_clock"
 	"github.com/superdurable/xtemporal/common/testing/protoassert"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
+	"go.temporal.io/api/workflowservice/v1"
 	"google.golang.org/protobuf/proto"
 )
 

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	batchspb "github.com/superdurable/xtemporal/api/batch/v1"
+	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	batchpb "go.temporal.io/api/batch/v1"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
@@ -13,8 +15,6 @@ import (
 	"go.temporal.io/api/workflowservice/v1"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
-	batchspb "github.com/superdurable/xtemporal/api/batch/v1"
-	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

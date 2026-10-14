@@ -1,9 +1,9 @@
 package wci
 
 import (
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
 	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
 	"github.com/superdurable/xtemporal/service/worker"
 )
 
