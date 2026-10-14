@@ -1,7 +1,6 @@
 package queues
 
 import (
-	"go.opentelemetry.io/otel/trace"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/clock"
 	"github.com/superdurable/xtemporal/common/cluster"
@@ -10,6 +9,7 @@ import (
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/service/history/tasks"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type (

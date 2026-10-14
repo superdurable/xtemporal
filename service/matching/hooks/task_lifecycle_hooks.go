@@ -3,10 +3,10 @@ package hooks
 import (
 	"context"
 
-	deploymentpb "go.temporal.io/api/deployment/v1"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/tqid"
+	deploymentpb "go.temporal.io/api/deployment/v1"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // SyncMatchOutcome describes the outcome of a sync match attempt from the hook's perspective.

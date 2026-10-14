@@ -6,6 +6,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	commonnexus "github.com/superdurable/xtemporal/common/nexus"
+	sdkconverter "github.com/superdurable/xtemporal/common/sdk"
+	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
+	"github.com/superdurable/xtemporal/common/testing/protorequire"
+	"github.com/superdurable/xtemporal/tests/testcore"
 	commandpb "go.temporal.io/api/command/v1"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
@@ -14,12 +20,6 @@ import (
 	"go.temporal.io/api/workflowservice/v1"
 	"go.temporal.io/api/workflowservice/v1/workflowservicenexus"
 	"go.temporal.io/sdk/client"
-	"github.com/superdurable/xtemporal/common/dynamicconfig"
-	commonnexus "github.com/superdurable/xtemporal/common/nexus"
-	sdkconverter "github.com/superdurable/xtemporal/common/sdk"
-	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
-	"github.com/superdurable/xtemporal/common/testing/protorequire"
-	"github.com/superdurable/xtemporal/tests/testcore"
 )
 
 type LinksSuite struct {

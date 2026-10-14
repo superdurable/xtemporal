@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/testservice/v1"
 	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/log"
@@ -22,6 +21,7 @@ import (
 	"github.com/superdurable/xtemporal/common/rpc/auth/authtest"
 	"github.com/superdurable/xtemporal/common/rpc/encryption"
 	"github.com/superdurable/xtemporal/tests/testutils"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"

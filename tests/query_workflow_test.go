@@ -11,6 +11,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
+	"github.com/superdurable/xtemporal/common/testing/testvars"
+	"github.com/superdurable/xtemporal/common/util"
+	"github.com/superdurable/xtemporal/service/history/consts"
+	"github.com/superdurable/xtemporal/tests/testcore"
 	commandpb "go.temporal.io/api/command/v1"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
@@ -23,12 +29,6 @@ import (
 	sdkclient "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
-	"github.com/superdurable/xtemporal/common/dynamicconfig"
-	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
-	"github.com/superdurable/xtemporal/common/testing/testvars"
-	"github.com/superdurable/xtemporal/common/util"
-	"github.com/superdurable/xtemporal/service/history/consts"
-	"github.com/superdurable/xtemporal/tests/testcore"
 )
 
 type QueryWorkflowSuite struct {

@@ -4,11 +4,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/temporalio/sqlparser"
-	enumspb "go.temporal.io/api/enums/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/sqlquery"
+	"github.com/temporalio/sqlparser"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // Supported Fields

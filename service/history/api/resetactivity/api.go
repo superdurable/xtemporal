@@ -3,7 +3,6 @@ package resetactivity
 import (
 	"context"
 
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/common/definition"
 	"github.com/superdurable/xtemporal/common/metrics"
@@ -11,6 +10,7 @@ import (
 	"github.com/superdurable/xtemporal/service/history/consts"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
 	"github.com/superdurable/xtemporal/service/history/workflow"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 func Invoke(

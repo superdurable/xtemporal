@@ -10,7 +10,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
@@ -18,6 +17,7 @@ import (
 	commonnexus "github.com/superdurable/xtemporal/common/nexus"
 	"github.com/superdurable/xtemporal/common/nexus/nexusrpc"
 	"github.com/superdurable/xtemporal/common/nexus/nexustest"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

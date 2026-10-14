@@ -5,9 +5,9 @@ import (
 	"slices"
 	"time"
 
+	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 )
 
 type VisibilityValue interface {

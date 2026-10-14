@@ -7,13 +7,12 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
-	"github.com/superdurable/xtemporal/common/dynamicconfig"
 )
 
 const (

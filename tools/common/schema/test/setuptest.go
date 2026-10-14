@@ -7,11 +7,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"github.com/urfave/cli"
 	"github.com/superdurable/xtemporal/common/convert"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/tests/testutils"
+	"github.com/urfave/cli"
 )
 
 // SetupSchemaTestBase is the base test suite for all tests

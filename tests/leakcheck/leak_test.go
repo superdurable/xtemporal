@@ -12,10 +12,10 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	sdkclient "go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/workflow"
 	"github.com/superdurable/xtemporal/common/testing/objectleak"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	sdkclient "go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/workflow"
 	"go.uber.org/goleak"
 )
 

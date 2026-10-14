@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/urfave/cli"
 	"github.com/superdurable/xtemporal/common/headers"
 	"github.com/superdurable/xtemporal/common/log"
 	dbschemas "github.com/superdurable/xtemporal/schema"
 	"github.com/superdurable/xtemporal/temporal/environment"
 	"github.com/superdurable/xtemporal/tools/common/schema"
+	"github.com/urfave/cli"
 )
 
 // RunTool runs the temporal-cassandra-tool command line tool

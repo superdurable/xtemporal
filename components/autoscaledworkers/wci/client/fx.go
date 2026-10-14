@@ -1,8 +1,6 @@
 package client
 
 import (
-	"go.uber.org/fx"
-
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
@@ -11,6 +9,7 @@ import (
 	"github.com/superdurable/xtemporal/common/resource"
 	"github.com/superdurable/xtemporal/common/testing/testhooks"
 	"github.com/superdurable/xtemporal/service/matching/hooks"
+	"go.uber.org/fx"
 )
 
 var Module = fx.Options(

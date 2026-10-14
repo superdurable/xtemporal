@@ -1,9 +1,9 @@
 package telemetry
 
 import (
-	"go.opentelemetry.io/otel/trace"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/persistence"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type (

@@ -8,7 +8,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	workerpb "go.temporal.io/api/worker/v1"
 	"github.com/superdurable/xtemporal/api/matchingservicemock/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/chasm"
@@ -24,6 +23,7 @@ import (
 	"github.com/superdurable/xtemporal/service/history/tasks"
 	"github.com/superdurable/xtemporal/service/history/tests"
 	"github.com/superdurable/xtemporal/service/history/workflow/cache"
+	workerpb "go.temporal.io/api/worker/v1"
 	"go.uber.org/mock/gomock"
 )
 

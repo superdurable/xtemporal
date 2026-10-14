@@ -7,8 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tidwall/btree"
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/backoff"
@@ -20,6 +18,8 @@ import (
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
 	"github.com/superdurable/xtemporal/common/softassert"
 	"github.com/superdurable/xtemporal/common/util"
+	"github.com/tidwall/btree"
+	"go.temporal.io/api/serviceerror"
 	"golang.org/x/sync/semaphore"
 )
 

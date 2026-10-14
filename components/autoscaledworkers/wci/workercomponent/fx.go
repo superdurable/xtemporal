@@ -1,11 +1,10 @@
 package workercomponent
 
 import (
-	"go.uber.org/fx"
-
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/sdk"
 	workercommon "github.com/superdurable/xtemporal/service/worker/common"
+	"go.uber.org/fx"
 )
 
 type (

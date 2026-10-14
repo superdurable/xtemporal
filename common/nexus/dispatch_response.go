@@ -2,9 +2,9 @@ package nexus
 
 import (
 	"github.com/nexus-rpc/sdk-go/nexus"
+	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	nexuspb "go.temporal.io/api/nexus/v1"
 	"go.temporal.io/sdk/temporal"
-	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 )
 
 // MatchingDispatchResponseToError converts a DispatchNexusTaskResponse proto into a Go error.

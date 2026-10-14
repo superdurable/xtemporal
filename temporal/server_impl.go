@@ -7,7 +7,6 @@ import (
 	"slices"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
 	"github.com/superdurable/xtemporal/common/cluster"
 	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/headers"
@@ -20,6 +19,7 @@ import (
 	"github.com/superdurable/xtemporal/common/resolver"
 	"github.com/superdurable/xtemporal/common/resource"
 	"github.com/superdurable/xtemporal/common/telemetry"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/multierr"
 )
 

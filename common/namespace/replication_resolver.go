@@ -1,8 +1,8 @@
 package namespace
 
 import (
-	enumspb "go.temporal.io/api/enums/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // RoutingStrategy determines how a business ID is used for routing decisions.

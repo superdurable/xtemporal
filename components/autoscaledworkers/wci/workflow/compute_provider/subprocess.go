@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 )
 
 const (

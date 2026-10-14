@@ -1,8 +1,8 @@
 package dynamicconfig
 
 import (
-	enumspb "go.temporal.io/api/enums/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 type (

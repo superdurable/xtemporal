@@ -6,8 +6,6 @@ import (
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"github.com/stretchr/testify/require"
-	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservicemock/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
@@ -16,6 +14,8 @@ import (
 	"github.com/superdurable/xtemporal/common/nexus/nexusrpc"
 	"github.com/superdurable/xtemporal/components/nexusoperations"
 	"github.com/superdurable/xtemporal/nexusworkflowref"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc"
 )

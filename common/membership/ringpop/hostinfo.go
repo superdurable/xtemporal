@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/dgryski/go-farm"
-	rpmembership "github.com/temporalio/ringpop-go/membership"
 	"github.com/superdurable/xtemporal/common/membership"
+	rpmembership "github.com/temporalio/ringpop-go/membership"
 )
 
 // hostInfo represents a host in a ring.

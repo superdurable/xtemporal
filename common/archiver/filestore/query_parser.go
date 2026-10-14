@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/temporalio/sqlparser"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/convert"
 	"github.com/superdurable/xtemporal/common/sqlquery"
 	"github.com/superdurable/xtemporal/common/util"
+	"github.com/temporalio/sqlparser"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 type (

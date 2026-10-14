@@ -8,10 +8,6 @@ import (
 	"sync"
 	"time"
 
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	schedulespb "github.com/superdurable/xtemporal/api/schedule/v1"
 	"github.com/superdurable/xtemporal/chasm"
@@ -24,6 +20,10 @@ import (
 	"github.com/superdurable/xtemporal/common/util"
 	queueerrors "github.com/superdurable/xtemporal/service/history/queues/errors"
 	legacyscheduler "github.com/superdurable/xtemporal/service/worker/scheduler"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
+	"go.temporal.io/api/workflowservice/v1"
 	"go.uber.org/fx"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

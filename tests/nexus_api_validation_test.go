@@ -9,9 +9,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/nexus-rpc/sdk-go/nexus"
-	nexuspb "go.temporal.io/api/nexus/v1"
-	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/api/workflowservice/v1"
 	tokenspb "github.com/superdurable/xtemporal/api/token/v1"
 	"github.com/superdurable/xtemporal/common/authorization"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
@@ -19,6 +16,9 @@ import (
 	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
 	"github.com/superdurable/xtemporal/service/frontend/configs"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	nexuspb "go.temporal.io/api/nexus/v1"
+	"go.temporal.io/api/serviceerror"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 type NexusAPIValidationTestSuite struct {

@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/sdk/converter"
 	replicationspb "github.com/superdurable/xtemporal/api/replication/v1"
 	"github.com/superdurable/xtemporal/chasm"
+	"go.temporal.io/sdk/converter"
 )
 
 func TestExecutionInfo_Marshal_OSS(t *testing.T) {

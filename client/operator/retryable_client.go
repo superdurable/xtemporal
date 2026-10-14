@@ -1,8 +1,8 @@
 package operator
 
 import (
-	"go.temporal.io/api/operatorservice/v1"
 	"github.com/superdurable/xtemporal/common/backoff"
+	"go.temporal.io/api/operatorservice/v1"
 )
 
 var _ operatorservice.OperatorServiceClient = (*retryableClient)(nil)

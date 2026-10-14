@@ -7,9 +7,9 @@ package notification
 
 import (
 	"github.com/google/uuid"
+	"github.com/superdurable/xtemporal/common/collection"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/serviceerror"
-	"github.com/superdurable/xtemporal/common/collection"
 )
 
 // PubSubNotifier is a keyed pub/sub over payloads of type T. Notify fans out

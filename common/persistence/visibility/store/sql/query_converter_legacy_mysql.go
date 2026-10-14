@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/temporalio/sqlparser"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store/query"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	"github.com/temporalio/sqlparser"
 )
 
 type (

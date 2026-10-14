@@ -6,10 +6,10 @@ import (
 	"sync"
 	"testing"
 
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/common/authorization"
 	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 type TLSFunctionalSuite struct {

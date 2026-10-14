@@ -5,9 +5,6 @@ package nsreplication
 import (
 	"context"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	replicationpb "go.temporal.io/api/replication/v1"
-	"go.temporal.io/api/serviceerror"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	replicationspb "github.com/superdurable/xtemporal/api/replication/v1"
@@ -16,6 +13,9 @@ import (
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/testing/testhooks"
+	enumspb "go.temporal.io/api/enums/v1"
+	replicationpb "go.temporal.io/api/replication/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 var (

@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/urfave/cli/v2"
 	"github.com/superdurable/xtemporal/common/codec"
+	"github.com/urfave/cli/v2"
 	"google.golang.org/protobuf/encoding/prototext"
 )
 
