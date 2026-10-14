@@ -124,19 +124,19 @@ jobs:
         run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml down --volumes
 
   functional-test-postgres:
-    name: PostgreSQL functional tests (${{ matrix.shard }}/3)
+    name: PostgreSQL functional tests (${{ matrix.shard }}/6)
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1, 2]
+        shard: [0, 1, 2, 3, 4, 5]
     env:
       CGO_ENABLED: 1
       GOMEMLIMIT: 8GiB
       PERSISTENCE_TYPE: sql
       PERSISTENCE_DRIVER: postgres12_pgx
-      TEST_TOTAL_SHARDS: 3
+      TEST_TOTAL_SHARDS: 6
       TEST_SHARD_INDEX: ${{ matrix.shard }}
     steps:
       - uses: actions/checkout@v4
