@@ -1,0 +1,52 @@
+name: checkgate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  checks: read
+
+concurrency:
+  group: checkgate-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  required-checks:
+    name: required-checks
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 55
+    steps:
+      - name: Wait for required checks
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const requiredChecks = new Set(["All Linters Succeed", "All Tests Succeed"]);
+            const headSHA = context.payload.pull_request.head.sha;
+            const deadline = Date.now() + 50 * 60 * 1000;
+
+            while (Date.now() < deadline) {
+              const { data } = await github.rest.checks.listForRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: headSHA,
+                filter: "latest",
+                per_page: 100,
+              });
+              const checks = data.check_runs.filter((check) => requiredChecks.has(check.name));
+              const failed = checks.filter((check) => check.status === "completed" && check.conclusion !== "success");
+
+              if (failed.length > 0) {
+                core.setFailed(`Required checks failed: ${failed.map((check) => check.name).join(", ")}`);
+                return;
+              }
+              if (checks.length === requiredChecks.size && checks.every((check) => check.conclusion === "success")) {
+                core.info("All required checks passed.");
+                return;
+              }
+              core.info(`Waiting for required checks: ${[...requiredChecks].filter((name) => !checks.some((check) => check.name === name)).join(", ") || "running checks"}`);
+              await new Promise((resolve) => setTimeout(resolve, 30_000));
+            }
+
+            core.setFailed("Timed out waiting for required checks.");
