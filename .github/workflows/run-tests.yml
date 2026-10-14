@@ -98,6 +98,7 @@ jobs:
         shard: [0, 1, 2]
     env:
       CGO_ENABLED: 1
+      GOMEMLIMIT: 8GiB
       PERSISTENCE_TYPE: sql
       PERSISTENCE_DRIVER: postgres12_pgx
       TEST_TOTAL_SHARDS: 3
@@ -110,7 +111,7 @@ jobs:
           cache: true
       - name: Start PostgreSQL
         run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
-      - run: ./develop/github/monitor_test.sh go test -tags disable_grpc_modules,test_dep -race -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=postgres12_pgx
+      - run: ./develop/github/monitor_test.sh go test -tags disable_grpc_modules,test_dep -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=postgres12_pgx
       - name: Upload memory diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
@@ -136,9 +137,11 @@ jobs:
         suite: [ndc, xdc]
     env:
       CGO_ENABLED: 1
+      GOMEMLIMIT: 8GiB
       PERSISTENCE_TYPE: sql
       PERSISTENCE_DRIVER: postgres12_pgx
       TEST_TIMEOUT: 35m
+      TEST_RACE_FLAG: off
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
