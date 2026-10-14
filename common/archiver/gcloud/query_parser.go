@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/temporalio/sqlparser"
 	"github.com/superdurable/xtemporal/common/sqlquery"
+	"github.com/temporalio/sqlparser"
 )
 
 type (

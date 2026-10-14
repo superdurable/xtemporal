@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	workerpb "go.temporal.io/api/worker/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/definition"
+	workerpb "go.temporal.io/api/worker/v1"
 )
 
 var _ Task = (*WorkerCommandsTask)(nil)

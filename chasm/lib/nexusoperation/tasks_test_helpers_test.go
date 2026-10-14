@@ -6,12 +6,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	commonpb "go.temporal.io/api/common/v1"
-	failurepb "go.temporal.io/api/failure/v1"
-	"go.temporal.io/sdk/converter"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	nexusoperationpb "github.com/superdurable/xtemporal/chasm/lib/nexusoperation/gen/nexusoperationpb/v1"
+	commonpb "go.temporal.io/api/common/v1"
+	failurepb "go.temporal.io/api/failure/v1"
+	"go.temporal.io/sdk/converter"
 )
 
 var endpointEntry = &persistencespb.NexusEndpointEntry{

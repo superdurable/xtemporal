@@ -3,9 +3,9 @@ package metrics
 import (
 	"runtime/debug"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
+	"go.temporal.io/api/serviceerror"
 )
 
 // CapturePanic is used to capture panic, it will emit the service panic metric, log the panic and also return the error through pointer.

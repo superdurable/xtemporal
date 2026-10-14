@@ -3,8 +3,8 @@ package nsreplication
 import (
 	"context"
 
-	replicationpb "go.temporal.io/api/replication/v1"
 	replicationspb "github.com/superdurable/xtemporal/api/replication/v1"
+	replicationpb "go.temporal.io/api/replication/v1"
 )
 
 // NamespaceReplicationAdmitter decides whether to process a namespace

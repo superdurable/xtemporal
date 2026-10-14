@@ -3,12 +3,12 @@ package matching
 import (
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/clock"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/number"
+	enumspb "go.temporal.io/api/enums/v1"
 	"google.golang.org/protobuf/types/known/anypb"
 )
 

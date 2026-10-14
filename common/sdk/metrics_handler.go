@@ -3,8 +3,8 @@ package sdk
 import (
 	"time"
 
-	sdkclient "go.temporal.io/sdk/client"
 	"github.com/superdurable/xtemporal/common/metrics"
+	sdkclient "go.temporal.io/sdk/client"
 )
 
 type (

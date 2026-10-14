@@ -8,10 +8,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/lambda"
 	"github.com/aws/aws-sdk-go-v2/service/lambda/types"
-
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
 	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
-	"github.com/superdurable/xtemporal/common/dynamicconfig"
 )
 
 const (

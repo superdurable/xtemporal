@@ -14,12 +14,12 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
-	"github.com/urfave/cli/v2"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/codec"
 	"github.com/superdurable/xtemporal/common/collection"
 	"github.com/superdurable/xtemporal/common/namespace"
+	"github.com/urfave/cli/v2"
+	"go.temporal.io/api/workflowservice/v1"
 	"google.golang.org/protobuf/proto"
 )
 

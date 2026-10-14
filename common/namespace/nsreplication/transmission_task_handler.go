@@ -3,14 +3,14 @@ package nsreplication
 import (
 	"context"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	namespacepb "go.temporal.io/api/namespace/v1"
-	replicationpb "go.temporal.io/api/replication/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	replicationspb "github.com/superdurable/xtemporal/api/replication/v1"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/persistence"
+	enumspb "go.temporal.io/api/enums/v1"
+	namespacepb "go.temporal.io/api/namespace/v1"
+	replicationpb "go.temporal.io/api/replication/v1"
 )
 
 // NOTE: the counterpart of namespace replication receiving logic is in service/worker package

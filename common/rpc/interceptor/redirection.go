@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/client"
 	"github.com/superdurable/xtemporal/common/api"
 	"github.com/superdurable/xtemporal/common/clock"
@@ -17,6 +16,7 @@ import (
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/namespace"
+	"go.temporal.io/api/workflowservice/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

@@ -5,9 +5,6 @@ import (
 	"strings"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	updatepb "go.temporal.io/api/update/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/common/api"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
@@ -18,6 +15,9 @@ import (
 	"github.com/superdurable/xtemporal/common/rpc/interceptor/logtags"
 	"github.com/superdurable/xtemporal/common/tasktoken"
 	"github.com/superdurable/xtemporal/service/frontend/configs"
+	enumspb "go.temporal.io/api/enums/v1"
+	updatepb "go.temporal.io/api/update/v1"
+	"go.temporal.io/api/workflowservice/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
 )

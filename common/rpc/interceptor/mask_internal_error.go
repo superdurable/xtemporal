@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/api"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
@@ -13,6 +12,7 @@ import (
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/rpc/interceptor/logtags"
 	"github.com/superdurable/xtemporal/common/tasktoken"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

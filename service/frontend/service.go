@@ -6,8 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"go.temporal.io/api/operatorservice/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/superdurable/xtemporal/chasm/lib/activity"
 	"github.com/superdurable/xtemporal/chasm/lib/callback"
@@ -20,6 +18,8 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/visibility/manager"
 	"github.com/superdurable/xtemporal/common/retrypolicy"
 	"github.com/superdurable/xtemporal/components/nexusoperations"
+	"go.temporal.io/api/operatorservice/v1"
+	"go.temporal.io/api/workflowservice/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"

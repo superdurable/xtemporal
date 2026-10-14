@@ -3,13 +3,13 @@ package client
 import (
 	"errors"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	"github.com/superdurable/xtemporal/service/history/api"
 	"github.com/superdurable/xtemporal/service/history/consts"
 	update2 "github.com/superdurable/xtemporal/service/history/workflow/update"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 const (

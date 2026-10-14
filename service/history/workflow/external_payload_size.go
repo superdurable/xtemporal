@@ -3,10 +3,10 @@ package workflow
 import (
 	"context"
 
+	"github.com/superdurable/xtemporal/common/metrics"
 	commonpb "go.temporal.io/api/common/v1"
 	historypb "go.temporal.io/api/history/v1"
 	"go.temporal.io/api/proxy"
-	"github.com/superdurable/xtemporal/common/metrics"
 )
 
 // CalculateExternalPayloadSize calculates the total size and count of all external payloads in the given history events.

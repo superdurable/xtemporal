@@ -3,9 +3,9 @@ package chasm
 import (
 	"time"
 
+	"github.com/superdurable/xtemporal/common/nexus/nexusrpc"
 	enumspb "go.temporal.io/api/enums/v1"
 	historypb "go.temporal.io/api/history/v1"
-	"github.com/superdurable/xtemporal/common/nexus/nexusrpc"
 )
 
 // MSPointer is a special CHASM type which components can use to access their Node's underlying backend (i.e. mutable

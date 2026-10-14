@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/definition"
+	"go.temporal.io/api/serviceerror"
 )
 
 func oneShard(definition.WorkflowKey) uint32 { return 1 }

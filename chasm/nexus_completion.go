@@ -3,9 +3,9 @@ package chasm
 import (
 	"encoding/base64"
 
-	commonpb "go.temporal.io/api/common/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	tokenspb "github.com/superdurable/xtemporal/api/token/v1"
+	commonpb "go.temporal.io/api/common/v1"
 	"google.golang.org/protobuf/proto"
 )
 

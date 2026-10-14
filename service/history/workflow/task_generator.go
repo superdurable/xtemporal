@@ -6,10 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	historypb "go.temporal.io/api/history/v1"
-	"go.temporal.io/api/serviceerror"
-	workerpb "go.temporal.io/api/worker/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
@@ -28,6 +24,10 @@ import (
 	"github.com/superdurable/xtemporal/service/history/hsm"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
 	"github.com/superdurable/xtemporal/service/history/tasks"
+	enumspb "go.temporal.io/api/enums/v1"
+	historypb "go.temporal.io/api/history/v1"
+	"go.temporal.io/api/serviceerror"
+	workerpb "go.temporal.io/api/worker/v1"
 )
 
 type (

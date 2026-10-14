@@ -3,10 +3,10 @@ package signalwithstartworkflow
 import (
 	"time"
 
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/namespace"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 func ConvertToStartRequest(

@@ -7,11 +7,6 @@ import (
 	"math"
 	"slices"
 
-	"go.opentelemetry.io/otel/trace"
-	enumspb "go.temporal.io/api/enums/v1"
-	protocolpb "go.temporal.io/api/protocol/v1"
-	"go.temporal.io/api/serviceerror"
-	updatepb "go.temporal.io/api/update/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/effect"
@@ -19,6 +14,11 @@ import (
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/telemetry"
+	"go.opentelemetry.io/otel/trace"
+	enumspb "go.temporal.io/api/enums/v1"
+	protocolpb "go.temporal.io/api/protocol/v1"
+	"go.temporal.io/api/serviceerror"
+	updatepb "go.temporal.io/api/update/v1"
 	"google.golang.org/protobuf/types/known/anypb"
 )
 

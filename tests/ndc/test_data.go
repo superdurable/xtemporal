@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"os"
 
-	historypb "go.temporal.io/api/history/v1"
-	replicationpb "go.temporal.io/api/replication/v1"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
 	"github.com/superdurable/xtemporal/common/codec"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	historypb "go.temporal.io/api/history/v1"
+	replicationpb "go.temporal.io/api/replication/v1"
 )
 
 var (

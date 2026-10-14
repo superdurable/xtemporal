@@ -30,15 +30,6 @@ import (
 	"time"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
-	apiactivitypb "go.temporal.io/api/activity/v1" //nolint:importas
-	callbackpb "go.temporal.io/api/callback/v1"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	failurepb "go.temporal.io/api/failure/v1"
-	historypb "go.temporal.io/api/history/v1"
-	sdkpb "go.temporal.io/api/sdk/v1"
-	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	tokenspb "github.com/superdurable/xtemporal/api/token/v1"
@@ -61,6 +52,15 @@ import (
 	"github.com/superdurable/xtemporal/common/tqid"
 	"github.com/superdurable/xtemporal/common/util"
 	"github.com/superdurable/xtemporal/service/history/consts"
+	apiactivitypb "go.temporal.io/api/activity/v1" //nolint:importas
+	callbackpb "go.temporal.io/api/callback/v1"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	failurepb "go.temporal.io/api/failure/v1"
+	historypb "go.temporal.io/api/history/v1"
+	sdkpb "go.temporal.io/api/sdk/v1"
+	"go.temporal.io/api/serviceerror"
+	"go.temporal.io/api/workflowservice/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

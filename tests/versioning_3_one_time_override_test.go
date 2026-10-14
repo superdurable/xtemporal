@@ -5,6 +5,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	deploymentspb "github.com/superdurable/xtemporal/api/deployment/v1"
+	"github.com/superdurable/xtemporal/common/primitives/timestamp"
+	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
+	"github.com/superdurable/xtemporal/common/testing/testvars"
+	"github.com/superdurable/xtemporal/common/worker_versioning"
+	"github.com/superdurable/xtemporal/tests/testcore"
 	commandpb "go.temporal.io/api/command/v1"
 	commonpb "go.temporal.io/api/common/v1"
 	deploymentpb "go.temporal.io/api/deployment/v1"
@@ -12,12 +18,6 @@ import (
 	"go.temporal.io/api/serviceerror"
 	workflowpb "go.temporal.io/api/workflow/v1"
 	"go.temporal.io/api/workflowservice/v1"
-	deploymentspb "github.com/superdurable/xtemporal/api/deployment/v1"
-	"github.com/superdurable/xtemporal/common/primitives/timestamp"
-	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
-	"github.com/superdurable/xtemporal/common/testing/testvars"
-	"github.com/superdurable/xtemporal/common/worker_versioning"
-	"github.com/superdurable/xtemporal/tests/testcore"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	"github.com/superdurable/xtemporal/common"
@@ -20,6 +19,7 @@ import (
 	"github.com/superdurable/xtemporal/common/softassert"
 	"github.com/superdurable/xtemporal/common/tqid"
 	"github.com/superdurable/xtemporal/common/util"
+	"go.temporal.io/api/serviceerror"
 )
 
 // priTaskMatcher matches a task producer with a task consumer

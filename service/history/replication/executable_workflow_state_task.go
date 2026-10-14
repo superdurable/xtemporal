@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
@@ -19,6 +18,7 @@ import (
 	ctasks "github.com/superdurable/xtemporal/common/tasks"
 	"github.com/superdurable/xtemporal/common/wideevents"
 	"github.com/superdurable/xtemporal/service/history/consts"
+	"go.temporal.io/api/serviceerror"
 )
 
 type (

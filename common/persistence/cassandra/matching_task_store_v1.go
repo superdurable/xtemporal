@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"go.temporal.io/api/serviceerror"
 	p "github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/persistence/nosql/nosqlplugin/cassandra/gocql"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

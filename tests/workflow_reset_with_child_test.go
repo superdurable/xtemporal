@@ -5,13 +5,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
+	"github.com/superdurable/xtemporal/tests/testcore"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/workflowservice/v1"
 	sdkclient "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/workflow"
-	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
-	"github.com/superdurable/xtemporal/tests/testcore"
 )
 
 // Tests workflow reset feature. This suite executes the following scenarios:

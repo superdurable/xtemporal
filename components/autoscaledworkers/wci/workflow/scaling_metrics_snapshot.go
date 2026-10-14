@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
+	scalingalgorithm "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/scaling_algorithm"
 	deploymentpb "go.temporal.io/api/deployment/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	workflowservice "go.temporal.io/api/workflowservice/v1"
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
-	scalingalgorithm "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/scaling_algorithm"
 	"go.temporal.io/sdk/activity"
 )
 

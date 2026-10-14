@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
-	commonpb "go.temporal.io/api/common/v1"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
+	commonpb "go.temporal.io/api/common/v1"
 )
 
 // ConvertNexusLinksToProtoLinks converts a slice of Nexus SDK links into Temporal proto links,

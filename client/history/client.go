@@ -10,7 +10,6 @@ import (
 	"sync"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	replicationspb "github.com/superdurable/xtemporal/api/replication/v1"
 	"github.com/superdurable/xtemporal/common"
@@ -21,6 +20,7 @@ import (
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/membership"
 	"github.com/superdurable/xtemporal/common/tasktoken"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

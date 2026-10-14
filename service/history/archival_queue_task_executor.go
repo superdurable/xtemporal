@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	carchiver "github.com/superdurable/xtemporal/common/archiver"
 	"github.com/superdurable/xtemporal/common/log"
@@ -20,6 +19,7 @@ import (
 	"github.com/superdurable/xtemporal/service/history/tasks"
 	"github.com/superdurable/xtemporal/service/history/workflow"
 	"github.com/superdurable/xtemporal/service/history/workflow/cache"
+	enumspb "go.temporal.io/api/enums/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

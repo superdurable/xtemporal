@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservicemock/v1"
 	"github.com/superdurable/xtemporal/common/convert"
@@ -17,6 +16,7 @@ import (
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/membership"
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/mock/gomock"
 )
 

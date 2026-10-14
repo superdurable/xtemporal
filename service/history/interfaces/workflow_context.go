@@ -5,14 +5,14 @@ package interfaces
 import (
 	"context"
 
-	commandpb "go.temporal.io/api/command/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/definition"
 	"github.com/superdurable/xtemporal/common/locks"
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/service/history/workflow/update"
+	commandpb "go.temporal.io/api/command/v1"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 type (

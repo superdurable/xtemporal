@@ -3,11 +3,11 @@ package tqid
 import (
 	"strings"
 
+	"github.com/superdurable/xtemporal/common/enums"
+	"github.com/superdurable/xtemporal/common/primitives"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/serviceerror"
 	taskqueuepb "go.temporal.io/api/taskqueue/v1"
-	"github.com/superdurable/xtemporal/common/enums"
-	"github.com/superdurable/xtemporal/common/primitives"
 )
 
 const (

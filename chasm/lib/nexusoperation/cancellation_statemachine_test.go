@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	failurepb "go.temporal.io/api/failure/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	nexusoperationpb "github.com/superdurable/xtemporal/chasm/lib/nexusoperation/gen/nexusoperationpb/v1"
 	"github.com/superdurable/xtemporal/common/backoff"
 	"github.com/superdurable/xtemporal/common/testing/protorequire"
+	failurepb "go.temporal.io/api/failure/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

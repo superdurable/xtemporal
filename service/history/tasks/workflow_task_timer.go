@@ -5,10 +5,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/definition"
 	ctasks "github.com/superdurable/xtemporal/common/tasks"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 const (
