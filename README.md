@@ -1,80 +1,42 @@
-<div class="title-block" style="text-align: center;" align="center">
+# xtemporal
 
-# Temporal—durable execution platform
+xtemporal is an independent fork of [Temporal Server](https://github.com/temporalio/temporal) that extends the upstream server with additional capabilities, much as Temporal originated from Uber Cadence. It is not affiliated with or endorsed by Temporal Technologies. “Temporal” is a trademark of its owner.
 
-<p><img title="temporal logo" src="https://avatars.githubusercontent.com/u/56493103?s=320" width="320" height="320"></p>
+The first planned extension is advanced visibility backed by ParadeDB. **ParadeDB support is not available yet.** See the [maintainer documentation](docs/xtemporal/README.md) for the extension layout and upstream sync process.
 
-[![GitHub Release](https://img.shields.io/github/v/release/temporalio/temporal)](https://github.com/temporalio/temporal/releases/latest)
-[![GitHub License](https://img.shields.io/github/license/temporalio/temporal)](https://github.com/temporalio/temporal/blob/main/LICENSE)
-[![Code Coverage](https://img.shields.io/badge/codecov-report-blue)](https://app.codecov.io/gh/temporalio/temporal)
-[![Community](https://img.shields.io/static/v1?label=community&message=get%20help&color=informational)](https://community.temporal.io)
-[![Go Report Card](https://goreportcard.com/badge/github.com/temporalio/temporal)](https://goreportcard.com/report/github.com/temporalio/temporal)
+## Versions and releases
 
-**[Introduction](#introduction) &nbsp;&nbsp;&bull;&nbsp;&nbsp;**
-**[Getting Started](#getting-started) &nbsp;&nbsp;&bull;&nbsp;&nbsp;**
-**[Contributing](#contributing) &nbsp;&nbsp;&bull;&nbsp;&nbsp;**
-**[Temporal Docs](https://docs.temporal.io/) &nbsp;&nbsp;&bull;&nbsp;&nbsp;**
-**[Temporal 101](https://learn.temporal.io/courses/temporal_101/)**
+xtemporal uses the same version numbers as upstream Temporal Server, starting with `v1.32.1`. The planned daily sync follows upstream's **Latest** release and proposes an updated snapshot for review. A release is published after that update is merged and validated.
 
-</div>
+Go module tags such as `v1.32.1` are immutable. If xtemporal needs its own hotfix on an upstream version, the hotfix receives a Docker tag such as `1.32.1-x.1`, while the moving `1.32.1` Docker tag points to the newest build for that version. Go consumers use the hotfix commit's pseudo-version; the `v1.32.1` Go tag does not move.
 
-## Introduction
+## Quick start
 
-Temporal is a durable execution platform that enables developers to build scalable applications without sacrificing productivity or reliability.
-The Temporal server executes units of application logic called Workflows in a resilient manner that automatically handles intermittent failures, and retries failed operations.
+The planned release image is `superdurable/xtemporal:<version>` (for example, `superdurable/xtemporal:1.32.1`). It contains both `temporal-server` and `temporal-sql-tool`. Once the first image is published, pull it with:
 
-Temporal is a mature technology that originated as a fork of Uber's Cadence.
-It is developed by [Temporal Technologies](https://temporal.io/), a startup by the creators of Cadence.
-
-[![image](https://github.com/temporalio/temporal/assets/251288/693d18b5-01de-4a3b-b47b-96347b84f610)](https://youtu.be/wIpz4ioK0gI 'Getting to know Temporal')
-
-## Getting Started
-
-### Download and Start Temporal Server Locally
-
-Execute the following commands to start a pre-built image along with all the dependencies.
-
-```bash
-brew install temporal
-temporal server start-dev
+```sh
+docker pull superdurable/xtemporal:1.32.1
 ```
 
-Refer to [Temporal CLI](https://docs.temporal.io/cli/#installation) documentation for more installation options.
+To embed the server in a Go application after the first module release:
 
-### Run the Samples
-
-Clone or download samples for [Go](https://github.com/temporalio/samples-go) or [Java](https://github.com/temporalio/samples-java) and run them with the local Temporal server.
-We have a number of [HelloWorld type scenarios](https://github.com/temporalio/samples-java#helloworld) available, as well as more advanced ones. Note that the sets of samples are currently different between Go and Java.
-
-### Use CLI
-
-Use [Temporal CLI](https://docs.temporal.io/cli/) to interact with the running Temporal server.
-
-```bash
-temporal operator namespace list
-temporal workflow list
+```sh
+go get github.com/superdurable/xtemporal@v1.32.1
 ```
 
-### Use Temporal Web UI
+```go
+import (
+	"github.com/superdurable/xtemporal/common/config"
+	"github.com/superdurable/xtemporal/temporal"
+)
 
-Try [Temporal Web UI](https://docs.temporal.io/web-ui) by opening [http://localhost:8233](http://localhost:8233) for viewing your sample workflows executing on Temporal.
+func newServer(cfg *config.Config) (temporal.Server, error) {
+	return temporal.NewServer(temporal.WithConfig(cfg))
+}
+```
 
-## Repository
+Supply your application configuration and any other required options; see the [server package](temporal/). Do not import xtemporal and `go.temporal.io/server` into the same binary: that would include two copies of the server.
 
-This repository contains the source code of the Temporal server. To implement Workflows, Activities and Workers, use one of the [supported languages](https://docs.temporal.io/dev-guide/).
+## Contributing and license
 
-## Contributing
-
-We'd love your help in making Temporal great.
-
-Helpful links to get started:
-
-- [work on or propose a new feature](https://github.com/temporalio/proposals)
-- [learn about the Temporal Server architecture](./docs/architecture/README.md)
-- [learn how to build and run the Temporal Server locally](./CONTRIBUTING.md)
-- [learn about Temporal Server testing tools and best practices](./docs/development/testing.md)
-- join the Temporal community [forum](https://community.temporal.io) and [Slack](https://t.mp/slack)
-
-## License
-
-[MIT License](https://github.com/temporalio/temporal/blob/main/LICENSE)
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development instructions and [docs/xtemporal/](docs/xtemporal/README.md) for fork maintenance. xtemporal is distributed under the [MIT License](LICENSE). The upstream copyright notices remain in the license; see [NOTICE](NOTICE) for the project's origins.
