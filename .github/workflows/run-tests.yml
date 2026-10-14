@@ -2,7 +2,6 @@ name: Tests
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
   push:
     branches: [main]
   schedule:
@@ -146,7 +145,14 @@ jobs:
           cache: true
       - name: Start PostgreSQL
         run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
-      - run: go test -tags disable_grpc_modules,test_dep -race -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=postgres12_pgx
+      - run: ./develop/github/monitor_test.sh go test -tags disable_grpc_modules,test_dep -race -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=postgres12_pgx
+      - name: Upload memory diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgres-functional-memory-${{ matrix.shard }}
+          path: .testoutput/memory/
+          if-no-files-found: ignore
       - name: Show PostgreSQL logs
         if: failure()
         run: docker compose -f "$DOCKER_COMPOSE_FILE" logs --no-color postgresql
@@ -208,17 +214,57 @@ jobs:
         if: always()
         run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml down --volumes
 
+  functional-test-postgres-multi-cluster:
+    name: PostgreSQL functional tests (${{ matrix.suite }})
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [ndc, xdc]
+    env:
+      CGO_ENABLED: 1
+      PERSISTENCE_TYPE: sql
+      PERSISTENCE_DRIVER: postgres12_pgx
+      TEST_TIMEOUT: 35m
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Start PostgreSQL
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
+      - run: ./develop/github/monitor_test.sh make functional-test-${{ matrix.suite }}-coverage
+      - name: Show PostgreSQL logs
+        if: failure()
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" logs --no-color postgresql
+      - name: Stop PostgreSQL
+        if: always()
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" down --volumes
+
   tests-succeed:
     name: All Tests Succeed
     if: always()
-    needs: [build, unit-test, integration-test, paradedb-persistence-test, functional-test-postgres, functional-test-paradedb, advanced-visibility-paradedb]
+    needs: [build, unit-test, integration-test, paradedb-persistence-test, functional-test-postgres, functional-test-paradedb, advanced-visibility-paradedb, functional-test-postgres-multi-cluster]
     runs-on: ubuntu-24.04-arm
     env:
-      RESULTS: ${{ toJSON(needs.*.result) }}
+      RESULTS: ${{ toJSON(needs) }}
+      EVENT_NAME: ${{ github.event_name }}
     steps:
       - name: Check results
         run: |
-          if jq -e 'all(.[]; . == "success")' <<< "$RESULTS"; then
+          if jq -e --arg event "$EVENT_NAME" '
+            .build.result == "success" and
+            .["unit-test"].result == "success" and
+            .["integration-test"].result == "success" and
+            .["paradedb-persistence-test"].result == "success" and
+            .["functional-test-postgres"].result == "success" and
+            .["functional-test-paradedb"].result == "success" and
+            .["advanced-visibility-paradedb"].result == "success" and
+            .["functional-test-postgres-multi-cluster"].result == (if $event == "schedule" then "success" else "skipped" end)
+          ' <<< "$RESULTS"; then
             exit 0
           fi
           exit 1
