@@ -73,6 +73,9 @@ func TestQueryTranslationTable(t *testing.T) {
 		convert func() (sqlparser.Expr, error)
 		want    string
 	}{
+		{"workflow type", func() (sqlparser.Expr, error) {
+			return c.ConvertComparisonExpr(sqlparser.EqualStr, query.NewSAColumn(sadefs.WorkflowType, sadefs.WorkflowType, 0), query.NewUnsafeSQLString("type"))
+		}, "workflow_type_name = 'type'"},
 		{"ordinary comparison", func() (sqlparser.Expr, error) {
 			return c.ConvertComparisonExpr(sqlparser.EqualStr, numeric, sqlparser.NewIntVal([]byte("42")))
 		}, "Int01 = 42"},
@@ -184,6 +187,7 @@ func TestStatements(t *testing.T) {
 
 func TestSelectPaginationAndCount(t *testing.T) {
 	c := &queryConverter{}
+	require.Equal(t, "2006-01-02 15:04:05.999999", c.GetDatetimeFormat())
 	stmt, args := c.BuildSelectStmt(nil, 25, nil)
 	require.NotContains(t, stmt, " WHERE ")
 	require.Contains(t, stmt, `ORDER BY sort_close_time DESC, start_time DESC, run_id COLLATE "C" LIMIT ?`)
