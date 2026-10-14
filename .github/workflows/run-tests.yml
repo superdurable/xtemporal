@@ -110,7 +110,6 @@ jobs:
       CGO_ENABLED: 1
       PERSISTENCE_TYPE: sql
       PERSISTENCE_DRIVER: sqlite
-      TEST_TIMEOUT: 35m
       TEST_TOTAL_SHARDS: 3
       TEST_SHARD_INDEX: ${{ matrix.shard }}
     steps:
@@ -119,7 +118,7 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
-      - run: make functional-test-coverage
+      - run: go test -tags disable_grpc_modules,test_dep -race -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=sqlite
 
   functional-test-postgres:
     name: PostgreSQL functional tests (${{ matrix.shard }}/3)
@@ -134,7 +133,6 @@ jobs:
       CGO_ENABLED: 1
       PERSISTENCE_TYPE: sql
       PERSISTENCE_DRIVER: postgres12_pgx
-      TEST_TIMEOUT: 35m
       TEST_TOTAL_SHARDS: 3
       TEST_SHARD_INDEX: ${{ matrix.shard }}
     steps:
@@ -145,7 +143,7 @@ jobs:
           cache: true
       - name: Start PostgreSQL
         run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
-      - run: make functional-test-coverage
+      - run: go test -tags disable_grpc_modules,test_dep -race -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=postgres12_pgx
       - name: Show PostgreSQL logs
         if: failure()
         run: docker compose -f "$DOCKER_COMPOSE_FILE" logs --no-color postgresql
