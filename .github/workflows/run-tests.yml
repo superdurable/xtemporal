@@ -55,9 +55,11 @@ jobs:
         env:
           SHARD: ${{ matrix.shard }}
         run: |
-          go list -tags test_dep -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./... |
-            grep -v -E '/(tests(/(ndc|xdc|mixedbrain))?|common/persistence/tests|tools/tests|temporaltest)$' |
-            awk -v shard="$SHARD" 'NR % 3 == shard % 3' > unit-packages.txt
+          {
+            go list -tags test_dep -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./... |
+              grep -v -E '^github.com/superdurable/xtemporal/(tests|common/persistence/tests|tools/tests|temporaltest)(/|$)'
+            printf '%s\n' github.com/superdurable/xtemporal/tests/testcore
+          } | sort -u | awk -v shard="$SHARD" 'NR % 3 == shard % 3' > unit-packages.txt
           test -s unit-packages.txt
           printf 'packages=%s\n' "$(paste -sd' ' unit-packages.txt)" >> "$GITHUB_OUTPUT"
       - name: Run unit tests
