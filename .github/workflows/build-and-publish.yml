@@ -91,8 +91,8 @@ jobs:
           fi
           for arch in "${arches[@]}"; do
             mkdir -p "docker/build/$arch"
-            CGO_ENABLED=0 GOOS=linux GOARCH="$arch" go build -tags disable_grpc_modules -o "docker/build/$arch/temporal-server" ./cmd/server
-            CGO_ENABLED=0 GOOS=linux GOARCH="$arch" go build -tags disable_grpc_modules -o "docker/build/$arch/temporal-sql-tool" ./cmd/tools/sql
+            CGO_ENABLED=0 GOOS=linux GOARCH="$arch" make temporal-server temporal-sql-tool
+            mv temporal-server temporal-sql-tool "docker/build/$arch/"
           done
 
       - name: Set up Docker Buildx
