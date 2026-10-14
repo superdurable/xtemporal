@@ -1,8 +1,8 @@
 package matching
 
 import (
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/namespace"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // TaskQueueRateLimitFractionProvider returns the fraction of the rate limit for a task queue.

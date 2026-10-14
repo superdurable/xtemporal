@@ -10,12 +10,12 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/common/log"
+	"github.com/superdurable/xtemporal/common/log/tag"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetrics "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
-	"github.com/superdurable/xtemporal/common/log"
-	"github.com/superdurable/xtemporal/common/log/tag"
 	"go.uber.org/mock/gomock"
 )
 

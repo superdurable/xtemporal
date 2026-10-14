@@ -1,8 +1,8 @@
 package metrics
 
 import (
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/tqid"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // GetPerActivityScope returns the standard tags for metrics associated with an activity.

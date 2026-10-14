@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
 	computeprovider "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/compute_provider"
 	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
-	"github.com/superdurable/xtemporal/common/dynamicconfig"
 )
 
 type (

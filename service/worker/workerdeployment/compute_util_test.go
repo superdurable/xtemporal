@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	wciiface "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	computepb "go.temporal.io/api/compute/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	wciiface "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 )
 
 func TestComputeConfigScalingGroupsToWCISpec_EmptyGroups(t *testing.T) {

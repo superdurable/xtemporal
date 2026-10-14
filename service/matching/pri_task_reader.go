@@ -9,7 +9,6 @@ import (
 
 	"github.com/emirpasic/gods/maps/treemap"
 	godsutils "github.com/emirpasic/gods/utils"
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/backoff"
@@ -21,6 +20,7 @@ import (
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
 	"github.com/superdurable/xtemporal/common/softassert"
 	"github.com/superdurable/xtemporal/common/util"
+	"go.temporal.io/api/serviceerror"
 	"golang.org/x/sync/semaphore"
 )
 

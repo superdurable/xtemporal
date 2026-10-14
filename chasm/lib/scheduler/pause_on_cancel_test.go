@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	failurepb "go.temporal.io/api/failure/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	schedulespb "github.com/superdurable/xtemporal/api/schedule/v1"
+	failurepb "go.temporal.io/api/failure/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

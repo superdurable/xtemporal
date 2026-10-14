@@ -6,8 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"go.temporal.io/api/operatorservice/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
@@ -31,6 +29,8 @@ import (
 	"github.com/superdurable/xtemporal/common/rpc/encryption"
 	"github.com/superdurable/xtemporal/common/sdk"
 	"github.com/superdurable/xtemporal/common/testing/testhooks"
+	"go.temporal.io/api/operatorservice/v1"
+	"go.temporal.io/api/workflowservice/v1"
 	"google.golang.org/grpc"
 )
 

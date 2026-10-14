@@ -7,13 +7,13 @@ import (
 	"context"
 	"time"
 
+	"github.com/superdurable/xtemporal/api/visibilityservice/v1"
+	"github.com/superdurable/xtemporal/common/namespace"
+	"github.com/superdurable/xtemporal/common/persistence"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	workflowpb "go.temporal.io/api/workflow/v1"
 	"go.temporal.io/api/workflowservice/v1"
-	"github.com/superdurable/xtemporal/api/visibilityservice/v1"
-	"github.com/superdurable/xtemporal/common/namespace"
-	"github.com/superdurable/xtemporal/common/persistence"
 )
 
 type (

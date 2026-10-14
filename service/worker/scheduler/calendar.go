@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	schedulepb "go.temporal.io/api/schedule/v1"
 	"github.com/superdurable/xtemporal/common/primitives/timestamp"
+	schedulepb "go.temporal.io/api/schedule/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

@@ -5,8 +5,6 @@ package eventhandler
 import (
 	"context"
 
-	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/api/serviceerror"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/common"
@@ -17,6 +15,8 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/serialization"
 	"github.com/superdurable/xtemporal/common/persistence/versionhistory"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

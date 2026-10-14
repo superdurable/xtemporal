@@ -7,14 +7,14 @@ import (
 	"time"
 	"unicode/utf8"
 
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/future"
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/manager"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store/elasticsearch/client"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
 	"go.uber.org/mock/gomock"
 )
 

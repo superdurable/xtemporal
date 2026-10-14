@@ -9,12 +9,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/sdk/activity"
-	sdkclient "go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/temporal"
-	sdkworker "go.temporal.io/sdk/worker"
-	"go.temporal.io/sdk/workflow"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
@@ -26,6 +20,12 @@ import (
 	"github.com/superdurable/xtemporal/service/history/tasks"
 	historyworkflow "github.com/superdurable/xtemporal/service/history/workflow"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/sdk/activity"
+	sdkclient "go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/temporal"
+	sdkworker "go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

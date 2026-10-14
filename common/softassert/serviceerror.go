@@ -3,9 +3,9 @@ package softassert
 import (
 	"fmt"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

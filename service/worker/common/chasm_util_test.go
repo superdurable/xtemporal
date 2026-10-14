@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/chasm"
+	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	workflowpb "go.temporal.io/api/workflow/v1"
-	"github.com/superdurable/xtemporal/chasm"
-	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 )
 
 func TestArchetypeIDFromExecutionInfo(t *testing.T) {

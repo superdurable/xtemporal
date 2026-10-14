@@ -13,7 +13,6 @@ import (
 	"sync"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/convert"
@@ -25,6 +24,7 @@ import (
 	"github.com/superdurable/xtemporal/common/rpc/auth"
 	"github.com/superdurable/xtemporal/common/rpc/encryption"
 	"github.com/superdurable/xtemporal/temporal/environment"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/connectivity"

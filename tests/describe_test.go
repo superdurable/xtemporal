@@ -7,12 +7,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	commandpb "go.temporal.io/api/command/v1"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
-	workflowpb "go.temporal.io/api/workflow/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/convert"
 	"github.com/superdurable/xtemporal/common/log/tag"
@@ -20,6 +14,12 @@ import (
 	"github.com/superdurable/xtemporal/common/primitives/timestamp"
 	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	commandpb "go.temporal.io/api/command/v1"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
+	workflowpb "go.temporal.io/api/workflow/v1"
+	"go.temporal.io/api/workflowservice/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	commonpb "go.temporal.io/api/common/v1"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	commonpb "go.temporal.io/api/common/v1"
 )
 
 func TestUserCustomSearchAttributes(t *testing.T) {

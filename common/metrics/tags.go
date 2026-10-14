@@ -5,12 +5,12 @@ import (
 	"strconv"
 	"strings"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	historypb "go.temporal.io/api/history/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/locks"
 	"github.com/superdurable/xtemporal/common/primitives"
 	"github.com/superdurable/xtemporal/common/util"
+	enumspb "go.temporal.io/api/enums/v1"
+	historypb "go.temporal.io/api/history/v1"
 )
 
 const (

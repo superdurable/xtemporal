@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	versionpb "go.temporal.io/api/version/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/headers"
 	"github.com/superdurable/xtemporal/common/persistence"
+	versionpb "go.temporal.io/api/version/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

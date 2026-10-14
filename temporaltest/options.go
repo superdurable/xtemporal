@@ -3,9 +3,9 @@ package temporaltest
 import (
 	"testing"
 
+	"github.com/superdurable/xtemporal/temporal"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
-	"github.com/superdurable/xtemporal/temporal"
 )
 
 type TestServerOption interface {

@@ -7,9 +7,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	commonpb "go.temporal.io/api/common/v1"
-	historypb "go.temporal.io/api/history/v1"
-	"go.temporal.io/sdk/converter"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
@@ -17,6 +14,9 @@ import (
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/payloads"
 	"github.com/superdurable/xtemporal/common/persistence/versionhistory"
+	commonpb "go.temporal.io/api/common/v1"
+	historypb "go.temporal.io/api/history/v1"
+	"go.temporal.io/sdk/converter"
 	"google.golang.org/protobuf/proto"
 )
 

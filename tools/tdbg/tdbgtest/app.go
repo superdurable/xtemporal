@@ -1,8 +1,8 @@
 package tdbgtest
 
 import (
-	"github.com/urfave/cli/v2"
 	"github.com/superdurable/xtemporal/tools/tdbg"
+	"github.com/urfave/cli/v2"
 )
 
 // NewCliApp is a wrapper around [tdbg.NewCliApp] that sets the [cli.App.ExitErrHandler] to a no-op function.

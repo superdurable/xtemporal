@@ -4,11 +4,6 @@ import (
 	"context"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/sdk/activity"
-	"go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/temporal"
-	"go.temporal.io/sdk/workflow"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common"
@@ -21,6 +16,11 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/visibility/manager"
 	"github.com/superdurable/xtemporal/common/quotas"
 	"github.com/superdurable/xtemporal/common/worker_versioning"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/sdk/activity"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/temporal"
+	"go.temporal.io/sdk/workflow"
 )
 
 const (

@@ -7,9 +7,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/temporalio/sqlparser"
 	enumspb "go.temporal.io/api/enums/v1"
-	"github.com/superdurable/xtemporal/common/searchattribute"
 )
 
 type (

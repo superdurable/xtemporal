@@ -9,9 +9,9 @@ import (
 	"github.com/gocql/gocql"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/common/persistence"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/serviceerror"
-	"github.com/superdurable/xtemporal/common/persistence"
 )
 
 // fakeRequestError implements gocql.RequestError for testing.

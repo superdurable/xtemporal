@@ -1,0 +1,11 @@
+.github/workflows
+.github/actions
+.github/CODEOWNERS
+.github/PULL_REQUEST_TEMPLATE*
+.github/dependabot.yml
+.github/dependabot.yaml
+.github/renovate.yml
+.github/renovate.yaml
+.github/renovate.json
+renovate.json
+.renovaterc*

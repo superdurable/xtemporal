@@ -12,7 +12,6 @@ import (
 	smithy "github.com/aws/smithy-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
 	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
 )
 

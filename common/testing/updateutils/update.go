@@ -2,14 +2,14 @@ package updateutils
 
 import (
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/common/payloads"
+	"github.com/superdurable/xtemporal/common/testing/protoutils"
+	"github.com/superdurable/xtemporal/common/testing/testvars"
 	commandpb "go.temporal.io/api/command/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	failurepb "go.temporal.io/api/failure/v1"
 	protocolpb "go.temporal.io/api/protocol/v1"
 	updatepb "go.temporal.io/api/update/v1"
-	"github.com/superdurable/xtemporal/common/payloads"
-	"github.com/superdurable/xtemporal/common/testing/protoutils"
-	"github.com/superdurable/xtemporal/common/testing/testvars"
 )
 
 type (

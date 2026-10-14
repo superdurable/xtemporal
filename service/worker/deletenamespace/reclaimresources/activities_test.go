@@ -5,12 +5,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/sdk/temporal"
-	"go.temporal.io/sdk/testsuite"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/manager"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	"go.temporal.io/sdk/temporal"
+	"go.temporal.io/sdk/testsuite"
 	"go.uber.org/mock/gomock"
 )
 

@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/log"
@@ -16,6 +13,9 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/serialization"
 	"github.com/superdurable/xtemporal/common/primitives/timestamp"
 	"github.com/superdurable/xtemporal/common/softassert"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

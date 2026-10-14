@@ -6,12 +6,12 @@ import (
 	"sync"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/clock"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/goro"
 	"github.com/superdurable/xtemporal/common/metrics"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 var (

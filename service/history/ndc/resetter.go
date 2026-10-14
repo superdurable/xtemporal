@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/definition"
@@ -15,6 +14,7 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/versionhistory"
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

@@ -11,8 +11,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/otel/trace"
-	"go.opentelemetry.io/otel/trace/embedded"
 	commonspb "github.com/superdurable/xtemporal/api/common/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/chasm"
@@ -25,6 +23,8 @@ import (
 	"github.com/superdurable/xtemporal/common/testing/nettest"
 	historyserver "github.com/superdurable/xtemporal/service/history"
 	"github.com/superdurable/xtemporal/service/history/tasks"
+	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace/embedded"
 	"go.uber.org/fx/fxtest"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc"

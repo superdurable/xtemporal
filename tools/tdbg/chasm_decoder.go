@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"reflect"
 
-	commonpb "go.temporal.io/api/common/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/codec"
 	"github.com/superdurable/xtemporal/common/persistence/serialization"
+	commonpb "go.temporal.io/api/common/v1"
 	"google.golang.org/protobuf/proto"
 )
 

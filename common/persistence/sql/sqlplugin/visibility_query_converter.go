@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/temporalio/sqlparser"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store/query"
+	"github.com/temporalio/sqlparser"
 )
 
 type (

@@ -6,10 +6,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	schedulepb "go.temporal.io/api/schedule/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	chasmspb "github.com/superdurable/xtemporal/api/chasm/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/api/visibilityservice/v1"
@@ -24,6 +20,10 @@ import (
 	"github.com/superdurable/xtemporal/common/sdk"
 	"github.com/superdurable/xtemporal/common/testing/mockapi/workflowservicemock/v1"
 	"github.com/superdurable/xtemporal/common/testing/mocksdk"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	schedulepb "go.temporal.io/api/schedule/v1"
+	"go.temporal.io/api/workflowservice/v1"
 	"go.uber.org/mock/gomock"
 )
 

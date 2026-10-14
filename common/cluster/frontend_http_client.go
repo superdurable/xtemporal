@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/collection"
+	"go.temporal.io/api/serviceerror"
 )
 
 type tlsConfigProvider interface {

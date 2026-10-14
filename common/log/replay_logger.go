@@ -1,8 +1,8 @@
 package log
 
 import (
-	"go.temporal.io/sdk/workflow"
 	"github.com/superdurable/xtemporal/common/log/tag"
+	"go.temporal.io/sdk/workflow"
 )
 
 const extraSkipForReplayLogger = 1

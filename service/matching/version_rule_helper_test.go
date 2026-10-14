@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 )
 
 func TestFindAssignmentBuildId_NoRules(t *testing.T) {

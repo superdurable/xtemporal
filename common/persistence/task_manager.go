@@ -3,12 +3,12 @@ package persistence
 import (
 	"context"
 
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/persistence/serialization"
 	"github.com/superdurable/xtemporal/common/primitives/timestamp"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 // Subqueue zero corresponds to "the queue" before migrating metadata to subqueues.

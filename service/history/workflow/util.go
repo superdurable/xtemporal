@@ -3,12 +3,6 @@ package workflow
 import (
 	"context"
 
-	commonpb "go.temporal.io/api/common/v1"
-	deploymentpb "go.temporal.io/api/deployment/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	historypb "go.temporal.io/api/history/v1"
-	"go.temporal.io/api/serviceerror"
-	workflowpb "go.temporal.io/api/workflow/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	callbackspb "github.com/superdurable/xtemporal/chasm/lib/callback/gen/callbackpb/v1"
@@ -20,6 +14,12 @@ import (
 	"github.com/superdurable/xtemporal/service/history/consts"
 	"github.com/superdurable/xtemporal/service/history/hsm"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	commonpb "go.temporal.io/api/common/v1"
+	deploymentpb "go.temporal.io/api/deployment/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	historypb "go.temporal.io/api/history/v1"
+	"go.temporal.io/api/serviceerror"
+	workflowpb "go.temporal.io/api/workflow/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/visibilityservice/v1"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/log"
@@ -13,6 +12,7 @@ import (
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/manager"
+	"go.temporal.io/api/serviceerror"
 )
 
 var _ manager.VisibilityManager = (*visibilityManagerMetrics)(nil)

@@ -3,8 +3,6 @@ package respondworkflowtaskfailed
 import (
 	"context"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/definition"
@@ -16,6 +14,8 @@ import (
 	"github.com/superdurable/xtemporal/service/history/consts"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
 	"github.com/superdurable/xtemporal/service/history/workflow"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 func Invoke(

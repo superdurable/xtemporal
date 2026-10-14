@@ -5,8 +5,6 @@ package ndc
 import (
 	"context"
 
-	historypb "go.temporal.io/api/history/v1"
-	"go.temporal.io/api/serviceerror"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	chasmworkflow "github.com/superdurable/xtemporal/chasm/lib/workflow"
 	"github.com/superdurable/xtemporal/common/log"
@@ -14,6 +12,8 @@ import (
 	"github.com/superdurable/xtemporal/service/history/hsm"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
 	"github.com/superdurable/xtemporal/service/history/workflow/update"
+	historypb "go.temporal.io/api/history/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 type (

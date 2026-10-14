@@ -3,13 +3,13 @@ package api
 import (
 	"context"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/rpc/interceptor"
 	"github.com/superdurable/xtemporal/service/history/consts"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 func ValidateSignal(

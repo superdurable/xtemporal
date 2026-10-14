@@ -5,8 +5,6 @@ import (
 	"errors"
 	"time"
 
-	commonpb "go.temporal.io/api/common/v1"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	taskqueuespb "github.com/superdurable/xtemporal/api/taskqueue/v1"
@@ -21,6 +19,8 @@ import (
 	"github.com/superdurable/xtemporal/service/history/consts"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
 	"github.com/superdurable/xtemporal/service/history/tasks"
+	commonpb "go.temporal.io/api/common/v1"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 )
 
 type (

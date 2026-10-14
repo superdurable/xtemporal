@@ -7,7 +7,6 @@ import (
 
 	"github.com/olivere/elastic/v7"
 	"github.com/stretchr/testify/require"
-	"github.com/temporalio/sqlparser"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/persistence/sql"
@@ -15,6 +14,7 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store/query"
 	vissql "github.com/superdurable/xtemporal/common/persistence/visibility/store/sql"
 	"github.com/superdurable/xtemporal/common/searchattribute"
+	"github.com/temporalio/sqlparser"
 )
 
 const (
