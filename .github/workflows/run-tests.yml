@@ -127,7 +127,7 @@ jobs:
           /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database paradedb_update --plugin paradedb setup-schema --version 0.0
           /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database paradedb_update --plugin paradedb update-schema --schema-name paradedb/visibility
       - name: Run ParadeDB visibility persistence suite
-        run: make integration-test-coverage INTEGRATION_TEST_DIRS='./common/persistence/tests' TEST_ARGS='-run=^TestParadeDBVisibilityPersistence$' TEST_PARALLEL_FLAGS='-p 1' TEST_TIMEOUT=20m TEST_RUNNER_TIMEOUT=30m
+        run: make integration-test-coverage INTEGRATION_TEST_DIRS='./common/persistence/tests' TEST_ARGS='-run=^TestParadeDBVisibilityPersistence$$' TEST_PARALLEL_FLAGS='-p 1' TEST_TIMEOUT=20m TEST_RUNNER_TIMEOUT=30m
       - name: Upload JUnit reports
         if: always()
         uses: actions/upload-artifact@v4

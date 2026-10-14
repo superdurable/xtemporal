@@ -13,7 +13,10 @@ trap 'rm -f "$xt_list"' EXIT
 
 make prepare-coverage-test
 go test -list '^Test' -tags disable_grpc_modules,test_dep -p 1 ./tests > "$xt_list"
-mapfile -t xt_suites < <(grep '^Test' "$xt_list")
+xt_suites=()
+while IFS= read -r xt_suite; do
+  xt_suites+=("$xt_suite")
+done < <(grep '^Test' "$xt_list")
 if [[ ${#xt_suites[@]} -eq 0 ]]; then
   echo "No functional test suites found." >&2
   exit 1
