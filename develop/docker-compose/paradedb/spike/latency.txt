@@ -1,0 +1,10 @@
+xtpdbspike-paradedb-1 status_time: p50=4.362 ms p95=6.208 ms
+xtpdbspike-paradedb-1 type_status: p50=4.375 ms p95=5.429 ms
+xtpdbspike-paradedb-1 text: p50=4.965 ms p95=5.895 ms
+xtpdbspike-paradedb-1 keyword_in: p50=4.407 ms p95=5.762 ms
+xtpdbspike-paradedb-1 keyword_list: p50=4.284 ms p95=5.133 ms
+xtpdbspike-postgres-1 status_time: p50=20.854 ms p95=27.780 ms
+xtpdbspike-postgres-1 type_status: p50=22.381 ms p95=26.298 ms
+xtpdbspike-postgres-1 text: p50=20.463 ms p95=23.454 ms
+xtpdbspike-postgres-1 keyword_in: p50=23.255 ms p95=79.071 ms
+xtpdbspike-postgres-1 keyword_list: p50=54.821 ms p95=136.570 ms

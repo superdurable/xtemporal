@@ -1,0 +1,197 @@
+Pager usage is off.
+namespace/status/time
+                                                                                                                          QUERY PLAN
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=18876.59..18878.93 rows=20 width=81) (actual time=46.930..49.673 rows=20 loops=1)
+   Buffers: shared hit=831 read=15259 dirtied=581
+   ->  Gather Merge  (cost=18876.59..18890.36 rows=118 width=81) (actual time=46.919..49.662 rows=20 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=831 read=15259 dirtied=581
+         ->  Sort  (cost=17876.57..17876.72 rows=59 width=81) (actual time=43.732..43.733 rows=15 loops=3)
+               Sort Key: (COALESCE(close_time, '9999-12-31 23:59:59'::timestamp without time zone)) DESC, start_time DESC, run_id
+               Sort Method: top-N heapsort  Memory: 30kB
+               Buffers: shared hit=831 read=15259 dirtied=581
+               Worker 0:  Sort Method: top-N heapsort  Memory: 30kB
+               Worker 1:  Sort Method: top-N heapsort  Memory: 30kB
+               ->  Parallel Seq Scan on executions_visibility  (cost=0.00..17875.00 rows=59 width=81) (actual time=2.173..43.494 rows=476 loops=3)
+                     Filter: ((start_time >= '2026-01-01 00:00:00'::timestamp without time zone) AND (start_time < '2026-01-02 00:00:00'::timestamp without time zone) AND (status = 1) AND ((namespace_id)::text = 'cfcd208495d565ef66e7dff9f98764da'::text))
+                     Rows Removed by Filter: 66191
+                     Buffers: shared hit=741 read=15259 dirtied=581
+ Planning:
+   Buffers: shared hit=1757 read=60
+ Planning Time: 6.113 ms
+ Execution Time: 49.743 ms
+(20 rows)
+
+workflow type/status
+                                                                             QUERY PLAN
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=18666.77..18668.17 rows=12 width=81) (actual time=19.356..21.635 rows=20 loops=1)
+   Buffers: shared hit=1503 read=14587
+   ->  Gather Merge  (cost=18666.77..18668.17 rows=12 width=81) (actual time=19.355..21.632 rows=20 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=1503 read=14587
+         ->  Sort  (cost=17666.74..17666.76 rows=6 width=81) (actual time=15.742..15.743 rows=16 loops=3)
+               Sort Key: (COALESCE(close_time, '9999-12-31 23:59:59'::timestamp without time zone)) DESC, start_time DESC, run_id
+               Sort Method: top-N heapsort  Memory: 30kB
+               Buffers: shared hit=1503 read=14587
+               Worker 0:  Sort Method: top-N heapsort  Memory: 30kB
+               Worker 1:  Sort Method: top-N heapsort  Memory: 30kB
+               ->  Parallel Seq Scan on executions_visibility  (cost=0.00..17666.67 rows=6 width=81) (actual time=0.764..15.518 rows=476 loops=3)
+                     Filter: (((workflow_type_name)::text = 'type-0'::text) AND (status = 1) AND ((namespace_id)::text = 'cfcd208495d565ef66e7dff9f98764da'::text))
+                     Rows Removed by Filter: 66191
+                     Buffers: shared hit=1413 read=14587
+ Planning:
+   Buffers: shared hit=5
+ Planning Time: 0.377 ms
+ Execution Time: 21.654 ms
+(20 rows)
+
+text search
+                                                                    QUERY PLAN
+--------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=17353.54..17353.59 rows=20 width=81) (actual time=202.542..202.544 rows=20 loops=1)
+   Buffers: shared hit=141 read=15869 written=8209
+   ->  Sort  (cost=17353.54..17353.79 rows=102 width=81) (actual time=202.541..202.542 rows=20 loops=1)
+         Sort Key: (COALESCE(close_time, '9999-12-31 23:59:59'::timestamp without time zone)) DESC, start_time DESC, run_id
+         Sort Method: top-N heapsort  Memory: 30kB
+         Buffers: shared hit=141 read=15869 written=8209
+         ->  Bitmap Heap Scan on executions_visibility  (cost=139.59..17350.82 rows=102 width=81) (actual time=7.089..200.736 rows=10000 loops=1)
+               Recheck Cond: (text01 @@ '''hello'''::tsquery)
+               Filter: ((namespace_id)::text = 'cfcd208495d565ef66e7dff9f98764da'::text)
+               Rows Removed by Filter: 10000
+               Heap Blocks: exact=16000
+               Buffers: shared hit=141 read=15869 written=8209
+               ->  Bitmap Index Scan on by_text_01  (cost=0.00..139.57 rows=20433 width=0) (actual time=1.889..1.889 rows=24000 loops=1)
+                     Index Cond: (text01 @@ '''hello'''::tsquery)
+                     Buffers: shared hit=5 read=5
+ Planning:
+   Buffers: shared hit=12
+ Planning Time: 0.673 ms
+ Execution Time: 203.788 ms
+(19 rows)
+
+keyword in
+                                                                           QUERY PLAN
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=18458.48..18460.34 rows=16 width=81) (actual time=20.776..23.013 rows=20 loops=1)
+   Buffers: shared hit=11180 read=4916 written=59
+   ->  Gather Merge  (cost=18458.48..18460.34 rows=16 width=81) (actual time=20.775..23.011 rows=20 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=11180 read=4916 written=59
+         ->  Sort  (cost=17458.45..17458.47 rows=8 width=81) (actual time=18.364..18.365 rows=16 loops=3)
+               Sort Key: (COALESCE(close_time, '9999-12-31 23:59:59'::timestamp without time zone)) DESC, start_time DESC, run_id
+               Sort Method: top-N heapsort  Memory: 30kB
+               Buffers: shared hit=11180 read=4916 written=59
+               Worker 0:  Sort Method: top-N heapsort  Memory: 30kB
+               Worker 1:  Sort Method: top-N heapsort  Memory: 30kB
+               ->  Parallel Seq Scan on executions_visibility  (cost=0.00..17458.33 rows=8 width=81) (actual time=0.756..18.100 rows=1333 loops=3)
+                     Filter: (((keyword01)::text = ANY ('{tenant-0,tenant-20}'::text[])) AND ((namespace_id)::text = 'cfcd208495d565ef66e7dff9f98764da'::text))
+                     Rows Removed by Filter: 65333
+                     Buffers: shared hit=11090 read=4916 written=59
+ Planning:
+   Buffers: shared hit=52
+ Planning Time: 0.232 ms
+ Execution Time: 23.030 ms
+(20 rows)
+
+keyword prefix
+                                                                   QUERY PLAN
+-------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=18458.40..18459.33 rows=8 width=81) (actual time=17.652..19.426 rows=20 loops=1)
+   Buffers: shared hit=11270 read=4820 written=96
+   ->  Gather Merge  (cost=18458.40..18459.33 rows=8 width=81) (actual time=17.650..19.423 rows=20 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=11270 read=4820 written=96
+         ->  Sort  (cost=17458.37..17458.38 rows=4 width=81) (actual time=15.970..15.970 rows=16 loops=3)
+               Sort Key: (COALESCE(close_time, '9999-12-31 23:59:59'::timestamp without time zone)) DESC, start_time DESC, run_id
+               Sort Method: top-N heapsort  Memory: 29kB
+               Buffers: shared hit=11270 read=4820 written=96
+               Worker 0:  Sort Method: top-N heapsort  Memory: 29kB
+               Worker 1:  Sort Method: top-N heapsort  Memory: 30kB
+               ->  Parallel Seq Scan on executions_visibility  (cost=0.00..17458.33 rows=4 width=81) (actual time=1.748..15.891 rows=67 loops=3)
+                     Filter: (((keyword02)::text ~~ 'prefix-12%'::text) AND ((namespace_id)::text = 'cfcd208495d565ef66e7dff9f98764da'::text))
+                     Rows Removed by Filter: 66600
+                     Buffers: shared hit=11180 read=4820 written=96
+ Planning:
+   Buffers: shared hit=6 read=5 written=5
+ Planning Time: 1.576 ms
+ Execution Time: 19.441 ms
+(20 rows)
+
+keyword list
+                                                                   QUERY PLAN
+------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=15108.03..15108.08 rows=20 width=81) (actual time=81.338..81.351 rows=20 loops=1)
+   Buffers: shared hit=8459 read=3548 written=1571
+   ->  Sort  (cost=15108.03..15108.16 rows=51 width=81) (actual time=81.337..81.339 rows=20 loops=1)
+         Sort Key: (COALESCE(close_time, '9999-12-31 23:59:59'::timestamp without time zone)) DESC, start_time DESC, run_id
+         Sort Method: top-N heapsort  Memory: 30kB
+         Buffers: shared hit=8459 read=3548 written=1571
+         ->  Bitmap Heap Scan on executions_visibility  (cost=76.25..15106.67 rows=51 width=81) (actual time=14.164..79.789 rows=10000 loops=1)
+               Recheck Cond: (keywordlist01 @> jsonb_build_array('tag-0'))
+               Filter: ((namespace_id)::text = 'cfcd208495d565ef66e7dff9f98764da'::text)
+               Heap Blocks: exact=12000
+               Buffers: shared hit=8459 read=3548 written=1571
+               ->  Bitmap Index Scan on by_keyword_list_01  (cost=0.00..76.23 rows=10240 width=0) (actual time=0.913..0.914 rows=12000 loops=1)
+                     Index Cond: (keywordlist01 @> jsonb_build_array('tag-0'))
+                     Buffers: shared hit=2 read=5 written=5
+ Planning:
+   Buffers: shared hit=11 read=1
+ Planning Time: 0.267 ms
+ Execution Time: 81.367 ms
+(18 rows)
+
+count
+                                                                    QUERY PLAN
+--------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=18458.70..18458.71 rows=1 width=8) (actual time=18.969..21.131 rows=1 loops=1)
+   Buffers: shared hit=14819 read=1181 written=1
+   ->  Gather  (cost=18458.48..18458.69 rows=2 width=8) (actual time=18.915..21.128 rows=3 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=14819 read=1181 written=1
+         ->  Partial Aggregate  (cost=17458.48..17458.49 rows=1 width=8) (actual time=16.628..16.628 rows=1 loops=3)
+               Buffers: shared hit=14819 read=1181 written=1
+               ->  Parallel Seq Scan on executions_visibility  (cost=0.00..17458.33 rows=59 width=0) (actual time=0.656..16.569 rows=476 loops=3)
+                     Filter: ((status = 1) AND ((namespace_id)::text = 'cfcd208495d565ef66e7dff9f98764da'::text))
+                     Rows Removed by Filter: 66191
+                     Buffers: shared hit=14819 read=1181 written=1
+ Planning:
+   Buffers: shared hit=4 read=2 written=1
+ Planning Time: 0.427 ms
+ Execution Time: 21.165 ms
+(16 rows)
+
+group count
+                                                                        QUERY PLAN
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize GroupAggregate  (cost=18268.17..18273.12 rows=7 width=12) (actual time=36.235..39.209 rows=7 loops=1)
+   Group Key: status
+   Buffers: shared hit=14989 read=1085
+   ->  Gather Merge  (cost=18268.17..18272.98 rows=14 width=12) (actual time=36.205..39.199 rows=21 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=14989 read=1085
+         ->  Partial GroupAggregate  (cost=17268.15..17271.35 rows=7 width=12) (actual time=32.844..32.991 rows=7 loops=3)
+               Group Key: status
+               Buffers: shared hit=14989 read=1085
+               ->  Sort  (cost=17268.15..17269.19 rows=417 width=4) (actual time=32.815..32.893 rows=3333 loops=3)
+                     Sort Key: status
+                     Sort Method: quicksort  Memory: 97kB
+                     Buffers: shared hit=14989 read=1085
+                     Worker 0:  Sort Method: quicksort  Memory: 97kB
+                     Worker 1:  Sort Method: quicksort  Memory: 97kB
+                     ->  Parallel Seq Scan on executions_visibility  (cost=0.00..17250.00 rows=417 width=4) (actual time=0.352..32.592 rows=3333 loops=3)
+                           Filter: ((namespace_id)::text = 'cfcd208495d565ef66e7dff9f98764da'::text)
+                           Rows Removed by Filter: 63333
+                           Buffers: shared hit=14915 read=1085
+ Planning:
+   Buffers: shared hit=4 read=1
+ Planning Time: 0.469 ms
+ Execution Time: 39.292 ms
+(24 rows)
