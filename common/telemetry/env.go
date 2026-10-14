@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/superdurable/xtemporal/common/primitives"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	otelsdktrace "go.opentelemetry.io/otel/sdk/trace"
-	"github.com/superdurable/xtemporal/common/primitives"
 )
 
 var (

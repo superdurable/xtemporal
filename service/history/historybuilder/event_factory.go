@@ -3,6 +3,12 @@ package historybuilder
 import (
 	"time"
 
+	"github.com/superdurable/xtemporal/api/historyservice/v1"
+	"github.com/superdurable/xtemporal/common"
+	"github.com/superdurable/xtemporal/common/clock"
+	"github.com/superdurable/xtemporal/common/namespace"
+	"github.com/superdurable/xtemporal/common/payload"
+	"github.com/superdurable/xtemporal/common/worker_versioning"
 	commandpb "go.temporal.io/api/command/v1"
 	commonpb "go.temporal.io/api/common/v1"
 	deploymentpb "go.temporal.io/api/deployment/v1"
@@ -13,12 +19,6 @@ import (
 	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	updatepb "go.temporal.io/api/update/v1"
 	workflowpb "go.temporal.io/api/workflow/v1"
-	"github.com/superdurable/xtemporal/api/historyservice/v1"
-	"github.com/superdurable/xtemporal/common"
-	"github.com/superdurable/xtemporal/common/clock"
-	"github.com/superdurable/xtemporal/common/namespace"
-	"github.com/superdurable/xtemporal/common/payload"
-	"github.com/superdurable/xtemporal/common/worker_versioning"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

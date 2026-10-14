@@ -3,11 +3,11 @@ package query
 import (
 	"strings"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 func ResolveSearchAttributeAlias(

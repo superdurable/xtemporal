@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/searchattribute"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // mapAllMapper is a mapper that resolves every alias to the same field name, to assert that

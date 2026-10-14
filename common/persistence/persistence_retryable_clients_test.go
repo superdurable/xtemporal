@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/backoff"
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/persistence/client"
 	"github.com/superdurable/xtemporal/common/persistence/mock"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/mock/gomock"
 )
 

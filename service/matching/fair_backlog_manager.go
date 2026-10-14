@@ -8,7 +8,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	taskqueuespb "github.com/superdurable/xtemporal/api/taskqueue/v1"
@@ -21,6 +20,7 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/softassert"
 	"github.com/superdurable/xtemporal/service/matching/counter"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

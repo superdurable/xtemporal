@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	archiverspb "github.com/superdurable/xtemporal/api/archiver/v1"
 	"github.com/superdurable/xtemporal/common/archiver"
 	"github.com/superdurable/xtemporal/common/archiver/gcloud/connector"
@@ -17,6 +16,7 @@ import (
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/searchattribute"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

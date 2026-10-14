@@ -3,10 +3,10 @@ package workflow
 import (
 	"sync"
 
-	querypb "go.temporal.io/api/query/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/service/history/consts"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	querypb "go.temporal.io/api/query/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 var (

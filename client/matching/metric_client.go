@@ -5,8 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	"github.com/superdurable/xtemporal/common/headers"
 	"github.com/superdurable/xtemporal/common/log"
@@ -14,6 +12,8 @@ import (
 	"github.com/superdurable/xtemporal/common/metrics"
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
 	"github.com/superdurable/xtemporal/common/tqid"
+	"go.temporal.io/api/serviceerror"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"google.golang.org/grpc"
 )
 

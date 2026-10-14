@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/otel/trace"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/client"
 	"github.com/superdurable/xtemporal/common/clock"
@@ -30,6 +29,7 @@ import (
 	"github.com/superdurable/xtemporal/service/history/tasks"
 	"github.com/superdurable/xtemporal/service/history/workflow"
 	"github.com/superdurable/xtemporal/service/history/workflow/cache"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/fx"
 	"go.uber.org/mock/gomock"
 )

@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/namespace"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 func TestNewTaskQueueRateLimitFractionProvider_ClampedToMax(t *testing.T) {

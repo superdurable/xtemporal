@@ -8,11 +8,11 @@ import (
 
 	"github.com/cactus/go-statsd-client/v5/statsd"
 	prom "github.com/prometheus/client_golang/prometheus"
-	"github.com/uber-go/tally/v4"
-	"github.com/uber-go/tally/v4/prometheus"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	statsdreporter "github.com/superdurable/xtemporal/common/metrics/tally/statsd"
+	"github.com/uber-go/tally/v4"
+	"github.com/uber-go/tally/v4/prometheus"
 )
 
 type (

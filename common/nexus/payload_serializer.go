@@ -7,9 +7,9 @@ import (
 	"mime"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
+	"github.com/superdurable/xtemporal/common/persistence/serialization"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	"github.com/superdurable/xtemporal/common/persistence/serialization"
 )
 
 type payloadSerializer struct{}

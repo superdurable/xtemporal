@@ -7,8 +7,6 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
@@ -17,6 +15,8 @@ import (
 	"github.com/superdurable/xtemporal/client/history"
 	"github.com/superdurable/xtemporal/client/matching"
 	"github.com/superdurable/xtemporal/common/cluster"
+	"go.temporal.io/api/serviceerror"
+	"go.temporal.io/api/workflowservice/v1"
 	"google.golang.org/grpc"
 )
 

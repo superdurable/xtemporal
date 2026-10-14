@@ -6,11 +6,11 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/superdurable/xtemporal/common/namespace"
+	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/serviceerror"
-	"github.com/superdurable/xtemporal/common/namespace"
-	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 )
 
 type (

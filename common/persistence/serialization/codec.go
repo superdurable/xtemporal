@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/superdurable/xtemporal/common/codec"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	"github.com/superdurable/xtemporal/common/codec"
 	"google.golang.org/protobuf/proto"
 )
 

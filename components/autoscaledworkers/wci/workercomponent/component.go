@@ -3,16 +3,16 @@ package workercomponent
 import (
 	"time"
 
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
-	instancewf "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow"
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
-	sdkclient "go.temporal.io/sdk/client"
-	sdkworker "go.temporal.io/sdk/worker"
-	"go.temporal.io/sdk/workflow"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/sdk"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
+	instancewf "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	workercommon "github.com/superdurable/xtemporal/service/worker/common"
+	sdkclient "go.temporal.io/sdk/client"
+	sdkworker "go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 )
 
 type (

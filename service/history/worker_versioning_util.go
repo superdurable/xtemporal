@@ -3,8 +3,6 @@ package history
 import (
 	"context"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	taskqueuespb "github.com/superdurable/xtemporal/api/taskqueue/v1"
 	"github.com/superdurable/xtemporal/common"
@@ -17,6 +15,8 @@ import (
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
 	"github.com/superdurable/xtemporal/service/history/tasks"
 	"github.com/superdurable/xtemporal/service/history/workflow/cache"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 func updateIndependentActivityBuildId(

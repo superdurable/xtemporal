@@ -9,8 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/temporalio/ringpop-go"
-	"github.com/temporalio/tchannel-go"
 	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/convert"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
@@ -23,6 +21,8 @@ import (
 	"github.com/superdurable/xtemporal/common/rpc/encryption"
 	"github.com/superdurable/xtemporal/common/util"
 	"github.com/superdurable/xtemporal/temporal/environment"
+	"github.com/temporalio/ringpop-go"
+	"github.com/temporalio/tchannel-go"
 	"go.uber.org/fx"
 )
 

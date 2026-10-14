@@ -3,11 +3,11 @@ package scheduler
 import (
 	"strings"
 
-	"github.com/temporalio/sqlparser"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/primitives"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	"github.com/temporalio/sqlparser"
 )
 
 var workflowIDCol = &sqlparser.ColName{Name: sqlparser.NewColIdent(sadefs.WorkflowID)}

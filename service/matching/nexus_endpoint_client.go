@@ -10,7 +10,6 @@ import (
 	"sync/atomic"
 
 	"github.com/google/uuid"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/backoff"
@@ -21,6 +20,7 @@ import (
 	"github.com/superdurable/xtemporal/common/headers"
 	p "github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/util"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

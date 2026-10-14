@@ -3,7 +3,6 @@ package deleteworkflow
 import (
 	"context"
 
-	commonpb "go.temporal.io/api/common/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/common/definition"
 	"github.com/superdurable/xtemporal/common/locks"
@@ -13,6 +12,7 @@ import (
 	"github.com/superdurable/xtemporal/service/history/deletemanager"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
 	"github.com/superdurable/xtemporal/service/history/workflow"
+	commonpb "go.temporal.io/api/common/v1"
 )
 
 func Invoke(

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/log"
@@ -14,6 +13,7 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store/query"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	"go.temporal.io/api/serviceerror"
 	expmaps "golang.org/x/exp/maps"
 )
 

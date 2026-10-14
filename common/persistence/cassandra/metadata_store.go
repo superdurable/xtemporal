@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	p "github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/persistence/nosql/nosqlplugin/cassandra/gocql"
 	"github.com/superdurable/xtemporal/common/primitives"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

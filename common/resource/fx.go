@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
@@ -47,6 +46,7 @@ import (
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/telemetry"
 	"github.com/superdurable/xtemporal/common/testing/testhooks"
+	"go.temporal.io/api/workflowservice/v1"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"

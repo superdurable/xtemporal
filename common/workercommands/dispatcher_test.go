@@ -7,10 +7,6 @@ import (
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
-	nexuspb "go.temporal.io/api/nexus/v1"
-	workerpb "go.temporal.io/api/worker/v1"
-	"go.temporal.io/sdk/temporal"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservicemock/v1"
 	"github.com/superdurable/xtemporal/common/definition"
@@ -19,6 +15,10 @@ import (
 	"github.com/superdurable/xtemporal/common/metrics/metricstest"
 	"github.com/superdurable/xtemporal/service/history/configs"
 	"github.com/superdurable/xtemporal/service/history/tasks"
+	enumspb "go.temporal.io/api/enums/v1"
+	nexuspb "go.temporal.io/api/nexus/v1"
+	workerpb "go.temporal.io/api/worker/v1"
+	"go.temporal.io/sdk/temporal"
 	"go.uber.org/mock/gomock"
 )
 

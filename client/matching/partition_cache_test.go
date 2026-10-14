@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/metrics"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // Using a fixed UUID so tests are deterministic. Must be valid UUID format for makeKey.

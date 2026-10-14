@@ -5,10 +5,10 @@ import (
 	"net/url"
 	"time"
 
-	failurepb "go.temporal.io/api/failure/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	callbackspb "github.com/superdurable/xtemporal/chasm/lib/callback/gen/callbackpb/v1"
 	"github.com/superdurable/xtemporal/common/backoff"
+	failurepb "go.temporal.io/api/failure/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

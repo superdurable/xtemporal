@@ -11,12 +11,6 @@ import (
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"github.com/stretchr/testify/require"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	nexuspb "go.temporal.io/api/nexus/v1"
-	"go.temporal.io/api/workflowservice/v1"
-	sdkclient "go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/temporal"
 	"github.com/superdurable/xtemporal/common/authorization"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/headers"
@@ -28,6 +22,12 @@ import (
 	"github.com/superdurable/xtemporal/components/nexusoperations"
 	"github.com/superdurable/xtemporal/service/frontend/configs"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	nexuspb "go.temporal.io/api/nexus/v1"
+	"go.temporal.io/api/workflowservice/v1"
+	sdkclient "go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/temporal"
 	"google.golang.org/grpc/metadata"
 )
 

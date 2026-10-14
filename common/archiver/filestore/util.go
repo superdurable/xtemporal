@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/dgryski/go-farm"
-	historypb "go.temporal.io/api/history/v1"
 	archiverspb "github.com/superdurable/xtemporal/api/archiver/v1"
 	"github.com/superdurable/xtemporal/common/archiver"
 	"github.com/superdurable/xtemporal/common/codec"
+	historypb "go.temporal.io/api/history/v1"
 	"go.uber.org/multierr"
 	"google.golang.org/protobuf/proto"
 )

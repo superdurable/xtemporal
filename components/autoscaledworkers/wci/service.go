@@ -3,8 +3,6 @@ package wci
 import (
 	"context"
 
-	"go.temporal.io/api/serviceerror"
-	wciLog "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/log"
 	"github.com/superdurable/xtemporal/common/cluster"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
@@ -14,7 +12,9 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/primitives"
 	"github.com/superdurable/xtemporal/common/sdk"
+	wciLog "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/log"
 	"github.com/superdurable/xtemporal/service/worker"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

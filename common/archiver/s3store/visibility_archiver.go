@@ -9,8 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"go.temporal.io/api/serviceerror"
-	workflowpb "go.temporal.io/api/workflow/v1"
 	archiverspb "github.com/superdurable/xtemporal/api/archiver/v1"
 	"github.com/superdurable/xtemporal/common/archiver"
 	"github.com/superdurable/xtemporal/common/config"
@@ -19,6 +17,8 @@ import (
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/primitives/timestamp"
 	"github.com/superdurable/xtemporal/common/searchattribute"
+	"go.temporal.io/api/serviceerror"
+	workflowpb "go.temporal.io/api/workflow/v1"
 )
 
 type (

@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/api/serviceerror"
 	schedulerpb "github.com/superdurable/xtemporal/chasm/lib/scheduler/gen/schedulerpb/v1"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/namespace"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/grpc"
 )
 

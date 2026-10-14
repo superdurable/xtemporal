@@ -3,9 +3,9 @@ package frontend
 import (
 	"fmt"
 
+	"github.com/superdurable/xtemporal/common/namespace"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/serviceerror"
-	"github.com/superdurable/xtemporal/common/namespace"
 )
 
 // validateClusterNotInUseByNamespaces guards RemoveRemoteCluster, which runs on

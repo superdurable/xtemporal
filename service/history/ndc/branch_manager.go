@@ -5,7 +5,6 @@ package ndc
 import (
 	"context"
 
-	"go.temporal.io/api/serviceerror"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
 	"github.com/superdurable/xtemporal/common/cluster"
 	"github.com/superdurable/xtemporal/common/log"
@@ -14,6 +13,7 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/versionhistory"
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

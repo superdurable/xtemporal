@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"regexp"
 
-	historypb "go.temporal.io/api/history/v1"
 	"github.com/superdurable/xtemporal/cmd/tools/codegen"
+	historypb "go.temporal.io/api/history/v1"
 )
 
 type (

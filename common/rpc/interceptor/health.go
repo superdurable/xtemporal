@@ -5,8 +5,8 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/api"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/grpc"
 )
 

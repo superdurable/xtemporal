@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"maps"
 
+	"github.com/superdurable/xtemporal/common/util"
 	commonpb "go.temporal.io/api/common/v1"
 	"go.temporal.io/sdk/converter"
-	"github.com/superdurable/xtemporal/common/util"
 )
 
 var (

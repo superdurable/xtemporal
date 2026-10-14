@@ -6,10 +6,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	enumspb "go.temporal.io/api/enums/v1"
-	querypb "go.temporal.io/api/query/v1"
 	"github.com/superdurable/xtemporal/common/payloads"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	enumspb "go.temporal.io/api/enums/v1"
+	querypb "go.temporal.io/api/query/v1"
 )
 
 type QuerySuite struct {

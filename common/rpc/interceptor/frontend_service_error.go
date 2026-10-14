@@ -3,11 +3,11 @@ package interceptor
 import (
 	"context"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/api"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

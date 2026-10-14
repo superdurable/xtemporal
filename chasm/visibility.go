@@ -6,12 +6,12 @@ import (
 	"maps"
 	"strings"
 
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/payload"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/protobuf/proto"
 )
 

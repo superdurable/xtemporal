@@ -9,8 +9,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservicemock/v1"
@@ -19,6 +17,8 @@ import (
 	"github.com/superdurable/xtemporal/common/convert"
 	"github.com/superdurable/xtemporal/common/testing/testhooks"
 	"github.com/superdurable/xtemporal/common/tqid"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/workflowservice/v1"
 	"go.uber.org/mock/gomock"
 )
 

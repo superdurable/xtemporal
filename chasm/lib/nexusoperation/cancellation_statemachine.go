@@ -1,10 +1,10 @@
 package nexusoperation
 
 import (
-	failurepb "go.temporal.io/api/failure/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/chasm/lib/nexusoperation/gen/nexusoperationpb/v1"
 	"github.com/superdurable/xtemporal/common/backoff"
+	failurepb "go.temporal.io/api/failure/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

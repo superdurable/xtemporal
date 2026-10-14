@@ -4,12 +4,12 @@ import (
 	"context"
 	"database/sql"
 
-	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/convert"
 	p "github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin"
 	"github.com/superdurable/xtemporal/common/primitives"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 func updateSignalsRequested(

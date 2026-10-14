@@ -8,15 +8,15 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	deploymentspb "github.com/superdurable/xtemporal/api/deployment/v1"
+	"github.com/superdurable/xtemporal/common/testing/testvars"
+	"github.com/superdurable/xtemporal/common/worker_versioning"
 	computepb "go.temporal.io/api/compute/v1"
 	deploymentpb "go.temporal.io/api/deployment/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/workflow"
-	deploymentspb "github.com/superdurable/xtemporal/api/deployment/v1"
-	"github.com/superdurable/xtemporal/common/testing/testvars"
-	"github.com/superdurable/xtemporal/common/worker_versioning"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

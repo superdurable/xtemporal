@@ -6,11 +6,11 @@ import (
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"github.com/stretchr/testify/require"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/log"
 	commonnexus "github.com/superdurable/xtemporal/common/nexus"
 	"github.com/superdurable/xtemporal/common/testing/protorequire"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // TestConvertNexusLinksToProtoLinks_ActivityVariant verifies that the shared

@@ -9,8 +9,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	enumspb "go.temporal.io/api/enums/v1"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/debug"
@@ -21,6 +19,8 @@ import (
 	"github.com/superdurable/xtemporal/common/membership"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/tqid"
+	enumspb "go.temporal.io/api/enums/v1"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"google.golang.org/grpc"
 )
 

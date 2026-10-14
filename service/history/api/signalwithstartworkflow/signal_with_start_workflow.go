@@ -5,9 +5,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/api/workflowservice/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/common/definition"
@@ -17,6 +14,9 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/service/history/api"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 // startOutcome describes the run that received the signal (or was started).

@@ -3,11 +3,11 @@ package shard
 import (
 	"math"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/common/cluster"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/namespace"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 const (

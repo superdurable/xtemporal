@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/blang/semver/v4"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/common/headers"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 // Overrides defines a set of special case behaviors like compensating for buggy

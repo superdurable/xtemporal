@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/superdurable/xtemporal/common/backoff"
 	"github.com/superdurable/xtemporal/common/channel"
@@ -17,6 +16,7 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence"
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
 	"github.com/superdurable/xtemporal/service/history/configs"
+	"go.temporal.io/api/serviceerror"
 )
 
 type (

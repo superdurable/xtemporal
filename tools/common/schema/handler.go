@@ -5,9 +5,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/urfave/cli"
 	"github.com/superdurable/xtemporal/common/log"
 	dbschemas "github.com/superdurable/xtemporal/schema"
+	"github.com/urfave/cli"
 )
 
 // Setup sets up schema tables

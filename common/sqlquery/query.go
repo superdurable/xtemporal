@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/primitives/timestamp"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (
