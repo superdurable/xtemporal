@@ -26,13 +26,24 @@ jobs:
             const deadline = Date.now() + 50 * 60 * 1000;
 
             while (Date.now() < deadline) {
-              const { data } = await github.rest.checks.listForRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: headSHA,
-                filter: "latest",
-                per_page: 100,
-              });
+              let data;
+              try {
+                ({ data } = await github.rest.checks.listForRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: headSHA,
+                  filter: "latest",
+                  per_page: 100,
+                }));
+              } catch (error) {
+                // Transient GitHub API errors must not fail the gate; the deadline still bounds the wait.
+                if (error.status && error.status < 500) {
+                  throw error;
+                }
+                core.warning(`Retrying after GitHub API error: ${error.message}`);
+                await new Promise((resolve) => setTimeout(resolve, 30_000));
+                continue;
+              }
               const checks = data.check_runs.filter((check) => requiredChecks.has(check.name));
               const failed = checks.filter((check) => check.status === "completed" && check.conclusion !== "success");
 
