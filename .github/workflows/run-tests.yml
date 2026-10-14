@@ -118,7 +118,14 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
-      - run: go test -tags disable_grpc_modules,test_dep -race -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=sqlite
+      - run: ./develop/github/monitor_test.sh go test -tags disable_grpc_modules,test_dep -race -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=sqlite
+      - name: Upload memory diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sqlite-functional-memory-${{ matrix.shard }}
+          path: .testoutput/memory/
+          if-no-files-found: ignore
 
   functional-test-postgres:
     name: PostgreSQL functional tests (${{ matrix.shard }}/3)
@@ -143,7 +150,14 @@ jobs:
           cache: true
       - name: Start PostgreSQL
         run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
-      - run: go test -tags disable_grpc_modules,test_dep -race -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=postgres12_pgx
+      - run: ./develop/github/monitor_test.sh go test -tags disable_grpc_modules,test_dep -race -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=postgres12_pgx
+      - name: Upload memory diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgres-functional-memory-${{ matrix.shard }}
+          path: .testoutput/memory/
+          if-no-files-found: ignore
       - name: Show PostgreSQL logs
         if: failure()
         run: docker compose -f "$DOCKER_COMPOSE_FILE" logs --no-color postgresql
