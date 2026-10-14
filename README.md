@@ -18,6 +18,8 @@
 
 </div>
 
+**ParadeDB visibility is EXPERIMENTAL and not for production use.** The pinned ParadeDB 0.26.0 backend exited during a 16-writer benchmark. See the [ParadeDB visibility guide](./docs/xtemporal/paradedb.md) and [benchmark release gate](./docs/xtemporal/paradedb-benchmark.md).
+
 ## Introduction
 
 Temporal is a durable execution platform that enables developers to build scalable applications without sacrificing productivity or reliability.
