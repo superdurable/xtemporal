@@ -10,7 +10,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
-	"go.opentelemetry.io/otel/trace"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	replicationspb "github.com/superdurable/xtemporal/api/replication/v1"
 	"github.com/superdurable/xtemporal/common"
@@ -36,6 +35,7 @@ import (
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/telemetry"
 	"github.com/superdurable/xtemporal/temporal/environment"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // TimePrecision is needed to account for database timestamp precision.
@@ -155,7 +155,7 @@ func NewTestBaseWithSQL(options *TestBaseOptions) *TestBase {
 		switch options.SQLDBPluginName {
 		case mysql.PluginName:
 			options.DBPort = environment.GetMySQLPort()
-		case postgresql.PluginName, postgresql.PluginNamePGX:
+		case postgresql.PluginName, postgresql.PluginNamePGX, "paradedb": // xtemporal: ParadeDB uses PostgreSQL test connections
 			options.DBPort = environment.GetPostgreSQLPort()
 		case sqlite.PluginName:
 			options.DBPort = 0
@@ -167,7 +167,7 @@ func NewTestBaseWithSQL(options *TestBaseOptions) *TestBase {
 		switch options.SQLDBPluginName {
 		case mysql.PluginName:
 			options.DBHost = environment.GetMySQLAddress()
-		case postgresql.PluginName, postgresql.PluginNamePGX:
+		case postgresql.PluginName, postgresql.PluginNamePGX, "paradedb": // xtemporal: ParadeDB uses PostgreSQL test connections
 			options.DBHost = environment.GetPostgreSQLAddress()
 		case sqlite.PluginName:
 			options.DBHost = environment.GetLocalhostIP()

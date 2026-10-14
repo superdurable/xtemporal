@@ -6,6 +6,8 @@ services:
       POSTGRES_DB: visibility
     ports:
       - "127.0.0.1:55432:5432"
+    volumes:
+      - ./init/01-users.sql:/docker-entrypoint-initdb.d/01-users.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d visibility"]
       interval: 2s
@@ -18,6 +20,8 @@ services:
       POSTGRES_DB: visibility
     ports:
       - "127.0.0.1:55433:5432"
+    volumes:
+      - ./init/01-users.sql:/docker-entrypoint-initdb.d/01-users.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d visibility"]
       interval: 2s

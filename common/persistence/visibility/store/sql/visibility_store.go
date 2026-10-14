@@ -6,10 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/temporalio/sqlparser"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/visibilityservice/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/config"
@@ -28,6 +24,10 @@ import (
 	"github.com/superdurable/xtemporal/common/resolver"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	"github.com/temporalio/sqlparser"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 type (
@@ -197,7 +197,7 @@ func (s *VisibilityStore) ListWorkflowExecutions(
 	ctx context.Context,
 	request *manager.ListWorkflowExecutionsRequestV2,
 ) (*store.InternalListExecutionsResponse, error) {
-	if s.enableUnifiedQueryConverter() {
+	if s.enableUnifiedQueryConverter() || s.GetName() == "paradedb" { // xtemporal: ParadeDB requires unified SQL conversion
 		return s.listWorkflowExecutions(ctx, request)
 	}
 	return s.listWorkflowExecutionsLegacy(ctx, request)
@@ -223,7 +223,7 @@ func (s *VisibilityStore) ListChasmExecutions(
 		ArchetypeID:   request.ArchetypeId,
 	}
 
-	if s.enableUnifiedQueryConverter() {
+	if s.enableUnifiedQueryConverter() || s.GetName() == "paradedb" { // xtemporal: ParadeDB requires unified SQL conversion
 		return s.listExecutionsInternal(ctx, requestInternal)
 	}
 
@@ -240,7 +240,7 @@ func (s *VisibilityStore) CountChasmExecutions(
 	}
 	mapper := rc.SearchAttributesMapper()
 
-	if s.enableUnifiedQueryConverter() {
+	if s.enableUnifiedQueryConverter() || s.GetName() == "paradedb" { // xtemporal: ParadeDB requires unified SQL conversion
 		return s.countChasmExecutions(ctx, request, mapper)
 	}
 	return s.countChasmExecutionsLegacy(ctx, request, mapper)
@@ -546,7 +546,7 @@ func (s *VisibilityStore) CountWorkflowExecutions(
 	ctx context.Context,
 	request *manager.CountWorkflowExecutionsRequest,
 ) (*store.InternalCountExecutionsResponse, error) {
-	if s.enableUnifiedQueryConverter() {
+	if s.enableUnifiedQueryConverter() || s.GetName() == "paradedb" { // xtemporal: ParadeDB requires unified SQL conversion
 		return s.countWorkflowExecutions(ctx, request)
 	}
 	return s.countWorkflowExecutionsLegacy(ctx, request)

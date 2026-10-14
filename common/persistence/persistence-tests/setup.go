@@ -10,6 +10,7 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin/postgresql"
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin/sqlite"
 	"github.com/superdurable/xtemporal/temporal/environment"
+	_ "github.com/superdurable/xtemporal/x/paradedb" // xtemporal: register ParadeDB for persistence tests
 )
 
 const (
@@ -37,7 +38,7 @@ func GetTestClusterOption(storeType, driver string) *TestBaseOptions {
 		switch driver {
 		case mysql.PluginName:
 			return GetMySQLTestClusterOption()
-		case postgresql.PluginName, postgresql.PluginNamePGX:
+		case postgresql.PluginName, postgresql.PluginNamePGX, "paradedb": // xtemporal: ParadeDB uses PostgreSQL test setup
 			return GetPostgreSQLTestClusterOption(driver, nil)
 		case sqlite.PluginName:
 			return GetSQLiteMemoryTestClusterOption()
@@ -82,7 +83,7 @@ func GetPostgreSQLTestClusterOption(
 	connectAttributes map[string]string,
 ) *TestBaseOptions {
 	switch pluginName {
-	case postgresql.PluginName, postgresql.PluginNamePGX:
+	case postgresql.PluginName, postgresql.PluginNamePGX, "paradedb": // xtemporal: ParadeDB uses PostgreSQL connections
 		// no-op
 	default:
 		panic(fmt.Sprintf(
