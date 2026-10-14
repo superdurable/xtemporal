@@ -76,9 +76,18 @@ func TestQueryTranslationTable(t *testing.T) {
 		{"workflow type", func() (sqlparser.Expr, error) {
 			return c.ConvertComparisonExpr(sqlparser.EqualStr, query.NewSAColumn(sadefs.WorkflowType, sadefs.WorkflowType, 0), query.NewUnsafeSQLString("type"))
 		}, "workflow_type_name = 'type'"},
+		{"execution status", func() (sqlparser.Expr, error) {
+			return c.ConvertComparisonExpr(sqlparser.EqualStr, query.NewSAColumn(sadefs.ExecutionStatus, sadefs.ExecutionStatus, 0), sqlparser.NewIntVal([]byte("1")))
+		}, "status = 1"},
 		{"ordinary comparison", func() (sqlparser.Expr, error) {
 			return c.ConvertComparisonExpr(sqlparser.EqualStr, numeric, sqlparser.NewIntVal([]byte("42")))
 		}, "Int01 = 42"},
+		{"boolean comparison", func() (sqlparser.Expr, error) {
+			return c.ConvertComparisonExpr(sqlparser.EqualStr, query.NewSAColumn("Bool01", "Bool01", 0), sqlparser.BoolVal(true))
+		}, "Bool01 = true"},
+		{"datetime comparison", func() (sqlparser.Expr, error) {
+			return c.ConvertComparisonExpr(sqlparser.GreaterEqualStr, query.NewSAColumn("Datetime01", "Datetime01", 0), query.NewUnsafeSQLString("2026-10-14T00:00:00Z"))
+		}, "Datetime01 >= '2026-10-14T00:00:00Z'"},
 		{"namespace non-equality", func() (sqlparser.Expr, error) {
 			return c.ConvertComparisonExpr(sqlparser.NotEqualStr, query.NamespaceIDSAColumn, query.NewUnsafeSQLString("ns"))
 		}, "namespace_id != 'ns'"},
