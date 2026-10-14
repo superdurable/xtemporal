@@ -53,7 +53,7 @@ The server and SQL tool import the plugin automatically. Library users must blan
 go test -tags test_dep ./x/paradedb
 PARADEDB_TEST=1 POSTGRES_PORT=55432 go test -tags test_dep ./common/persistence/tests -run '^TestParadeDBVisibilityPersistence$' -count=1
 POSTGRES_PORT=55432 go test -tags test_dep,integration ./tests -run '^TestWorkflowVisibilityTestSuite$' -count=1 -persistenceType=sql -persistenceDriver=paradedb
-POSTGRES_PORT=55432 go test -tags test_dep,integration ./tests -run '^TestAdvancedVisibilitySuite$' -parallel 1 -count=1 -persistenceType=sql -persistenceDriver=paradedb
+POSTGRES_PORT=55432 go test -tags test_dep,integration ./tests -run '^TestAdvancedVisibilitySuite' -parallel 2 -timeout 65m -count=1 -persistenceType=sql -persistenceDriver=paradedb
 ```
 
-The test harness uses `postgres12_pgx` for its default store and `paradedb` for visibility. ParadeDB's `pg_search` source is AGPL-3.0; review distribution obligations before bundling ParadeDB or `pg_search` in a product image.
+The test harness uses `postgres12_pgx` for its default store and `paradedb` for visibility. The Compose example sets `max_connections=500` so the complete advanced visibility suites can run with two tests in parallel. CI also runs the full functional package in three shards against ParadeDB on each pull request and push to main. ParadeDB's `pg_search` source is AGPL-3.0; review distribution obligations before bundling ParadeDB or `pg_search` in a product image.

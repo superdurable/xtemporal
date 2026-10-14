@@ -22,7 +22,15 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const requiredChecks = new Set(["All Linters Succeed", "All Tests Succeed"]);
+            const requiredChecks = new Set([
+              "All Linters Succeed",
+              "All Tests Succeed",
+              "ParadeDB persistence tests",
+              "ParadeDB functional tests (0/3)",
+              "ParadeDB functional tests (1/3)",
+              "ParadeDB functional tests (2/3)",
+              "ParadeDB advanced visibility",
+            ]);
             const headSHA = context.payload.pull_request.head.sha;
             const deadline = Date.now() + 50 * 60 * 1000;
 

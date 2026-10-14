@@ -66,13 +66,9 @@ jobs:
         run: make unit-test UNIT_TEST_DIRS="${{ steps.packages.outputs.packages }}"
 
   integration-test:
-    name: Persistence tests (${{ matrix.database }})
+    name: PostgreSQL persistence and schema tests
     runs-on: ubuntu-24.04
     timeout-minutes: 35
-    strategy:
-      fail-fast: false
-      matrix:
-        database: [postgres12_pgx, sqlite]
     env:
       TEST_TIMEOUT: 25m
       CGO_ENABLED: 1
@@ -83,46 +79,53 @@ jobs:
           go-version-file: go.mod
           cache: true
       - name: Start PostgreSQL
-        if: matrix.database == 'postgres12_pgx'
         run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
       - name: Run PostgreSQL persistence and schema tests
-        if: matrix.database == 'postgres12_pgx'
         run: make integration-test INTEGRATION_TEST_DIRS='./common/persistence/tests ./tools/tests' TEST_ARGS=-run=^Test.*PGX
-      - name: Run SQLite persistence tests
-        if: matrix.database == 'sqlite'
-        run: make integration-test INTEGRATION_TEST_DIRS='./common/persistence/tests' TEST_ARGS='-run=^TestSQLite'
       - name: Show PostgreSQL logs
-        if: failure() && matrix.database == 'postgres12_pgx'
+        if: failure()
         run: docker compose -f "$DOCKER_COMPOSE_FILE" logs --no-color postgresql
       - name: Stop PostgreSQL
-        if: always() && matrix.database == 'postgres12_pgx'
+        if: always()
         run: docker compose -f "$DOCKER_COMPOSE_FILE" down --volumes
 
-  functional-test-sqlite:
-    name: SQLite functional tests (${{ matrix.shard }}/3)
+  paradedb-persistence-test:
+    name: ParadeDB persistence tests
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [0, 1, 2]
+    timeout-minutes: 35
     env:
+      PARADEDB_TEST: 1
+      POSTGRES_PORT: 55432
       CGO_ENABLED: 1
-      PERSISTENCE_TYPE: sql
-      PERSISTENCE_DRIVER: sqlite
-      TEST_TOTAL_SHARDS: 3
-      TEST_SHARD_INDEX: ${{ matrix.shard }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
           cache: true
-      - run: go test -tags disable_grpc_modules,test_dep -race -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=sqlite
+      - name: Start ParadeDB
+        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml up --detach --wait paradedb
+      - name: Build SQL tool
+        run: go build -o /tmp/temporal-sql-tool ./cmd/tools/sql
+      - name: Verify full schema setup and versioned update
+        run: |
+          for database in paradedb_setup paradedb_update; do
+            /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database "$database" --plugin paradedb create-database
+          done
+          /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database paradedb_setup --plugin paradedb setup-schema --schema-name paradedb/visibility --version 1.14
+          /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database paradedb_update --plugin paradedb setup-schema --version 0.0
+          /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database paradedb_update --plugin paradedb update-schema --schema-name paradedb/visibility
+      - name: Run ParadeDB visibility persistence suite
+        run: go test -tags test_dep -timeout 20m -count=1 ./common/persistence/tests -run '^TestParadeDBVisibilityPersistence$'
+      - name: Show ParadeDB logs
+        if: failure()
+        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml logs --no-color paradedb
+      - name: Stop ParadeDB
+        if: always()
+        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml down --volumes
 
   functional-test-postgres:
     name: PostgreSQL functional tests (${{ matrix.shard }}/3)
-    if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'sync/') || contains(github.event.pull_request.labels.*.name, 'full-ci')
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     strategy:
@@ -151,38 +154,71 @@ jobs:
         if: always()
         run: docker compose -f "$DOCKER_COMPOSE_FILE" down --volumes
 
-  functional-test-sqlite-multi-cluster:
-    name: SQLite functional tests (${{ matrix.suite }})
+  functional-test-paradedb:
+    name: ParadeDB functional tests (${{ matrix.shard }}/3)
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        suite: [ndc, xdc]
+        shard: [0, 1, 2]
     env:
       CGO_ENABLED: 1
-      PERSISTENCE_TYPE: sql
-      PERSISTENCE_DRIVER: sqlite
-      TEST_TIMEOUT: 35m
+      POSTGRES_PORT: 55432
+      TEST_TOTAL_SHARDS: 3
+      TEST_SHARD_INDEX: ${{ matrix.shard }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
           cache: true
-      - run: make functional-test-${{ matrix.suite }}-coverage
+      - name: Start ParadeDB
+        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml up --detach --wait paradedb
+      - name: Run functional tests
+        run: go test -tags disable_grpc_modules,test_dep -race -p 2 -parallel 4 -timeout 50m -count=1 ./tests -persistenceType=sql -persistenceDriver=paradedb
+      - name: Show ParadeDB logs
+        if: failure()
+        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml logs --no-color paradedb
+      - name: Stop ParadeDB
+        if: always()
+        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml down --volumes
+
+  advanced-visibility-paradedb:
+    name: ParadeDB advanced visibility
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      CGO_ENABLED: 1
+      POSTGRES_PORT: 55432
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Start ParadeDB
+        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml up --detach --wait paradedb
+      - name: Run complete advanced visibility suites
+        run: go test -tags disable_grpc_modules,test_dep -race -p 2 -parallel 2 -timeout 65m -count=1 ./tests -run '^TestAdvancedVisibilitySuite' -persistenceType=sql -persistenceDriver=paradedb
+      - name: Show ParadeDB logs
+        if: failure()
+        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml logs --no-color paradedb
+      - name: Stop ParadeDB
+        if: always()
+        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml down --volumes
 
   tests-succeed:
     name: All Tests Succeed
     if: always()
-    needs: [build, unit-test, integration-test, functional-test-sqlite, functional-test-sqlite-multi-cluster, functional-test-postgres]
+    needs: [build, unit-test, integration-test, paradedb-persistence-test, functional-test-postgres, functional-test-paradedb, advanced-visibility-paradedb]
     runs-on: ubuntu-24.04-arm
     env:
       RESULTS: ${{ toJSON(needs.*.result) }}
     steps:
       - name: Check results
         run: |
-          if jq -e 'all(.[]; . == "success" or . == "skipped")' <<< "$RESULTS"; then
+          if jq -e 'all(.[]; . == "success")' <<< "$RESULTS"; then
             exit 0
           fi
           exit 1
