@@ -1,2 +1,1 @@
-CREATE ROLE temporal LOGIN PASSWORD 'temporal' CREATEDB;
-GRANT pg_signal_backend TO temporal;
+CREATE ROLE temporal LOGIN PASSWORD 'temporal' SUPERUSER;

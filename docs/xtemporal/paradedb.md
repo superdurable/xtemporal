@@ -17,7 +17,7 @@ go build -o /tmp/temporal-sql-tool ./cmd/tools/sql
 /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database temporal_visibility --plugin paradedb setup-schema --schema-name paradedb/visibility --version 1.14
 ```
 
-For an empty visibility database with version tables at 0.0, `update-schema --schema-name paradedb/visibility` applies the versioned migrations through 1.14. Do not run it after the full 1.14 `setup-schema` command. The Compose file creates the `temporal` test role on first initialization.
+For an empty visibility database with version tables at 0.0, `update-schema --schema-name paradedb/visibility` applies the versioned migrations through 1.14. Do not run it after the full 1.14 `setup-schema` command. The Compose file creates a superuser `temporal` test role on first initialization so tests can terminate ParadeDB background sessions while dropping temporary databases; use a limited role for deployments.
 
 Configure the two stores separately:
 

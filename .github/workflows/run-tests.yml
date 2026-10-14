@@ -171,7 +171,6 @@ jobs:
         shard: [0, 1, 2]
     env:
       CGO_ENABLED: 1
-      GOMAXPROCS: 1
       GOMEMLIMIT: 8GiB
       POSTGRES_PORT: 55432
       TEST_TOTAL_SHARDS: 3
