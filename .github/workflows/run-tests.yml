@@ -1,0 +1,188 @@
+name: Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 8 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+env:
+  TEMPORAL_VERSION_CHECK_DISABLED: 1
+  DOCKER_COMPOSE_FILE: ./develop/github/docker-compose.yml
+
+jobs:
+  build:
+    name: Build binaries
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: make bins
+
+  unit-test:
+    name: Unit tests (${{ matrix.shard }}/3)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    env:
+      GOMAXPROCS: 2
+      TEST_TIMEOUT: 25m
+      CGO_ENABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Select unit test packages
+        id: packages
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          {
+            go list -tags test_dep -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./... |
+              grep -v -E '^github.com/superdurable/xtemporal/(tests|common/persistence/tests|tools/tests|temporaltest)(/|$)'
+            printf '%s\n' github.com/superdurable/xtemporal/tests/testcore
+          } | sort -u | awk -v shard="$SHARD" 'NR % 3 == shard % 3' > unit-packages.txt
+          test -s unit-packages.txt
+          printf 'packages=%s\n' "$(paste -sd' ' unit-packages.txt)" >> "$GITHUB_OUTPUT"
+      - name: Run unit tests
+        run: make unit-test UNIT_TEST_DIRS="${{ steps.packages.outputs.packages }}"
+
+  integration-test:
+    name: Persistence tests (${{ matrix.database }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [postgres12_pgx, sqlite]
+    env:
+      TEST_TIMEOUT: 25m
+      CGO_ENABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Start PostgreSQL
+        if: matrix.database == 'postgres12_pgx'
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
+      - name: Run PostgreSQL persistence and schema tests
+        if: matrix.database == 'postgres12_pgx'
+        run: make integration-test INTEGRATION_TEST_DIRS='./common/persistence/tests ./tools/tests' TEST_ARGS=-run=^Test.*PGX
+      - name: Run SQLite persistence tests
+        if: matrix.database == 'sqlite'
+        run: make integration-test INTEGRATION_TEST_DIRS='./common/persistence/tests' TEST_ARGS='-run=^TestSQLite'
+      - name: Show PostgreSQL logs
+        if: failure() && matrix.database == 'postgres12_pgx'
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" logs --no-color postgresql
+      - name: Stop PostgreSQL
+        if: always() && matrix.database == 'postgres12_pgx'
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" down --volumes
+
+  functional-test-sqlite:
+    name: SQLite functional tests (${{ matrix.shard }}/3)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2]
+    env:
+      CGO_ENABLED: 1
+      PERSISTENCE_TYPE: sql
+      PERSISTENCE_DRIVER: sqlite
+      TEST_TOTAL_SHARDS: 3
+      TEST_SHARD_INDEX: ${{ matrix.shard }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go test -tags disable_grpc_modules,test_dep -race -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=sqlite
+
+  functional-test-postgres:
+    name: PostgreSQL functional tests (${{ matrix.shard }}/3)
+    if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'sync/') || contains(github.event.pull_request.labels.*.name, 'full-ci')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2]
+    env:
+      CGO_ENABLED: 1
+      PERSISTENCE_TYPE: sql
+      PERSISTENCE_DRIVER: postgres12_pgx
+      TEST_TOTAL_SHARDS: 3
+      TEST_SHARD_INDEX: ${{ matrix.shard }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Start PostgreSQL
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
+      - run: go test -tags disable_grpc_modules,test_dep -race -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=postgres12_pgx
+      - name: Show PostgreSQL logs
+        if: failure()
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" logs --no-color postgresql
+      - name: Stop PostgreSQL
+        if: always()
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" down --volumes
+
+  functional-test-sqlite-multi-cluster:
+    name: SQLite functional tests (${{ matrix.suite }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [ndc, xdc]
+    env:
+      CGO_ENABLED: 1
+      PERSISTENCE_TYPE: sql
+      PERSISTENCE_DRIVER: sqlite
+      TEST_TIMEOUT: 35m
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: make functional-test-${{ matrix.suite }}-coverage
+
+  tests-succeed:
+    name: All Tests Succeed
+    if: always()
+    needs: [build, unit-test, integration-test, functional-test-sqlite, functional-test-sqlite-multi-cluster, functional-test-postgres]
+    runs-on: ubuntu-24.04-arm
+    env:
+      RESULTS: ${{ toJSON(needs.*.result) }}
+    steps:
+      - name: Check results
+        run: |
+          if jq -e 'all(.[]; . == "success" or . == "skipped")' <<< "$RESULTS"; then
+            exit 0
+          fi
+          exit 1
