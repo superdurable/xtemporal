@@ -111,7 +111,7 @@ jobs:
           cache: true
       - name: Start PostgreSQL
         run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
-      - run: ./develop/github/monitor_test.sh go test -tags disable_grpc_modules,test_dep -p 2 -timeout 35m -count=1 ./tests -persistenceType=sql -persistenceDriver=postgres12_pgx
+      - run: ./.github/scripts/run-functional-shard.sh postgres12_pgx
       - name: Upload memory diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
