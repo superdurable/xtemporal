@@ -5,7 +5,6 @@ package deletemanager
 import (
 	"context"
 
-	commonpb "go.temporal.io/api/common/v1"
 	"github.com/superdurable/xtemporal/common/clock"
 	"github.com/superdurable/xtemporal/common/definition"
 	"github.com/superdurable/xtemporal/common/metrics"
@@ -17,6 +16,7 @@ import (
 	"github.com/superdurable/xtemporal/service/history/tasks"
 	"github.com/superdurable/xtemporal/service/history/workflow"
 	wcache "github.com/superdurable/xtemporal/service/history/workflow/cache"
+	commonpb "go.temporal.io/api/common/v1"
 )
 
 type (

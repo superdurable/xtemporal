@@ -9,14 +9,13 @@ import (
 
 	run "cloud.google.com/go/run/apiv2"
 	runpb "cloud.google.com/go/run/apiv2/runpb"
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/impersonate"
 	"google.golang.org/api/option"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
-
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
-	"github.com/superdurable/xtemporal/common/dynamicconfig"
 )
 
 const (

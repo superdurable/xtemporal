@@ -3,9 +3,6 @@ package migration
 import (
 	"context"
 
-	"go.temporal.io/api/workflowservice/v1"
-	sdkworker "go.temporal.io/sdk/worker"
-	"go.temporal.io/sdk/workflow"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	serverClient "github.com/superdurable/xtemporal/client"
@@ -19,6 +16,9 @@ import (
 	"github.com/superdurable/xtemporal/common/primitives"
 	"github.com/superdurable/xtemporal/common/resource"
 	workercommon "github.com/superdurable/xtemporal/service/worker/common"
+	"go.temporal.io/api/workflowservice/v1"
+	sdkworker "go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 	"go.uber.org/fx"
 )
 

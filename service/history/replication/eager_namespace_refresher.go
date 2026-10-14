@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	replicationspb "github.com/superdurable/xtemporal/api/replication/v1"
@@ -14,6 +13,7 @@ import (
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/namespace/nsreplication"
 	"github.com/superdurable/xtemporal/common/persistence"
+	"go.temporal.io/api/serviceerror"
 )
 
 //go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination eager_namespace_refresher_mock.go

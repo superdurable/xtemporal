@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"go.temporal.io/sdk/activity"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/headers"
 	"github.com/superdurable/xtemporal/common/log"
@@ -14,6 +13,7 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/visibility/manager"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	"github.com/superdurable/xtemporal/service/worker/deletenamespace/errors"
+	"go.temporal.io/sdk/activity"
 )
 
 type (

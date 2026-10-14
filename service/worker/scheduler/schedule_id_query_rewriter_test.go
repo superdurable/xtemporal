@@ -4,10 +4,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/primitives"
 	"github.com/superdurable/xtemporal/common/searchattribute"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // TestMapper only processes "test-namespace"; use it so custom SA lookups resolve correctly.

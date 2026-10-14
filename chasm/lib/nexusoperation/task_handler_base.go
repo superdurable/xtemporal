@@ -9,8 +9,6 @@ import (
 	"text/template"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/log"
@@ -20,6 +18,8 @@ import (
 	commonnexus "github.com/superdurable/xtemporal/common/nexus"
 	"github.com/superdurable/xtemporal/common/nexus/nexusrpc"
 	"github.com/superdurable/xtemporal/common/resource"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/fx"
 )
 

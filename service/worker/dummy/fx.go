@@ -1,10 +1,10 @@
 package dummy
 
 import (
-	sdkworker "go.temporal.io/sdk/worker"
-	"go.temporal.io/sdk/workflow"
 	"github.com/superdurable/xtemporal/common/namespace"
 	workercommon "github.com/superdurable/xtemporal/service/worker/common"
+	sdkworker "go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 	"go.uber.org/fx"
 )
 

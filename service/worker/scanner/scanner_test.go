@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/sdk/client"
 	"github.com/superdurable/xtemporal/api/adminservicemock/v1"
 	"github.com/superdurable/xtemporal/api/historyservicemock/v1"
 	"github.com/superdurable/xtemporal/common/config"
@@ -20,6 +19,7 @@ import (
 	"github.com/superdurable/xtemporal/common/sdk"
 	"github.com/superdurable/xtemporal/common/testing/mocksdk"
 	"github.com/superdurable/xtemporal/service/worker/scanner/build_ids"
+	"go.temporal.io/sdk/client"
 	"go.uber.org/mock/gomock"
 )
 

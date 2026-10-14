@@ -9,7 +9,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
@@ -33,6 +32,7 @@ import (
 	"github.com/superdurable/xtemporal/service/history/configs"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
 	"github.com/superdurable/xtemporal/service/history/shard"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

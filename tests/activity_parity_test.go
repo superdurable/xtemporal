@@ -9,10 +9,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
-	failurepb "go.temporal.io/api/failure/v1"
-	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/sdk/temporal"
 	"github.com/superdurable/xtemporal/chasm/lib/activity"
 	"github.com/superdurable/xtemporal/chasm/lib/activity/model"
 	"github.com/superdurable/xtemporal/common"
@@ -21,6 +17,10 @@ import (
 	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
 	"github.com/superdurable/xtemporal/service/history/consts"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	enumspb "go.temporal.io/api/enums/v1"
+	failurepb "go.temporal.io/api/failure/v1"
+	"go.temporal.io/api/serviceerror"
+	"go.temporal.io/sdk/temporal"
 )
 
 type activityParityTestSuite struct {

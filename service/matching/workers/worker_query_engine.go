@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/superdurable/xtemporal/common/sqlquery"
 	"github.com/temporalio/sqlparser"
 	"go.temporal.io/api/serviceerror"
 	workerpb "go.temporal.io/api/worker/v1"
-	"github.com/superdurable/xtemporal/common/sqlquery"
 )
 
 const (

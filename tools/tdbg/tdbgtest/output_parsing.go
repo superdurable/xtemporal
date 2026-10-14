@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"io"
 
-	"go.temporal.io/api/temporalproto"
 	"github.com/superdurable/xtemporal/tools/tdbg"
+	"go.temporal.io/api/temporalproto"
 	"google.golang.org/protobuf/proto"
 )
 

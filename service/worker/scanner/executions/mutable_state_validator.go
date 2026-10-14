@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common"
@@ -13,6 +12,7 @@ import (
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/persistence/versionhistory"
 	"github.com/superdurable/xtemporal/common/primitives/timestamp"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

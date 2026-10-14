@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	historypb "go.temporal.io/api/history/v1"
 	"github.com/superdurable/xtemporal/common/persistence"
 	test "github.com/superdurable/xtemporal/common/testing"
 	"github.com/superdurable/xtemporal/service/history/tasks"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	historypb "go.temporal.io/api/history/v1"
 )
 
 func (s *NDCFunctionalTestSuite) TestReplicationMessageDLQ() {

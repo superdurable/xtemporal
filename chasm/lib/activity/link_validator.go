@@ -1,10 +1,10 @@
 package activity
 
 import (
-	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	commonlinks "github.com/superdurable/xtemporal/common/links"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 // linkValidator validates links attached to standalone activity executions.

@@ -6,11 +6,11 @@ import (
 	"context"
 	"strings"
 
-	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/common/api"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/tasktoken"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 type RoutingKeyExtractor struct {

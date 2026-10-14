@@ -7,10 +7,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/metrics/metricstest"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/mock/gomock"
 )
 

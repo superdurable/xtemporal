@@ -5,9 +5,6 @@ import (
 	"math"
 	"time"
 
-	"go.temporal.io/api/workflowservice/v1"
-	sdkworker "go.temporal.io/sdk/worker"
-	"go.temporal.io/sdk/workflow"
 	schedulespb "github.com/superdurable/xtemporal/api/schedule/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	schedulerpb "github.com/superdurable/xtemporal/chasm/lib/scheduler/gen/schedulerpb/v1"
@@ -19,6 +16,9 @@ import (
 	"github.com/superdurable/xtemporal/common/resource"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	workercommon "github.com/superdurable/xtemporal/service/worker/common"
+	"go.temporal.io/api/workflowservice/v1"
+	sdkworker "go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 	"go.uber.org/fx"
 )
 

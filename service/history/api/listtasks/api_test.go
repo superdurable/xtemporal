@@ -8,7 +8,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
@@ -17,6 +16,7 @@ import (
 	"github.com/superdurable/xtemporal/common/testing/protoassert"
 	"github.com/superdurable/xtemporal/service/history/tasks"
 	"github.com/superdurable/xtemporal/service/history/tests"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

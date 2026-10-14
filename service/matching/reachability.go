@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/temporalio/sqlparser"
-	enumspb "go.temporal.io/api/enums/v1"
 	clockspb "github.com/superdurable/xtemporal/api/clock/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/cache"
@@ -22,6 +20,8 @@ import (
 	"github.com/superdurable/xtemporal/common/tqid"
 	"github.com/superdurable/xtemporal/common/util"
 	"github.com/superdurable/xtemporal/common/worker_versioning"
+	"github.com/temporalio/sqlparser"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 const (

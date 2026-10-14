@@ -10,15 +10,15 @@ import (
 	"sync/atomic"
 	"time"
 
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
-	workerpb "go.temporal.io/api/worker/v1"
 	"github.com/superdurable/xtemporal/common/authorization"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/primitives"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
+	workerpb "go.temporal.io/api/worker/v1"
 	"go.uber.org/fx"
 )
 

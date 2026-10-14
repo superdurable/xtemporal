@@ -5,10 +5,10 @@ import (
 	"sync"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/cache"
 	"github.com/superdurable/xtemporal/common/clock"
 	"github.com/superdurable/xtemporal/common/quotas"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 type (

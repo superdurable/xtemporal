@@ -5,12 +5,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
-	workerpb "go.temporal.io/api/worker/v1"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/metrics/metricstest"
 	"github.com/superdurable/xtemporal/common/namespace"
+	enumspb "go.temporal.io/api/enums/v1"
+	workerpb "go.temporal.io/api/worker/v1"
 )
 
 func TestWorkersPerProcessMetric(t *testing.T) {

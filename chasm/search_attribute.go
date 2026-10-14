@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 )
 
 // CHASM Search Attribute User Guide:

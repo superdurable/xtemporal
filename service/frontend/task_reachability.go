@@ -8,11 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/temporalio/sqlparser"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	hlc "github.com/superdurable/xtemporal/common/clock/hybrid_logical_clock"
@@ -22,6 +17,11 @@ import (
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	"github.com/superdurable/xtemporal/common/util"
 	"github.com/superdurable/xtemporal/common/worker_versioning"
+	"github.com/temporalio/sqlparser"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 // Helper for deduping GetWorkerBuildIdCompatibility matching requests.

@@ -10,21 +10,20 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
-	workflowservice "go.temporal.io/api/workflowservice/v1"
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/common/namespace"
+	"github.com/superdurable/xtemporal/common/sdk"
 	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
 	wcimetrics "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/metrics"
 	computeprovider "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/compute_provider"
 	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	scalingalgorithm "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/scaling_algorithm"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
+	workflowservice "go.temporal.io/api/workflowservice/v1"
 	"go.temporal.io/sdk/activity"
 	sdkclient "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
-	"github.com/superdurable/xtemporal/common/dynamicconfig"
-	"github.com/superdurable/xtemporal/common/namespace"
-	"github.com/superdurable/xtemporal/common/sdk"
 )
 
 const (

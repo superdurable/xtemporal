@@ -6,18 +6,17 @@ import (
 	"errors"
 	"time"
 
-	"google.golang.org/protobuf/types/known/timestamppb"
-
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
+	worker_versioning "github.com/superdurable/xtemporal/common/worker_versioning"
 	wcimetrics "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/metrics"
 	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	scalingalgorithm "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/scaling_algorithm"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 	sdkclient "go.temporal.io/sdk/client"
 	sdklog "go.temporal.io/sdk/log"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
-	worker_versioning "github.com/superdurable/xtemporal/common/worker_versioning"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

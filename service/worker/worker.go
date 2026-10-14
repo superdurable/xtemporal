@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync/atomic"
 
-	sdkworker "go.temporal.io/sdk/worker"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/headers"
 	"github.com/superdurable/xtemporal/common/log"
@@ -13,6 +12,7 @@ import (
 	"github.com/superdurable/xtemporal/common/primitives"
 	"github.com/superdurable/xtemporal/common/sdk"
 	workercommon "github.com/superdurable/xtemporal/service/worker/common"
+	sdkworker "go.temporal.io/sdk/worker"
 )
 
 type (

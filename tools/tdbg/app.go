@@ -7,9 +7,9 @@ import (
 	"runtime/debug"
 
 	"github.com/fatih/color"
-	"github.com/urfave/cli/v2"
 	"github.com/superdurable/xtemporal/common/headers"
 	"github.com/superdurable/xtemporal/service/history/tasks"
+	"github.com/urfave/cli/v2"
 )
 
 type (

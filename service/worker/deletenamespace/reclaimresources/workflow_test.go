@@ -8,8 +8,6 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/sdk/temporal"
-	"go.temporal.io/sdk/testsuite"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/namespace"
@@ -18,6 +16,8 @@ import (
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	"github.com/superdurable/xtemporal/service/worker/deletenamespace/deleteexecutions"
 	"github.com/superdurable/xtemporal/service/worker/deletenamespace/errors"
+	"go.temporal.io/sdk/temporal"
+	"go.temporal.io/sdk/testsuite"
 	"go.uber.org/mock/gomock"
 )
 

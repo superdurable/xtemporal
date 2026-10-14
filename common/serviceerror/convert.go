@@ -1,8 +1,8 @@
 package serviceerror
 
 import (
-	"go.temporal.io/api/serviceerror"
 	errordetailsspb "github.com/superdurable/xtemporal/api/errordetails/v1"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

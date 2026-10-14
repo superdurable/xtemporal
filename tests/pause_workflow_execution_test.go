@@ -13,6 +13,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/common/payload"
+	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
+	"github.com/superdurable/xtemporal/common/util"
+	"github.com/superdurable/xtemporal/tests/testcore"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	querypb "go.temporal.io/api/query/v1"
@@ -23,11 +28,6 @@ import (
 	"go.temporal.io/sdk/temporal"
 	sdkworker "go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
-	"github.com/superdurable/xtemporal/common/dynamicconfig"
-	"github.com/superdurable/xtemporal/common/payload"
-	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
-	"github.com/superdurable/xtemporal/common/util"
-	"github.com/superdurable/xtemporal/tests/testcore"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

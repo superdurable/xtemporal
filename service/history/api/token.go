@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 
-	commonpb "go.temporal.io/api/common/v1"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	tokenspb "github.com/superdurable/xtemporal/api/token/v1"
@@ -15,6 +14,7 @@ import (
 	"github.com/superdurable/xtemporal/service/history/consts"
 	"github.com/superdurable/xtemporal/service/history/events"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	commonpb "go.temporal.io/api/common/v1"
 )
 
 // NOTE: DO NOT MODIFY UNLESS ALSO APPLIED TO ./service/frontend/token_deprecated.go

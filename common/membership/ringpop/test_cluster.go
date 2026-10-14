@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/temporalio/ringpop-go"
-	"github.com/temporalio/tchannel-go"
 	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/membership"
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/primitives"
+	"github.com/temporalio/ringpop-go"
+	"github.com/temporalio/tchannel-go"
 	"go.uber.org/mock/gomock"
 )
 

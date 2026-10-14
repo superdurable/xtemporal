@@ -8,10 +8,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/common/headers"
 	"github.com/superdurable/xtemporal/common/quotas"
 	"github.com/superdurable/xtemporal/common/testing/temporalapi"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 type (

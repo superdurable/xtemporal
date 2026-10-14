@@ -1,10 +1,10 @@
 package sql
 
 import (
-	enumspb "go.temporal.io/api/enums/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	p "github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 func (m *sqlExecutionStore) extractCurrentWorkflowConflictError(

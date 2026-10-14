@@ -1,8 +1,8 @@
 package wideevents
 
 import (
-	"go.opentelemetry.io/otel/log"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
+	"go.opentelemetry.io/otel/log"
 )
 
 // ReplicationLifecycleEventName is the stable event name for the ReplicationLifecycle wide event,

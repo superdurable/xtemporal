@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/jmoiron/sqlx"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/clock"
 	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/log"
@@ -15,6 +14,7 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin/postgresql/driver"
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin/postgresql/session"
 	"github.com/superdurable/xtemporal/common/resolver"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (
