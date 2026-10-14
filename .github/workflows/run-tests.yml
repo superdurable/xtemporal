@@ -85,7 +85,7 @@ jobs:
         run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
       - name: Run PostgreSQL persistence and schema tests
         if: matrix.database == 'postgres12_pgx'
-        run: make integration-test INTEGRATION_TEST_DIRS='./common/persistence/tests ./tools/tests' TEST_ARGS='-run=^Test.*PGX$'
+        run: make integration-test INTEGRATION_TEST_DIRS='./common/persistence/tests ./tools/tests' TEST_ARGS=-run=^Test.*PGX
       - name: Run SQLite persistence tests
         if: matrix.database == 'sqlite'
         run: make integration-test INTEGRATION_TEST_DIRS='./common/persistence/tests' TEST_ARGS='-run=^TestSQLite'
