@@ -1,0 +1,518 @@
+package testcore
+
+import (
+	"context"
+	"crypto/tls"
+	"crypto/x509"
+	"errors"
+	"fmt"
+	"net/url"
+	"os"
+	"testing"
+	"time"
+
+	"github.com/google/uuid"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.temporal.io/api/operatorservice/v1"
+	"go.temporal.io/api/workflowservice/v1"
+	"github.com/superdurable/xtemporal/api/adminservice/v1"
+	"github.com/superdurable/xtemporal/api/historyservice/v1"
+	"github.com/superdurable/xtemporal/api/matchingservice/v1"
+	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
+	schedulerpb "github.com/superdurable/xtemporal/chasm/lib/scheduler/gen/schedulerpb/v1"
+	"github.com/superdurable/xtemporal/common/cluster"
+	"github.com/superdurable/xtemporal/common/config"
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/common/log"
+	"github.com/superdurable/xtemporal/common/log/tag"
+	"github.com/superdurable/xtemporal/common/membership/static"
+	"github.com/superdurable/xtemporal/common/metrics"
+	"github.com/superdurable/xtemporal/common/metrics/metricstest"
+	"github.com/superdurable/xtemporal/common/persistence"
+	persistenceclient "github.com/superdurable/xtemporal/common/persistence/client"
+	persistencetests "github.com/superdurable/xtemporal/common/persistence/persistence-tests"
+	"github.com/superdurable/xtemporal/common/persistence/serialization"
+	esclient "github.com/superdurable/xtemporal/common/persistence/visibility/store/elasticsearch/client"
+	"github.com/superdurable/xtemporal/common/pprof"
+	"github.com/superdurable/xtemporal/common/primitives"
+	"github.com/superdurable/xtemporal/common/resolver"
+	"github.com/superdurable/xtemporal/common/rpc/auth"
+	"github.com/superdurable/xtemporal/common/rpc/encryption"
+	"github.com/superdurable/xtemporal/common/telemetry"
+	"github.com/superdurable/xtemporal/common/testing/freeport"
+	"github.com/superdurable/xtemporal/common/testing/testhooks"
+	"github.com/superdurable/xtemporal/temporal"
+	"github.com/superdurable/xtemporal/temporal/environment"
+	"github.com/superdurable/xtemporal/tests/testutils"
+	"go.uber.org/multierr"
+)
+
+type (
+	transferProtocol string
+
+	// TestCluster is a testcore struct for functional tests
+	TestCluster struct {
+		testBase *persistencetests.TestBase
+		host     *temporalImpl
+	}
+
+	// TestClusterConfig are config for a test cluster
+	TestClusterConfig struct {
+		IsMasterCluster           bool
+		ClusterMetadata           cluster.Config
+		Persistence               persistencetests.TestBaseOptions
+		FrontendConfig            FrontendConfig
+		HistoryConfig             HistoryConfig
+		MatchingConfig            MatchingConfig
+		WorkerConfig              WorkerConfig
+		ESConfig                  *esclient.Config
+		MockAdminClient           map[string]adminservice.AdminServiceClient
+		FaultInjection            *config.FaultInjection
+		DCRedirectionPolicy       config.DCRedirectionPolicy
+		DynamicConfigOverrides    map[dynamicconfig.Key]any
+		EnableMTLS                bool
+		EnableMetricsCapture      bool
+		EnableHistoryTaskRecorder bool
+		EnableReplicationRecorder bool
+		EnableArchival            bool
+		SpanExporters             map[telemetry.SpanExporterType]sdktrace.SpanExporter
+		TokenProvider             auth.TokenProvider
+		TLSConfigProvider         *encryption.FixedTLSConfigProvider
+		AdditionalServerOptions   []temporal.ServerOption
+	}
+
+	TestClusterFactory interface {
+		NewCluster(t *testing.T, clusterConfig *TestClusterConfig, logger log.Logger) (*TestCluster, error)
+	}
+
+	defaultTestClusterFactory struct {
+		tbFactory persistenceTestBaseFactory
+	}
+)
+
+const (
+	httpProtocol transferProtocol = "http"
+	grpcProtocol transferProtocol = "grpc"
+)
+
+func (f *defaultTestClusterFactory) NewCluster(t *testing.T, clusterConfig *TestClusterConfig, logger log.Logger) (*TestCluster, error) {
+	return newClusterWithPersistenceTestBaseFactory(t, clusterConfig, logger, f.tbFactory)
+}
+
+func NewTestClusterFactory() TestClusterFactory {
+	tbFactory := &defaultPersistenceTestBaseFactory{}
+	return newTestClusterFactoryWithCustomTestBaseFactory(tbFactory)
+}
+
+func newTestClusterFactoryWithCustomTestBaseFactory(tbFactory persistenceTestBaseFactory) TestClusterFactory {
+	return &defaultTestClusterFactory{
+		tbFactory: tbFactory,
+	}
+}
+
+type persistenceTestBaseFactory interface {
+	NewTestBase(options *persistencetests.TestBaseOptions) *persistencetests.TestBase
+}
+
+type defaultPersistenceTestBaseFactory struct{}
+
+// GetPersistenceTestDefaults returns the default persistence options based on CLI flags.
+// Use this when creating TestClusterConfig to ensure proper database configuration.
+func GetPersistenceTestDefaults() persistencetests.TestBaseOptions {
+	return *persistencetests.GetTestClusterOption(cliFlags.persistenceType, cliFlags.persistenceDriver)
+}
+
+func (f *defaultPersistenceTestBaseFactory) NewTestBase(options *persistencetests.TestBaseOptions) *persistencetests.TestBase {
+	defaults := GetPersistenceTestDefaults()
+	options.ApplyDefaults(&defaults)
+
+	if cliFlags.enableFaultInjection != "" && options.FaultInjection == nil {
+		// If -enableFaultInjection is passed to the test runner, then default fault injection config is added to the persistence options.
+		// If FaultInjectionConfig is already set by test, then it means that this test requires
+		// a specific fault injection configuration that takes precedence over a default one.
+		options.FaultInjection = config.DefaultFaultInjection()
+	}
+
+	return persistencetests.NewTestBase(options)
+}
+
+func newClusterWithPersistenceTestBaseFactory(
+	t *testing.T,
+	clusterConfig *TestClusterConfig,
+	logger log.Logger,
+	tbFactory persistenceTestBaseFactory,
+) (*TestCluster, error) {
+	const minNodes = 1
+	clusterConfig.FrontendConfig.NumFrontendHosts = max(minNodes, clusterConfig.FrontendConfig.NumFrontendHosts)
+	clusterConfig.HistoryConfig.NumHistoryHosts = max(minNodes, clusterConfig.HistoryConfig.NumHistoryHosts)
+	clusterConfig.MatchingConfig.NumMatchingHosts = max(minNodes, clusterConfig.MatchingConfig.NumMatchingHosts)
+	clusterConfig.WorkerConfig.NumWorkers = max(minNodes, clusterConfig.WorkerConfig.NumWorkers)
+	workerHosts := clusterConfig.WorkerConfig.NumWorkers
+	if clusterConfig.WorkerConfig.DisableWorker {
+		clusterConfig.WorkerConfig.NumWorkers = 0
+		workerHosts = minNodes
+	}
+
+	// Allocate addresses for every service, including worker, since NewServer validates
+	// the full static host map even when a test opts out of starting worker.
+	hostsByProtocolByService := map[transferProtocol]map[primitives.ServiceName]static.Hosts{
+		grpcProtocol: {
+			primitives.FrontendService: {All: makeAddresses(clusterConfig.FrontendConfig.NumFrontendHosts)},
+			primitives.MatchingService: {All: makeAddresses(clusterConfig.MatchingConfig.NumMatchingHosts)},
+			primitives.HistoryService:  {All: makeAddresses(clusterConfig.HistoryConfig.NumHistoryHosts)},
+			primitives.WorkerService:   {All: makeAddresses(workerHosts)},
+		},
+		httpProtocol: {
+			primitives.FrontendService: {All: makeAddresses(clusterConfig.FrontendConfig.NumFrontendHosts)},
+		},
+	}
+
+	if len(clusterConfig.ClusterMetadata.ClusterInformation) > 0 {
+		// set self-address for current cluster
+		ci := clusterConfig.ClusterMetadata.ClusterInformation[clusterConfig.ClusterMetadata.CurrentClusterName]
+		ci.RPCAddress = hostsByProtocolByService[grpcProtocol][primitives.FrontendService].All[0]
+		ci.HTTPAddress = hostsByProtocolByService[httpProtocol][primitives.FrontendService].All[0]
+		clusterConfig.ClusterMetadata.ClusterInformation[clusterConfig.ClusterMetadata.CurrentClusterName] = ci
+	}
+
+	clusterMetadataConfig := cluster.NewTestClusterMetadataConfig(
+		clusterConfig.ClusterMetadata.EnableGlobalNamespace,
+		clusterConfig.IsMasterCluster,
+	)
+	if !clusterConfig.IsMasterCluster && clusterConfig.ClusterMetadata.MasterClusterName != "" { // xdc cluster metadata setup
+		clusterMetadataConfig = &cluster.Config{
+			EnableGlobalNamespace:    clusterConfig.ClusterMetadata.EnableGlobalNamespace,
+			FailoverVersionIncrement: clusterConfig.ClusterMetadata.FailoverVersionIncrement,
+			MasterClusterName:        clusterConfig.ClusterMetadata.MasterClusterName,
+			CurrentClusterName:       clusterConfig.ClusterMetadata.CurrentClusterName,
+			ClusterInformation:       clusterConfig.ClusterMetadata.ClusterInformation,
+		}
+	}
+	clusterConfig.Persistence.Logger = logger
+	clusterConfig.Persistence.FaultInjection = clusterConfig.FaultInjection
+
+	testBase := tbFactory.NewTestBase(&clusterConfig.Persistence)
+
+	testBase.Setup(clusterMetadataConfig)
+	var err error
+
+	pConfig := testBase.DefaultTestCluster.Config()
+	pConfig.NumHistoryShards = clusterConfig.HistoryConfig.NumHistoryShards
+
+	if !UseSQLVisibility() {
+		clusterConfig.ESConfig = &esclient.Config{
+			Indices: map[string]string{
+				esclient.VisibilityAppName: RandomizeStr("temporal_visibility_v1_test"),
+			},
+			URL: url.URL{
+				Host:   fmt.Sprintf("%s:%d", environment.GetESAddress(), environment.GetESPort()),
+				Scheme: "http",
+			},
+			Version:     environment.GetESVersion(),
+			DisableGzip: true, // lowers memory and CPU usage significantly in tests
+		}
+
+		err = persistencetests.SetupEsIndex(clusterConfig.ESConfig, logger)
+		if err != nil {
+			return nil, err
+		}
+
+		pConfig.VisibilityStore = "test-es-visibility"
+		pConfig.DataStores[pConfig.VisibilityStore] = config.DataStore{
+			Elasticsearch: clusterConfig.ESConfig,
+		}
+	} else {
+		clusterConfig.ESConfig = nil
+	}
+
+	clusterInfoMap := make(map[string]cluster.ClusterInformation)
+	for clusterName, clusterInfo := range clusterMetadataConfig.ClusterInformation {
+		clusterInfo.ShardCount = clusterConfig.HistoryConfig.NumHistoryShards
+		clusterInfo.ClusterID = uuid.NewString()
+		clusterInfoMap[clusterName] = clusterInfo
+		_, err := testBase.ClusterMetadataManager.SaveClusterMetadata(context.Background(), &persistence.SaveClusterMetadataRequest{
+			ClusterMetadata: &persistencespb.ClusterMetadata{
+				HistoryShardCount:        clusterConfig.HistoryConfig.NumHistoryShards,
+				ClusterName:              clusterName,
+				ClusterId:                clusterInfo.ClusterID,
+				IsConnectionEnabled:      clusterInfo.Enabled,
+				IsReplicationEnabled:     clusterInfo.ReplicationEnabled,
+				IsGlobalNamespaceEnabled: clusterMetadataConfig.EnableGlobalNamespace,
+				FailoverVersionIncrement: clusterMetadataConfig.FailoverVersionIncrement,
+				ClusterAddress:           clusterInfo.RPCAddress,
+				HttpAddress:              clusterInfo.HTTPAddress,
+				InitialFailoverVersion:   clusterInfo.InitialFailoverVersion,
+			}},
+		)
+		if err != nil {
+			return nil, err
+		}
+	}
+	clusterMetadataConfig.ClusterInformation = clusterInfoMap
+
+	cfg := &config.Config{
+		Persistence:     pConfig,
+		ClusterMetadata: clusterMetadataConfig,
+		Visibility:      config.Visibility{},
+	}
+	clusterMetadataConfig, pConfig, err = temporal.ApplyClusterMetadataConfigProvider(
+		logger,
+		cfg,
+		resolver.NewNoopResolver(),
+		persistenceclient.FactoryProvider,
+		testBase.AbstractDataStoreFactory,
+		testBase.VisibilityStoreFactory,
+		metrics.NoopMetricsHandler,
+		serialization.NewSerializer(),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	var tlsConfigProvider *encryption.FixedTLSConfigProvider
+	if clusterConfig.TLSConfigProvider != nil {
+		tlsConfigProvider = clusterConfig.TLSConfigProvider
+	} else if clusterConfig.EnableMTLS {
+		if tlsConfigProvider, err = createFixedTLSConfigProvider(); err != nil {
+			return nil, err
+		}
+	}
+
+	persistenceConfig := copyPersistenceConfig(pConfig)
+	if clusterConfig.ESConfig != nil {
+		esDataStoreName := "es-visibility"
+		persistenceConfig.VisibilityStore = esDataStoreName
+		persistenceConfig.DataStores[esDataStoreName] = config.DataStore{
+			Elasticsearch: clusterConfig.ESConfig,
+		}
+	}
+
+	serverConfig := &config.Config{
+		Global: config.Global{
+			Membership: config.Membership{
+				MaxJoinDuration: time.Second,
+			},
+		},
+		Persistence:         persistenceConfig,
+		ClusterMetadata:     clusterMetadataConfig,
+		DCRedirectionPolicy: clusterConfig.DCRedirectionPolicy,
+		Visibility:          config.Visibility{},
+		ExporterConfig: telemetry.ExportConfig{
+			CustomExporters: clusterConfig.SpanExporters,
+		},
+	}
+
+	if clusterConfig.EnableArchival {
+		enableArchivalConfig(serverConfig)
+	}
+
+	var captureMetricsHandler *metricstest.CaptureHandler
+	if clusterConfig.EnableMetricsCapture {
+		captureMetricsHandler = metricstest.NewCaptureHandler()
+	}
+
+	err = newPProfInitializerImpl(logger, PprofTestPort).Start()
+	if err != nil {
+		logger.Fatal("Failed to start pprof", tag.Error(err))
+	}
+
+	host := newTemporal(t, &temporalParams{
+		Config:                    serverConfig,
+		MetadataMgr:               testBase.MetadataManager,
+		AbstractDataStoreFactory:  testBase.AbstractDataStoreFactory,
+		VisibilityStoreFactory:    testBase.VisibilityStoreFactory,
+		Logger:                    logger,
+		MockAdminClient:           clusterConfig.MockAdminClient,
+		DynamicConfigOverrides:    clusterConfig.DynamicConfigOverrides,
+		TLSConfigProvider:         tlsConfigProvider,
+		HostsByProtocolByService:  hostsByProtocolByService,
+		TokenProvider:             clusterConfig.TokenProvider,
+		CaptureMetricsHandler:     captureMetricsHandler,
+		EnableHistoryTaskRecorder: clusterConfig.EnableHistoryTaskRecorder,
+		EnableReplicationRecorder: clusterConfig.EnableReplicationRecorder,
+		WorkerConfig:              clusterConfig.WorkerConfig,
+		AdditionalServerOptions:   clusterConfig.AdditionalServerOptions,
+	})
+	if err = host.Start(); err != nil {
+		return nil, err
+	}
+
+	return &TestCluster{testBase: testBase, host: host}, nil
+}
+
+func newPProfInitializerImpl(logger log.Logger, port int) *pprof.PProfInitializerImpl {
+	return &pprof.PProfInitializerImpl{
+		PProf: &config.PProf{
+			Port: port,
+		},
+		Logger: logger,
+	}
+}
+
+func enableArchivalConfig(cfg *config.Config) {
+	filestoreArchiver := &config.FilestoreArchiver{
+		FileMode: "0666",
+		DirMode:  "0766",
+	}
+	cfg.Archival.History = config.HistoryArchival{
+		State:      config.ArchivalEnabled,
+		EnableRead: true,
+		Provider: &config.HistoryArchiverProvider{
+			Filestore: filestoreArchiver,
+		},
+	}
+	cfg.Archival.Visibility = config.VisibilityArchival{
+		State:      config.ArchivalEnabled,
+		EnableRead: true,
+		Provider: &config.VisibilityArchiverProvider{
+			Filestore: filestoreArchiver,
+		},
+	}
+	cfg.NamespaceDefaults.Archival = config.ArchivalNamespaceDefaults{
+		History: config.HistoryArchivalNamespaceDefaults{
+			State: config.ArchivalEnabled,
+			URI:   "testScheme://test/history/archive/path",
+		},
+		Visibility: config.VisibilityArchivalNamespaceDefaults{
+			State: config.ArchivalEnabled,
+			URI:   "testScheme://test/visibility/archive/path",
+		},
+	}
+}
+
+// TearDownCluster tears down the test cluster
+func (tc *TestCluster) TearDownCluster() error {
+	errs := tc.host.Stop()
+	tc.testBase.TearDownWorkflowStore()
+	if !UseSQLVisibility() {
+		if esConfig := tc.host.serverConfig.Persistence.DataStores[tc.host.serverConfig.Persistence.VisibilityStore].Elasticsearch; esConfig != nil {
+			if err := persistencetests.DeleteEsIndex(esConfig, tc.host.logger); err != nil {
+				errs = multierr.Combine(errs, err)
+			}
+		}
+	}
+	return errs
+}
+
+// TODO (alex): remove this method. Replace usages with concrete methods.
+func (tc *TestCluster) TestBase() *persistencetests.TestBase {
+	return tc.testBase
+}
+
+func (tc *TestCluster) FrontendClient() workflowservice.WorkflowServiceClient {
+	return tc.host.FrontendClient()
+}
+
+func (tc *TestCluster) AdminClient() adminservice.AdminServiceClient {
+	return tc.host.AdminClient()
+}
+
+func (tc *TestCluster) OperatorClient() operatorservice.OperatorServiceClient {
+	return tc.host.OperatorClient()
+}
+
+// HistoryClient returns a history client from the test cluster
+func (tc *TestCluster) HistoryClient() historyservice.HistoryServiceClient {
+	return tc.host.HistoryClient()
+}
+
+// MatchingClient returns a matching client from the test cluster
+func (tc *TestCluster) MatchingClient() matchingservice.MatchingServiceClient {
+	return tc.host.MatchingClient()
+}
+
+// SchedulerClient returns a scheduler client from the test cluster
+func (tc *TestCluster) SchedulerClient() schedulerpb.SchedulerServiceClient {
+	return tc.host.SchedulerClient()
+}
+
+// ExecutionManager returns an execution manager factory from the test cluster
+func (tc *TestCluster) ExecutionManager() persistence.ExecutionManager {
+	return tc.testBase.ExecutionManager
+}
+
+// TODO (alex): expose only needed objects from TemporalImpl.
+func (tc *TestCluster) Host() *temporalImpl {
+	return tc.host
+}
+
+func (tc *TestCluster) InjectHook(t *testing.T, hook testhooks.Hook, scope any) func() {
+	return tc.host.injectHook(t, hook, scope)
+}
+
+func (tc *TestCluster) WorkerGRPCAddress() string {
+	return tc.host.WorkerGRPCAddress()
+}
+
+func (tc *TestCluster) ClusterName() string {
+	return tc.host.serverConfig.ClusterMetadata.CurrentClusterName
+}
+
+func (tc *TestCluster) GetReplicationStreamRecorder() *ReplicationStreamRecorder {
+	return tc.host.replicationStreamRecorder
+}
+
+func (tc *TestCluster) GetHistoryTaskRecorder() *HistoryTaskRecorder {
+	return tc.host.GetHistoryTaskRecorder()
+}
+
+func (tc *TestCluster) OverrideDynamicConfig(t *testing.T, key dynamicconfig.GenericSetting, value any) (cleanup func()) {
+	return tc.host.overrideDynamicConfigForTest(t, key.Key(), value)
+}
+
+var errCannotAddCACertToPool = errors.New("failed adding CA to pool")
+
+func createFixedTLSConfigProvider() (*encryption.FixedTLSConfigProvider, error) {
+	// We use the existing cert generation utilities even though they use slow
+	// RSA and use disk unnecessarily
+	tempDir, err := os.MkdirTemp("", "")
+	if err != nil {
+		return nil, err
+	}
+	defer os.RemoveAll(tempDir)
+
+	certChain, err := testutils.GenerateTestChain(tempDir, TlsCertCommonName)
+	if err != nil {
+		return nil, err
+	}
+
+	// Due to how mTLS is built in the server, we have to reuse the CA for server
+	// and client, therefore we might as well reuse the cert too
+
+	tlsCert, err := tls.LoadX509KeyPair(certChain.CertPubFile, certChain.CertKeyFile)
+	if err != nil {
+		return nil, err
+	}
+	caCertPool := x509.NewCertPool()
+	if caCertBytes, err := os.ReadFile(certChain.CaPubFile); err != nil {
+		return nil, err
+	} else if !caCertPool.AppendCertsFromPEM(caCertBytes) {
+		return nil, errCannotAddCACertToPool
+	}
+
+	serverTLSConfig := &tls.Config{
+		Certificates: []tls.Certificate{tlsCert},
+		ClientCAs:    caCertPool,
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+	}
+	clientTLSConfig := &tls.Config{
+		ServerName:   TlsCertCommonName,
+		Certificates: []tls.Certificate{tlsCert},
+		RootCAs:      caCertPool,
+	}
+
+	return &encryption.FixedTLSConfigProvider{
+		InternodeServerConfig: serverTLSConfig,
+		InternodeClientConfig: clientTLSConfig,
+		FrontendServerConfig:  serverTLSConfig,
+		FrontendClientConfig:  clientTLSConfig,
+	}, nil
+}
+
+func makeAddresses(count int) []string {
+	hosts := make([]string, count)
+	for i := range hosts {
+		hosts[i] = fmt.Sprintf("127.0.0.1:%d", freeport.MustGetFreePort())
+	}
+	return hosts
+}

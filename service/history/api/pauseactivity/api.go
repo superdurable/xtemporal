@@ -1,0 +1,102 @@
+package pauseactivity
+
+import (
+	"context"
+
+	"go.temporal.io/api/workflowservice/v1"
+	"github.com/superdurable/xtemporal/api/historyservice/v1"
+	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
+	"github.com/superdurable/xtemporal/common/definition"
+	"github.com/superdurable/xtemporal/common/metrics"
+	"github.com/superdurable/xtemporal/service/history/api"
+	"github.com/superdurable/xtemporal/service/history/consts"
+	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	"github.com/superdurable/xtemporal/service/history/workflow"
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+func Invoke(
+	ctx context.Context,
+	request *historyservice.PauseActivityRequest,
+	shardContext historyi.ShardContext,
+	workflowConsistencyChecker api.WorkflowConsistencyChecker,
+) (resp *historyservice.PauseActivityResponse, retError error) {
+	var activityMetrics []workflow.ActivityMetricsInfo
+
+	err := api.GetAndUpdateWorkflowWithNew(
+		ctx,
+		nil,
+		definition.NewWorkflowKey(
+			request.NamespaceId,
+			request.GetFrontendRequest().GetExecution().GetWorkflowId(),
+			request.GetFrontendRequest().GetExecution().GetRunId(),
+		),
+		func(workflowLease api.WorkflowLease) (*api.UpdateWorkflowAction, error) {
+			mutableState := workflowLease.GetMutableState()
+			frontendRequest := request.GetFrontendRequest()
+			if !mutableState.IsWorkflowExecutionRunning() {
+				return nil, consts.ErrWorkflowCompleted
+			}
+
+			var activityIDs []string
+			switch a := frontendRequest.GetActivity().(type) {
+			case *workflowservice.PauseActivityRequest_Id:
+				activityIDs = append(activityIDs, a.Id)
+			case *workflowservice.PauseActivityRequest_Type:
+				activityType := a.Type
+				for _, ai := range mutableState.GetPendingActivityInfos() {
+					if ai.ActivityType.Name == activityType {
+						activityIDs = append(activityIDs, ai.ActivityId)
+					}
+				}
+			}
+
+			if len(activityIDs) == 0 {
+				return nil, consts.ErrActivityNotFound
+			}
+
+			pauseInfo := &persistencespb.ActivityInfo_PauseInfo{
+				PauseTime: timestamppb.New(shardContext.GetTimeSource().Now()),
+				PausedBy: &persistencespb.ActivityInfo_PauseInfo_Manual_{
+					Manual: &persistencespb.ActivityInfo_PauseInfo_Manual{
+						Identity: frontendRequest.GetIdentity(),
+						Reason:   frontendRequest.GetReason(),
+					},
+				},
+				RequestId: request.GetFrontendRequest().GetRequestId(),
+			}
+
+			for _, activityId := range activityIDs {
+				activityInfo, activityFound := mutableState.GetActivityByActivityID(activityId)
+				if !activityFound {
+					return nil, consts.ErrActivityNotFound
+				}
+				wasPaused := activityInfo.GetPaused()
+				err := workflow.PauseActivity(mutableState, activityId, pauseInfo)
+				if err != nil {
+					return nil, err
+				}
+				if !wasPaused {
+					activityMetrics = append(activityMetrics, workflow.NewActivityMetricsInfo(mutableState, activityInfo))
+				}
+			}
+			return &api.UpdateWorkflowAction{
+				Noop:               false,
+				CreateWorkflowTask: false,
+			}, nil
+		},
+		nil,
+		shardContext,
+		workflowConsistencyChecker,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, info := range activityMetrics {
+		metrics.ActivityPause.With(info.MetricsHandler(shardContext, metrics.ActivityPausedScope)).Record(1)
+	}
+
+	return &historyservice.PauseActivityResponse{}, nil
+}

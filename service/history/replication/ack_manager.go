@@ -1,0 +1,587 @@
+//go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination ack_manager_mock.go
+
+package replication
+
+import (
+	"context"
+	"sync"
+	"time"
+
+	"github.com/google/uuid"
+	"go.temporal.io/api/serviceerror"
+	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
+	replicationspb "github.com/superdurable/xtemporal/api/replication/v1"
+	"github.com/superdurable/xtemporal/common/backoff"
+	"github.com/superdurable/xtemporal/common/collection"
+	"github.com/superdurable/xtemporal/common/definition"
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/common/log"
+	"github.com/superdurable/xtemporal/common/log/tag"
+	"github.com/superdurable/xtemporal/common/metrics"
+	"github.com/superdurable/xtemporal/common/namespace"
+	"github.com/superdurable/xtemporal/common/persistence"
+	"github.com/superdurable/xtemporal/service/history/configs"
+	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	"github.com/superdurable/xtemporal/service/history/tasks"
+	wcache "github.com/superdurable/xtemporal/service/history/workflow/cache"
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+type (
+	AckManager interface {
+		NotifyNewTasks(tasks []tasks.Task)
+		GetMaxTaskInfo() (int64, time.Time)
+		GetTasks(ctx context.Context, pollingCluster string, queryMessageID int64) (*replicationspb.ReplicationMessages, error)
+		GetTask(ctx context.Context, taskInfo *replicationspb.ReplicationTaskInfo) (*replicationspb.ReplicationTask, error)
+
+		SubscribeNotification(string) (<-chan struct{}, string)
+		UnsubscribeNotification(string)
+		ConvertTask(
+			ctx context.Context,
+			task tasks.Task,
+		) (*replicationspb.ReplicationTask, error)
+		ConvertTaskByCluster(
+			ctx context.Context,
+			task tasks.Task,
+			targetClusterID int32,
+		) (*replicationspb.ReplicationTask, error)
+		GetReplicationTasksIter(
+			ctx context.Context,
+			pollingCluster string,
+			minInclusiveTaskID int64,
+			maxExclusiveTaskID int64,
+		) (collection.Iterator[tasks.Task], error)
+	}
+
+	ackMgrImpl struct {
+		currentClusterName                   string
+		shardContext                         historyi.ShardContext
+		config                               *configs.Config
+		workflowCache                        wcache.Cache
+		eventBlobCache                       persistence.XDCCache
+		replicationProgressCache             ProgressCache
+		executionMgr                         persistence.ExecutionManager
+		metricsHandler                       metrics.Handler
+		logger                               log.Logger
+		retryPolicy                          backoff.RetryPolicy
+		namespaceRegistry                    namespace.Registry
+		syncVersionedTransitionTaskConverter *syncVersionedTransitionTaskConverter
+		pageSize                             dynamicconfig.IntPropertyFn
+		maxSkipTaskCount                     dynamicconfig.IntPropertyFn
+		readBuffer                           *readBuffer
+
+		sync.Mutex
+		// largest replication task ID generated
+		maxTaskID                  *int64
+		maxTaskVisibilityTimestamp time.Time
+		sanityCheckTime            time.Time
+
+		subscriberLock sync.Mutex
+		subscribers    map[string]channelMetadata
+	}
+
+	channelMetadata struct {
+		notifyCh     chan struct{}
+		clusterName  string
+		backlogCount int64
+	}
+)
+
+var (
+	errUnknownReplicationTask = serviceerror.NewInternal("unknown replication task")
+)
+
+func NewAckManager(
+	shardContext historyi.ShardContext,
+	workflowCache wcache.Cache,
+	eventBlobCache persistence.XDCCache,
+	replicationProgressCache ProgressCache,
+	executionMgr persistence.ExecutionManager,
+	syncStateRetriever SyncStateRetriever,
+	logger log.Logger,
+) AckManager {
+
+	currentClusterName := shardContext.GetClusterMetadata().GetCurrentClusterName()
+	config := shardContext.GetConfig()
+	metricsHandler := shardContext.GetMetricsHandler().WithTags(metrics.OperationTag(metrics.ReplicatorQueueProcessorScope))
+	taggedLogger := log.With(logger, tag.ComponentReplicatorQueue)
+
+	retryPolicy := backoff.NewExponentialRetryPolicy(200 * time.Millisecond).
+		WithMaximumAttempts(5).
+		WithBackoffCoefficient(1)
+
+	return &ackMgrImpl{
+		currentClusterName:                   currentClusterName,
+		shardContext:                         shardContext,
+		config:                               shardContext.GetConfig(),
+		workflowCache:                        workflowCache,
+		eventBlobCache:                       eventBlobCache,
+		replicationProgressCache:             replicationProgressCache,
+		executionMgr:                         executionMgr,
+		metricsHandler:                       metricsHandler,
+		logger:                               taggedLogger,
+		retryPolicy:                          retryPolicy,
+		namespaceRegistry:                    shardContext.GetNamespaceRegistry(),
+		syncVersionedTransitionTaskConverter: newSyncVersionedTransitionTaskConverter(shardContext, workflowCache, eventBlobCache, replicationProgressCache, executionMgr, syncStateRetriever, logger),
+		pageSize:                             config.ReplicatorProcessorFetchTasksBatchSize,
+		maxSkipTaskCount:                     config.ReplicatorProcessorMaxSkipTaskCount,
+		readBuffer:                           newReadBuffer(config.ReplicationStreamReadBufferSize, metricsHandler, taggedLogger),
+
+		maxTaskID:       nil,
+		sanityCheckTime: time.Time{},
+
+		subscribers: make(map[string]channelMetadata),
+	}
+}
+
+func (p *ackMgrImpl) NotifyNewTasks(
+	tasks []tasks.Task,
+) {
+
+	if len(tasks) == 0 {
+		return
+	}
+	maxTaskID := tasks[0].GetTaskID()
+	maxVisibilityTimestamp := tasks[0].GetVisibilityTime()
+	for _, task := range tasks {
+		if maxTaskID < task.GetTaskID() {
+			maxTaskID = task.GetTaskID()
+		}
+		if maxVisibilityTimestamp.Before(task.GetVisibilityTime()) {
+			maxVisibilityTimestamp = task.GetVisibilityTime()
+		}
+	}
+
+	defer p.broadcast(len(tasks))
+
+	p.Lock()
+	defer p.Unlock()
+	if p.maxTaskID == nil || *p.maxTaskID < maxTaskID {
+		p.maxTaskID = &maxTaskID
+	}
+	if p.maxTaskVisibilityTimestamp.IsZero() || p.maxTaskVisibilityTimestamp.Before(maxVisibilityTimestamp) {
+		p.maxTaskVisibilityTimestamp = maxVisibilityTimestamp
+	}
+}
+
+func (p *ackMgrImpl) GetMaxTaskInfo() (int64, time.Time) {
+	p.Lock()
+	defer p.Unlock()
+
+	maxTaskID := p.maxTaskID
+	if maxTaskID == nil {
+		// maxTaskID is nil before any replication task is written which happens right after shard reload. In that case,
+		// use ImmediateTaskMaxReadLevel which is the max task id of any immediate task queues.
+		// ImmediateTaskMaxReadLevel will be the lower bound of new range_id if shard reload. Remote cluster will quickly (in
+		// a few seconds) ack to the latest ImmediateTaskMaxReadLevel if there is no replication tasks at all.
+		taskID := p.shardContext.GetQueueExclusiveHighReadWatermark(tasks.CategoryReplication).Prev().TaskID
+		maxTaskID = &taskID
+	}
+	maxVisibilityTimestamp := p.maxTaskVisibilityTimestamp
+	if maxVisibilityTimestamp.IsZero() {
+		maxVisibilityTimestamp = p.shardContext.GetTimeSource().Now()
+	}
+
+	return *maxTaskID, maxVisibilityTimestamp
+}
+
+// TODO: deprecate this method
+// It's only used by the replication DLQ v1 logic.
+func (p *ackMgrImpl) GetTask(
+	ctx context.Context,
+	taskInfo *replicationspb.ReplicationTaskInfo,
+) (*replicationspb.ReplicationTask, error) {
+
+	switch taskInfo.TaskType {
+	case enumsspb.TASK_TYPE_REPLICATION_SYNC_ACTIVITY:
+		return p.ConvertTask(ctx, &tasks.SyncActivityTask{
+			WorkflowKey: definition.NewWorkflowKey(
+				taskInfo.GetNamespaceId(),
+				taskInfo.GetWorkflowId(),
+				taskInfo.GetRunId(),
+			),
+			VisibilityTimestamp: time.Unix(0, 0),
+			TaskID:              taskInfo.TaskId,
+			Version:             taskInfo.Version,
+			ScheduledEventID:    taskInfo.ScheduledEventId,
+		})
+	case enumsspb.TASK_TYPE_REPLICATION_HISTORY:
+		return p.ConvertTask(ctx, &tasks.HistoryReplicationTask{
+			WorkflowKey: definition.NewWorkflowKey(
+				taskInfo.GetNamespaceId(),
+				taskInfo.GetWorkflowId(),
+				taskInfo.GetRunId(),
+			),
+			VisibilityTimestamp: time.Unix(0, 0),
+			TaskID:              taskInfo.TaskId,
+			Version:             taskInfo.Version,
+			FirstEventID:        taskInfo.FirstEventId,
+			NextEventID:         taskInfo.NextEventId,
+		})
+	case enumsspb.TASK_TYPE_REPLICATION_SYNC_WORKFLOW_STATE:
+		return p.ConvertTask(ctx, &tasks.SyncWorkflowStateTask{
+			WorkflowKey: definition.NewWorkflowKey(
+				taskInfo.GetNamespaceId(),
+				taskInfo.GetWorkflowId(),
+				taskInfo.GetRunId(),
+			),
+			VisibilityTimestamp: time.Unix(0, 0),
+			TaskID:              taskInfo.TaskId,
+			Version:             taskInfo.Version,
+			Priority:            taskInfo.GetPriority(),
+		})
+	case enumsspb.TASK_TYPE_REPLICATION_SYNC_HSM:
+		return p.ConvertTask(ctx, &tasks.SyncHSMTask{
+			WorkflowKey: definition.NewWorkflowKey(
+				taskInfo.GetNamespaceId(),
+				taskInfo.GetWorkflowId(),
+				taskInfo.GetRunId(),
+			),
+			VisibilityTimestamp: time.Unix(0, 0),
+			TaskID:              taskInfo.TaskId,
+		})
+	default:
+		return nil, serviceerror.NewInternalf("Unknown replication task type: %v", taskInfo.TaskType)
+	}
+}
+
+func (p *ackMgrImpl) GetTasks(
+	ctx context.Context,
+	pollingCluster string,
+	queryMessageID int64,
+) (*replicationspb.ReplicationMessages, error) {
+
+	minTaskID, maxTaskID := p.taskIDsRange(queryMessageID)
+	replicationTasks, lastTaskID, err := p.getTasks(
+		ctx,
+		pollingCluster,
+		minTaskID,
+		maxTaskID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Note this is a very rough indicator of how much the remote DC is behind on this shard.
+	metrics.ReplicationTasksLag.With(p.metricsHandler).Record(
+		maxTaskID-lastTaskID,
+		metrics.TargetClusterTag(pollingCluster),
+		metrics.OperationTag(metrics.ReplicationTaskFetcherScope),
+	)
+
+	metrics.ReplicationTasksFetched.With(p.metricsHandler).
+		Record(int64(len(replicationTasks)))
+
+	replicationEventTime := timestamppb.New(p.shardContext.GetTimeSource().Now())
+	if len(replicationTasks) > 0 {
+		replicationEventTime = replicationTasks[len(replicationTasks)-1].GetVisibilityTime()
+	}
+	return &replicationspb.ReplicationMessages{
+		ReplicationTasks:       replicationTasks,
+		HasMore:                lastTaskID < maxTaskID,
+		LastRetrievedMessageId: lastTaskID,
+		SyncShardStatus: &replicationspb.SyncShardStatus{
+			StatusTime: replicationEventTime,
+		},
+	}, nil
+}
+
+func (p *ackMgrImpl) getTasks(
+	ctx context.Context,
+	pollingCluster string,
+	minTaskID int64,
+	maxTaskID int64,
+) ([]*replicationspb.ReplicationTask, int64, error) {
+	if minTaskID > maxTaskID {
+		return nil, 0, serviceerror.NewUnavailable("min task ID > max task ID, probably due to shard re-balancing")
+	} else if minTaskID == maxTaskID {
+		return nil, maxTaskID, nil
+	}
+
+	replicationTasks := make([]*replicationspb.ReplicationTask, 0, p.pageSize())
+	skippedTaskCount := 0
+	lastTaskID := maxTaskID // If no tasks are returned, then it means there are no tasks bellow maxTaskID.
+	iter := collection.NewPagingIterator(p.getReplicationTasksFn(ctx, minTaskID, maxTaskID, p.pageSize()))
+	// iter.HasNext() should be the last check to avoid extra page read in case if replicationTasks is already full.
+	for len(replicationTasks) < p.pageSize() && skippedTaskCount <= p.maxSkipTaskCount() && iter.HasNext() {
+		task, err := iter.Next()
+		if err != nil {
+			return p.swallowPartialResultsError(replicationTasks, lastTaskID, err)
+		}
+
+		// If, for any reason, task is skipped:
+		//  - lastTaskID needs to be updated because this task should not be read next time,
+		//  - skippedTaskCount needs to be incremented to prevent timeout on caller side (too many tasks are skipped).
+		// If error has occurred though, lastTaskID shouldn't be updated, and next time task needs to be read again.
+
+		ns, err := p.namespaceRegistry.GetNamespaceByID(namespace.ID(task.GetNamespaceID()))
+		if err != nil {
+			if _, isNotFound := err.(*serviceerror.NamespaceNotFound); !isNotFound {
+				return p.swallowPartialResultsError(replicationTasks, lastTaskID, err)
+			}
+			// Namespace doesn't exist on this cluster (i.e. deleted). It is safe to skip the task.
+			lastTaskID = task.GetTaskID()
+			skippedTaskCount++
+			continue
+		}
+		// If namespace doesn't exist on polling cluster, there is no reason to send the task.
+		if !ns.IsOnCluster(pollingCluster) {
+			lastTaskID = task.GetTaskID()
+			skippedTaskCount++
+			continue
+		}
+
+		replicationTask, err := p.ConvertTask(ctx, task)
+		if err != nil {
+			return p.swallowPartialResultsError(replicationTasks, lastTaskID, err)
+		} else if replicationTask == nil {
+			lastTaskID = task.GetTaskID()
+			skippedTaskCount++
+			continue
+		}
+		lastTaskID = task.GetTaskID()
+		replicationTasks = append(replicationTasks, replicationTask)
+	}
+
+	return replicationTasks, lastTaskID, nil
+}
+
+func (p *ackMgrImpl) getReplicationTasksFn(
+	ctx context.Context,
+	minTaskID int64,
+	maxTaskID int64,
+	batchSize int,
+) collection.PaginationFn[tasks.Task] {
+	return func(paginationToken []byte) ([]tasks.Task, []byte, error) {
+		response, err := p.executionMgr.GetHistoryTasks(ctx, &persistence.GetHistoryTasksRequest{
+			ShardID:             p.shardContext.GetShardID(),
+			TaskCategory:        tasks.CategoryReplication,
+			InclusiveMinTaskKey: tasks.NewImmediateKey(minTaskID + 1),
+			ExclusiveMaxTaskKey: tasks.NewImmediateKey(maxTaskID + 1),
+			BatchSize:           batchSize,
+			NextPageToken:       paginationToken,
+		})
+		if err != nil {
+			return nil, nil, err
+		}
+		return response.Tasks, response.NextPageToken, nil
+	}
+}
+
+func (p *ackMgrImpl) swallowPartialResultsError(
+	replicationTasks []*replicationspb.ReplicationTask,
+	lastTaskID int64,
+	err error,
+) ([]*replicationspb.ReplicationTask, int64, error) {
+
+	p.logger.Error("Replication tasks reader encountered error, return earlier.", tag.Error(err), tag.Value(len(replicationTasks)))
+	if len(replicationTasks) == 0 {
+		return nil, 0, err
+	}
+	return replicationTasks, lastTaskID, nil
+}
+
+func (p *ackMgrImpl) taskIDsRange(
+	lastReadMessageID int64,
+) (minTaskID int64, maxTaskID int64) {
+	minTaskID = lastReadMessageID
+	maxTaskID = p.shardContext.GetQueueExclusiveHighReadWatermark(tasks.CategoryReplication).Prev().TaskID
+
+	p.Lock()
+	defer p.Unlock()
+	defer func() { p.maxTaskID = new(maxTaskID) }()
+
+	now := p.shardContext.GetTimeSource().Now()
+	if p.sanityCheckTime.IsZero() || p.sanityCheckTime.Before(now) {
+		p.sanityCheckTime = now.Add(backoff.Jitter(
+			p.config.ReplicatorProcessorMaxPollInterval(),
+			p.config.ReplicatorProcessorMaxPollIntervalJitterCoefficient(),
+		))
+		return minTaskID, maxTaskID
+	}
+
+	if p.maxTaskID != nil && *p.maxTaskID < maxTaskID {
+		maxTaskID = *p.maxTaskID
+	}
+
+	return minTaskID, maxTaskID
+}
+
+// TODO split the ack manager into 2 components
+
+func (p *ackMgrImpl) ConvertTask(
+	ctx context.Context,
+	task tasks.Task,
+) (*replicationspb.ReplicationTask, error) {
+	switch task := task.(type) {
+	case *tasks.SyncActivityTask:
+		return convertActivityStateReplicationTask(
+			ctx,
+			p.shardContext,
+			task,
+			p.workflowCache,
+		)
+	case *tasks.SyncWorkflowStateTask:
+		return convertWorkflowStateReplicationTask(
+			ctx,
+			p.shardContext,
+			task,
+			p.workflowCache,
+		)
+	case *tasks.HistoryReplicationTask:
+		return convertHistoryReplicationTask(
+			ctx,
+			p.shardContext,
+			task,
+			p.shardContext.GetShardID(),
+			p.workflowCache,
+			p.eventBlobCache,
+			p.executionMgr,
+			p.logger,
+			p.config,
+		)
+	case *tasks.SyncHSMTask:
+		return convertSyncHSMReplicationTask(
+			ctx,
+			p.shardContext,
+			task,
+			p.workflowCache,
+		)
+	case *tasks.DeleteExecutionReplicationTask:
+		return convertDeleteExecutionReplicationTask(task)
+	default:
+		return nil, errUnknownReplicationTask
+	}
+}
+
+func (p *ackMgrImpl) ConvertTaskByCluster(
+	ctx context.Context,
+	task tasks.Task,
+	targetClusterID int32,
+) (*replicationspb.ReplicationTask, error) {
+	switch task := task.(type) {
+	case *tasks.SyncVersionedTransitionTask:
+		return convertSyncVersionedTransitionTask(
+			ctx,
+			task,
+			targetClusterID,
+			p.syncVersionedTransitionTaskConverter,
+		)
+	default:
+		return p.ConvertTask(ctx, task)
+	}
+}
+
+func (p *ackMgrImpl) SubscribeNotification(clusterName string) (<-chan struct{}, string) {
+	subscriberID := uuid.New().String()
+
+	p.subscriberLock.Lock()
+	defer p.subscriberLock.Unlock()
+
+	for {
+		if _, ok := p.subscribers[subscriberID]; !ok {
+			channel := make(chan struct{}, 1)
+			p.subscribers[subscriberID] = channelMetadata{
+				notifyCh:     channel,
+				clusterName:  clusterName,
+				backlogCount: 0,
+			}
+			return channel, subscriberID
+		}
+		subscriberID = uuid.New().String()
+	}
+}
+
+func (p *ackMgrImpl) UnsubscribeNotification(subscriberID string) {
+	p.subscriberLock.Lock()
+	defer p.subscriberLock.Unlock()
+
+	delete(p.subscribers, subscriberID)
+}
+
+func (p *ackMgrImpl) broadcast(taskCount int) {
+	p.subscriberLock.Lock()
+	defer p.subscriberLock.Unlock()
+
+	for _, notification := range p.subscribers {
+		select {
+		case notification.notifyCh <- struct{}{}:
+			// This tells the backlog between two notifications. This is the best effort to know lagging task count.
+			if notification.backlogCount > 0 {
+				metrics.ReplicationTaskSendBacklog.With(p.metricsHandler).
+					Record(notification.backlogCount, metrics.TargetClusterTag(notification.clusterName))
+			}
+			notification.backlogCount = 0
+		default:
+			notification.backlogCount += int64(taskCount)
+			// noop
+		}
+	}
+}
+
+func (p *ackMgrImpl) GetReplicationTasksIter(
+	ctx context.Context,
+	pollingCluster string,
+	minInclusiveTaskID int64,
+	maxExclusiveTaskID int64,
+) (collection.Iterator[tasks.Task], error) {
+	// Reads go through the shard's replication read buffer, so the overlapping tip
+	// scans of every stream and lane share one persistence read. Pagination is by
+	// task id (the buffer serves covered ranges from memory); a non-empty token just
+	// marks that the range is not exhausted.
+	nextMinTaskID := minInclusiveTaskID
+	return collection.NewPagingIterator(func(_ []byte) ([]tasks.Task, []byte, error) {
+		page, next, err := p.readBuffer.readPage(
+			nextMinTaskID,
+			maxExclusiveTaskID,
+			func(fetchMinInclusive int64, fetchMaxExclusive int64) ([]tasks.Task, int64, error) {
+				// A store may legally return an empty page with a continuation token
+				// (e.g. Cassandra paging): only an empty token proves the range was
+				// fully scanned, so an empty page with a token is not authoritative
+				// and must not exit — the buffer would record coverage over tasks
+				// that were never read. Pages with tasks are returned as-is, never
+				// accumulated across store pages, to keep reads bounded by BatchSize.
+				var pageToken []byte
+				for {
+					response, err := func() (*persistence.GetHistoryTasksResponse, error) {
+						ctx1, cancel := context.WithTimeout(ctx, 30*time.Second)
+						defer cancel()
+						return p.executionMgr.GetHistoryTasks(ctx1, &persistence.GetHistoryTasksRequest{
+							ShardID:             p.shardContext.GetShardID(),
+							TaskCategory:        tasks.CategoryReplication,
+							InclusiveMinTaskKey: tasks.NewImmediateKey(fetchMinInclusive),
+							ExclusiveMaxTaskKey: tasks.NewImmediateKey(fetchMaxExclusive),
+							BatchSize:           p.config.ReplicatorProcessorFetchTasksBatchSize(),
+							NextPageToken:       pageToken,
+						})
+					}()
+					if err != nil {
+						return nil, 0, err
+					}
+					metrics.ReplicationTaskLoadSize.With(p.metricsHandler).Record(int64(len(response.Tasks)))
+					// Not authoritative (see loop comment above): keep paging.
+					if len(response.Tasks) == 0 && len(response.NextPageToken) > 0 {
+						pageToken = response.NextPageToken
+						continue
+					}
+					coveredTo := fetchMaxExclusive
+					if len(response.NextPageToken) > 0 {
+						// Page-size truncation: the read is only authoritative
+						// through the last task it returned.
+						coveredTo = response.Tasks[len(response.Tasks)-1].GetTaskID() + 1
+					}
+					return response.Tasks, coveredTo, nil
+				}
+			},
+		)
+		if err != nil {
+			return nil, nil, err
+		}
+		nextMinTaskID = next
+		var token []byte
+		if next != 0 {
+			token = []byte{1}
+		}
+		return page, token, nil
+	}), nil
+}

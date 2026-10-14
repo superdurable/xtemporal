@@ -1,0 +1,91 @@
+package computeprovider
+
+import (
+	"context"
+	"errors"
+	"fmt"
+
+	computepb "go.temporal.io/api/compute/v1"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/common/sdk"
+)
+
+const (
+	configTestInvokeIllegalField = "illegal_field"
+)
+
+type testInvokeComputeProvider struct{}
+
+func init() {
+	RegisterComputeProvider(
+		iface.ComputeProviderTypeTestInvoke,
+		NewTestInvokeComputeProvider,
+	)
+}
+
+func NewTestInvokeComputeProvider(
+	_ context.Context,
+	_ *dynamicconfig.Collection,
+) (ComputeProvider, error) {
+	return &testInvokeComputeProvider{}, nil
+}
+
+func (p *testInvokeComputeProvider) LaunchStrategy() LaunchStrategy {
+	return LaunchStrategyInvoke
+}
+
+func (p *testInvokeComputeProvider) ValidateConfig(
+	_ context.Context,
+	rc RequestContext,
+	config ComputeProviderConfig,
+) error {
+	if _, ok := config[configTestInvokeIllegalField].(string); ok {
+		return fmt.Errorf("illegal_field found in config")
+	}
+
+	emitProviderEvent(rc, "validate")
+	return nil
+}
+
+func (p *testInvokeComputeProvider) InvokeWorker(
+	_ context.Context,
+	rc RequestContext,
+	_ ComputeProviderConfig,
+) error {
+	emitProviderEvent(rc, "invoke")
+	return nil
+}
+
+func (p *testInvokeComputeProvider) UpdateWorkerSetSize(
+	_ context.Context,
+	_ RequestContext,
+	_ ComputeProviderConfig,
+	_ int32,
+) error {
+	return errors.ErrUnsupported
+}
+
+// TestInvokeComputeProviderValidComputeProvider provides an example valid config for testing code to use
+func TestInvokeComputeProviderValidComputeProvider() *computepb.ComputeProvider {
+	providerDetails := map[string]string{}
+	payload, _ := sdk.PreferProtoDataConverter.ToPayload(providerDetails)
+
+	return &computepb.ComputeProvider{
+		Type:    string(iface.ComputeProviderTypeTestInvoke),
+		Details: payload,
+	}
+}
+
+// TestInvokeComputeProviderInvalidComputeProvider provides an example invalid config for testing code to use
+func TestInvokeComputeProviderInvalidComputeProvider() *computepb.ComputeProvider {
+	providerDetails := map[string]string{
+		configTestInvokeIllegalField: "something",
+	}
+	payload, _ := sdk.PreferProtoDataConverter.ToPayload(providerDetails)
+
+	return &computepb.ComputeProvider{
+		Type:    string(iface.ComputeProviderTypeTestInvoke),
+		Details: payload,
+	}
+}

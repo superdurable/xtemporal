@@ -1,0 +1,178 @@
+package metrics
+
+import "github.com/superdurable/xtemporal/common/metrics"
+
+var (
+	BacklogCount = metrics.NewGaugeDef(
+		"worker_controller_instance_backlog_count",
+		metrics.WithDescription("The total detected backlog size for a worker controller instance."))
+	BacklogAge = metrics.NewGaugeDef(
+		"worker_controller_instance_backlog_age",
+		metrics.WithDescription("The max detected backlog age in seconds for a worker controller instance."))
+
+	ScaleUpCount = metrics.NewCounterDef(
+		"worker_controller_instance_scale_up_count",
+		metrics.WithDescription("The number of times a scale up was performed for a worker controller instance."))
+	ScaleUpThrottledCount = metrics.NewCounterDef(
+		"worker_controller_instance_scale_up_throttled_count",
+		metrics.WithDescription("The number of times a scale up was throttled for a worker controller instance."))
+	TargetWorkerCount = metrics.NewGaugeDef(
+		"worker_controller_instance_target_worker_count",
+		metrics.WithDescription("The target worker-set size the scaling algorithm requested."))
+	DeferredScalingDecisionCount = metrics.NewCounterDef(
+		"worker_controller_instance_deferred_scaling_decision_count",
+		metrics.WithDescription("The number of times a deferred scaling decision was dispatched for a worker controller instance."))
+	DeferredScalingDecisionMetricsPullFailedCount = metrics.NewCounterDef(
+		"worker_controller_instance_deferred_scaling_decision_metrics_pull_failed_count",
+		metrics.WithDescription("The number of deferred scaling decision invocations whose lazy metrics-snapshot pull failed."))
+
+	WorkflowErrorCount = metrics.NewCounterDef(
+		"worker_controller_instance_workflow_error_count",
+		metrics.WithDescription("The number of times a workflow error occurred for a worker controller instance."))
+
+	Signals = metrics.NewCounterDef(
+		"worker_controller_instance_signals",
+		metrics.WithDescription("The number of times a signal occurred for a worker controller instance."))
+	Updates = metrics.NewCounterDef(
+		"worker_controller_instance_updates",
+		metrics.WithDescription("The number of times an update occurred for a worker controller instance."))
+	Operations = metrics.NewCounterDef(
+		"worker_controller_instance_operations",
+		metrics.WithDescription("The number of times an operation occurred for a worker controller instance."))
+	Activities = metrics.NewCounterDef(
+		"worker_controller_instance_activities",
+		metrics.WithDescription("The number of times an activity was executed as part of a worker controller instance."))
+
+	ScalingActionProcessingLatency = metrics.NewTimerDef(
+		"worker_controller_instance_scaling_action_processing_latency",
+		metrics.WithDescription("Latency of WCI's own processing — from trigger (task-add signal receipt / stats poll start) to scaling-action completion."))
+)
+
+// Tag key constants matching github.com/superdurable/xtemporal/common/metrics/tags.go.
+// Exported tag constructors do not work in SDK metrics handlers so tags are defined as constants here.
+// Used as map keys with the SDK MetricsHandler (workflow and activity context).
+const (
+	NamespaceTag               = "namespace"
+	ActivityTypeTag            = "activityType"
+	WorkerDeploymentNameTag    = "worker_deployment_name"
+	WorkerDeploymentBuildIDTag = "worker_build_id"
+	ComputeProviderTag         = "compute_provider"
+	SignalTypeTagName          = "signal_type"
+	UpdateTypeTagName          = "update_type"
+	OperationTagName           = metrics.OperationTagName
+	ErrorTypeTagName           = metrics.ErrorTypeTagName
+	ScaleUpTriggerTagName      = "scale_up_trigger"
+	SkipReasonTagName          = "skip_reason"
+	ActivityErrorTypeTagName   = "activity_error_type"
+	PathTagName                = "path"
+)
+
+// ComputeProviderNone is the sentinel compute_provider tag value used when a
+// metric is not emitted.
+const ComputeProviderNone = "none"
+
+// ErrorType is the bounded set of values for the `error_type` tag.
+type ErrorType string
+
+// SkippedReason is the bounded set of values for the `skip_reason` tag.
+type SkippedReason string
+
+// ActivityErrorType is the bounded set of values for the `activity_error_type` tag.
+type ActivityErrorType string
+
+// ActivityType is the bounded set of values for the `activityType` tag.
+type ActivityType string
+
+const (
+	ErrorTypeDescribeWorkerDeploymentVersionFailed ErrorType = "describe_worker_deployment_version_failed"
+	ErrorTypeLockFailure                           ErrorType = "lock_failure"
+	ErrorTypeBuildUpdatedSpecFailure               ErrorType = "build_updated_spec_failure"
+	ErrorTypeInvalidSpec                           ErrorType = "invalid_spec"
+	// ErrorTypeActivityError is the coarse bucket used at workflow-side activity-execution failure sites, paired with
+	// the activity_error_type tag for sub-classification.
+	ErrorTypeActivityError        ErrorType = "activity_error"
+	ErrorTypeInvalidRequest       ErrorType = "invalid_request"
+	ErrorTypeAlgorithmUnavailable ErrorType = "algorithm_unavailable"
+	ErrorTypeAlgorithmFailed      ErrorType = "algorithm_failed"
+	// ErrorTypeComputeProviderNotEnabled means no compute provider is enabled for the
+	// namespace, or the one the spec names is not registered. Nothing was attempted.
+	ErrorTypeComputeProviderNotEnabled ErrorType = "compute_provider_not_enabled"
+	// ErrorTypeComputeProviderFailed is the fallback for a compute provider failure
+	// the provider did not classify. The values below are the classified subsets.
+	ErrorTypeComputeProviderFailed ErrorType = "compute_provider_failed"
+	// ErrorTypeComputeProviderRejected means the provider rejected a request made
+	// against the customer's config for a reason we could not narrow further.
+	ErrorTypeComputeProviderRejected ErrorType = "compute_provider_rejected"
+	// ErrorTypeComputeProviderRejectedNotFound means the compute resource named by
+	// the customer's config does not exist.
+	ErrorTypeComputeProviderRejectedNotFound ErrorType = "compute_provider_rejected_not_found"
+	// ErrorTypeComputeProviderRejectedAccessDenied means the resource exists but the
+	// role we assumed lacks permission to act on it.
+	ErrorTypeComputeProviderRejectedAccessDenied ErrorType = "compute_provider_rejected_access_denied"
+	// ErrorTypeComputeProviderServiceUnavailable means the provider's API was
+	// unreachable or returned a server-side error.
+	ErrorTypeComputeProviderServiceUnavailable ErrorType = "compute_provider_service_unavailable"
+	// ErrorTypeComputeProviderThrottled means the provider rate- or
+	// concurrency-limited the request.
+	ErrorTypeComputeProviderThrottled ErrorType = "compute_provider_throttled"
+	// ErrorTypeComputeProviderInternal means the compute provider call failed on
+	// worker-controller-instances's own configuration or credentials rather than the
+	// customer's.
+	ErrorTypeComputeProviderInternal ErrorType = "compute_provider_internal"
+	// ErrorTypeNone is the sentinel used when a metric's fixed tag schema requires the
+	// error_type tag on a non-error path.
+	ErrorTypeNone ErrorType = "none"
+)
+
+const (
+	SkippedReasonSpecMissing          SkippedReason = "spec_missing"
+	SkippedReasonWciDisabled          SkippedReason = "wci_disabled"
+	SkippedReasonInvalidRequest       SkippedReason = "invalid_request"
+	SkippedReasonAlgorithmUnavailable SkippedReason = "algorithm_unavailable"
+	SkippedReasonAlgorithmFailed      SkippedReason = "algorithm_failed"
+	SkippedReasonNoMatchingScaler     SkippedReason = "no_matching_scaler"
+	SkippedReasonInvalidCount         SkippedReason = "invalid_count"
+	SkippedReasonNoSourceRequest      SkippedReason = "no_source_request"
+	SkippedReasonTaskTypeMismatch     SkippedReason = "task_type_mismatch"
+	// SkippedReasonNone is the sentinel used when a metric's fixed tag schema requires the
+	// skip_reason tag on a non-skip path.
+	SkippedReasonNone SkippedReason = "none"
+)
+
+const (
+	ActivityErrorTypeTimeout     ActivityErrorType = "timeout"
+	ActivityErrorTypeCanceled    ActivityErrorType = "canceled"
+	ActivityErrorTypeApplication ActivityErrorType = "application"
+	ActivityErrorTypePanic       ActivityErrorType = "panic"
+	ActivityErrorTypeTerminated  ActivityErrorType = "terminated"
+	ActivityErrorTypeOther       ActivityErrorType = "other"
+	// ActivityErrorTypeNone is the sentinel used when a metric's fixed tag schema requires
+	// the activity_error_type tag on a path that is not an activity error.
+	ActivityErrorTypeNone ActivityErrorType = "none"
+)
+
+const (
+	ActivityTypeHandleTaskAddSignal               ActivityType = "handle_task_add_signal"
+	ActivityTypeUpdateWorkerSetSize               ActivityType = "update_worker_set_size"
+	ActivityTypeInvokeWorker                      ActivityType = "invoke_worker"
+	ActivityTypeInvokeWorkersToRegisterTaskQueues ActivityType = "invoke_workers_to_register_task_queues"
+	ActivityTypeValidateSpec                      ActivityType = "validate_spec"
+	ActivityTypePullStats                         ActivityType = "pull_stats"
+	ActivityTypeHandleDeferredScalingDecision     ActivityType = "handle_deferred_scaling_decision"
+)
+
+const (
+	SignalTypeTaskAdd                    = "task_add"
+	UpdateTypeValidateSpec               = "validate_spec"
+	UpdateTypeUpdateInstance             = "update_instance"
+	UpdateTypeDeleteInstance             = "delete_instance"
+	OperationTypePullStats               = "pull_stats"
+	OperationTypeValidateSpec            = "validate_spec"
+	OperationTypeInvokeWorker            = "invoke_worker"
+	OperationTypeUpdateWorkerSetSize     = "update_worker_set_size"
+	OperationTypeDeferredScalingDecision = "deferred_scaling_decision"
+	ScaleUpTriggerTypeMetricsPoll        = "metrics_poll"
+	ScaleUpTriggerTypeTaskAdd            = "task_add"
+	PathTaskAdd                          = "task_add"
+	PathPullStats                        = "pull_stats"
+)

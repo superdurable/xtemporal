@@ -1,0 +1,277 @@
+//go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination client_factory_mock.go
+
+package client
+
+import (
+	"time"
+
+	"go.temporal.io/api/operatorservice/v1"
+	"go.temporal.io/api/workflowservice/v1"
+	"github.com/superdurable/xtemporal/api/adminservice/v1"
+	"github.com/superdurable/xtemporal/api/historyservice/v1"
+	"github.com/superdurable/xtemporal/api/matchingservice/v1"
+	"github.com/superdurable/xtemporal/client/admin"
+	"github.com/superdurable/xtemporal/client/frontend"
+	"github.com/superdurable/xtemporal/client/history"
+	"github.com/superdurable/xtemporal/client/matching"
+	"github.com/superdurable/xtemporal/client/operator"
+	"github.com/superdurable/xtemporal/common"
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/common/log"
+	"github.com/superdurable/xtemporal/common/membership"
+	"github.com/superdurable/xtemporal/common/metrics"
+	"github.com/superdurable/xtemporal/common/namespace"
+	"github.com/superdurable/xtemporal/common/primitives"
+	"github.com/superdurable/xtemporal/common/testing/testhooks"
+	"google.golang.org/grpc"
+)
+
+type (
+	// Factory can be used to create RPC clients for temporal services
+	Factory interface {
+		NewHistoryClientWithTimeout(timeout time.Duration) (historyservice.HistoryServiceClient, error)
+		NewMatchingClientWithTimeout(namespaceIDToName NamespaceIDToNameFunc, timeout time.Duration, longPollTimeout time.Duration) (matchingservice.MatchingServiceClient, error)
+		NewRemoteFrontendClientWithTimeout(rpcAddress string, timeout time.Duration, longPollTimeout time.Duration) (grpc.ClientConnInterface, workflowservice.WorkflowServiceClient)
+		NewLocalFrontendClientWithTimeout(timeout time.Duration, longPollTimeout time.Duration) (grpc.ClientConnInterface, workflowservice.WorkflowServiceClient, error)
+		NewRemoteAdminClientWithTimeout(rpcAddress string, timeout time.Duration, largeTimeout time.Duration) adminservice.AdminServiceClient
+		NewLocalAdminClientWithTimeout(timeout time.Duration, largeTimeout time.Duration) (adminservice.AdminServiceClient, error)
+		NewRemoteOperatorClientWithTimeout(rpcAddress string, timeout time.Duration) operatorservice.OperatorServiceClient
+		NewLocalOperatorClientWithTimeout(timeout time.Duration) (operatorservice.OperatorServiceClient, error)
+	}
+
+	// FactoryProvider can be used to provide a customized client Factory implementation.
+	FactoryProvider interface {
+		NewFactory(
+			rpcFactory common.RPCFactory,
+			monitor membership.Monitor,
+			metricsHandler metrics.Handler,
+			dc *dynamicconfig.Collection,
+			testHooks testhooks.TestHooks,
+			numberOfHistoryShards int32,
+			logger log.Logger,
+			throttledLogger log.Logger,
+		) Factory
+	}
+
+	// NamespaceIDToNameFunc maps a namespaceID to namespace name. Returns error when mapping is not possible.
+	NamespaceIDToNameFunc func(id namespace.ID) (namespace.Name, error)
+
+	rpcClientFactory struct {
+		rpcFactory            common.RPCFactory
+		monitor               membership.Monitor
+		metricsHandler        metrics.Handler
+		dynConfig             *dynamicconfig.Collection
+		testHooks             testhooks.TestHooks
+		numberOfHistoryShards int32
+		logger                log.Logger
+		throttledLogger       log.Logger
+	}
+
+	factoryProviderImpl struct {
+	}
+
+	serviceKeyResolverImpl struct {
+		resolver membership.ServiceResolver
+	}
+)
+
+// NewFactoryProvider creates a default implementation of FactoryProvider.
+func NewFactoryProvider() FactoryProvider {
+	return &factoryProviderImpl{}
+}
+
+// NewFactory creates an instance of client factory that knows how to dispatch RPC calls.
+func (p *factoryProviderImpl) NewFactory(
+	rpcFactory common.RPCFactory,
+	monitor membership.Monitor,
+	metricsHandler metrics.Handler,
+	dc *dynamicconfig.Collection,
+	testHooks testhooks.TestHooks,
+	numberOfHistoryShards int32,
+	logger log.Logger,
+	throttledLogger log.Logger,
+) Factory {
+	return &rpcClientFactory{
+		rpcFactory:            rpcFactory,
+		monitor:               monitor,
+		metricsHandler:        metricsHandler,
+		dynConfig:             dc,
+		testHooks:             testHooks,
+		numberOfHistoryShards: numberOfHistoryShards,
+		logger:                logger,
+		throttledLogger:       throttledLogger,
+	}
+}
+
+func (cf *rpcClientFactory) NewHistoryClientWithTimeout(timeout time.Duration) (historyservice.HistoryServiceClient, error) {
+	resolver, err := cf.monitor.GetResolver(primitives.HistoryService)
+	if err != nil {
+		return nil, err
+	}
+	client := history.NewClient(
+		cf.dynConfig,
+		resolver,
+		cf.logger,
+		cf.numberOfHistoryShards,
+		cf.rpcFactory,
+		timeout,
+	)
+	if cf.metricsHandler != nil {
+		client = history.NewMetricClient(client, cf.metricsHandler, cf.logger, cf.throttledLogger)
+	}
+	return client, nil
+}
+
+func (cf *rpcClientFactory) NewMatchingClientWithTimeout(
+	namespaceIDToName NamespaceIDToNameFunc,
+	timeout time.Duration,
+	longPollTimeout time.Duration,
+) (matchingservice.MatchingServiceClient, error) {
+	resolver, err := cf.monitor.GetResolver(primitives.MatchingService)
+	if err != nil {
+		return nil, err
+	}
+
+	keyResolver := newServiceKeyResolver(resolver)
+	clientProvider := func(clientKey string) (any, func() error, error) {
+		connection := cf.rpcFactory.CreateMatchingGRPCConnection(clientKey)
+		return matchingservice.NewMatchingServiceClient(connection), connection.Close, nil
+	}
+	client := matching.NewClient(
+		timeout,
+		longPollTimeout,
+		common.NewClientCache(keyResolver, clientProvider, cf.logger),
+		cf.metricsHandler,
+		cf.logger,
+		matching.NewLoadBalancer(namespaceIDToName, cf.dynConfig, cf.testHooks),
+		dynamicconfig.MatchingSpreadRoutingBatchSize.Get(cf.dynConfig),
+		resolver,
+		dynamicconfig.MatchingConnectionCloseDelay.Get(cf.dynConfig),
+	)
+
+	if cf.metricsHandler != nil {
+		client = matching.NewMetricClient(client, cf.metricsHandler, cf.logger, cf.throttledLogger)
+	}
+	return client, nil
+
+}
+
+func (cf *rpcClientFactory) NewRemoteFrontendClientWithTimeout(
+	rpcAddress string,
+	timeout time.Duration,
+	longPollTimeout time.Duration,
+) (grpc.ClientConnInterface, workflowservice.WorkflowServiceClient) {
+	connection := cf.rpcFactory.CreateRemoteFrontendGRPCConnection(rpcAddress)
+	client := workflowservice.NewWorkflowServiceClient(connection)
+	return connection, cf.newFrontendClient(client, timeout, longPollTimeout)
+}
+
+func (cf *rpcClientFactory) NewLocalFrontendClientWithTimeout(
+	timeout time.Duration,
+	longPollTimeout time.Duration,
+) (grpc.ClientConnInterface, workflowservice.WorkflowServiceClient, error) {
+	connection := cf.rpcFactory.CreateLocalFrontendGRPCConnection()
+	client := workflowservice.NewWorkflowServiceClient(connection)
+	return connection, cf.newFrontendClient(client, timeout, longPollTimeout), nil
+}
+
+func (cf *rpcClientFactory) NewRemoteAdminClientWithTimeout(
+	rpcAddress string,
+	timeout time.Duration,
+	largeTimeout time.Duration,
+) adminservice.AdminServiceClient {
+	connection := cf.rpcFactory.CreateRemoteFrontendGRPCConnection(rpcAddress)
+	client := adminservice.NewAdminServiceClient(connection)
+	return cf.newAdminClient(client, timeout, largeTimeout)
+}
+
+func (cf *rpcClientFactory) NewLocalAdminClientWithTimeout(
+	timeout time.Duration,
+	longPollTimeout time.Duration,
+) (adminservice.AdminServiceClient, error) {
+	connection := cf.rpcFactory.CreateLocalFrontendGRPCConnection()
+	client := adminservice.NewAdminServiceClient(connection)
+	return cf.newAdminClient(client, timeout, longPollTimeout), nil
+}
+
+func (cf *rpcClientFactory) newAdminClient(
+	client adminservice.AdminServiceClient,
+	timeout time.Duration,
+	longPollTimeout time.Duration,
+) adminservice.AdminServiceClient {
+	client = admin.NewClient(timeout, longPollTimeout, client)
+	if cf.metricsHandler != nil {
+		client = admin.NewMetricClient(client, cf.metricsHandler, cf.throttledLogger)
+	}
+	return client
+}
+
+func (cf *rpcClientFactory) newFrontendClient(
+	client workflowservice.WorkflowServiceClient,
+	timeout time.Duration,
+	longPollTimeout time.Duration,
+) workflowservice.WorkflowServiceClient {
+	client = frontend.NewClient(timeout, longPollTimeout, client)
+	if cf.metricsHandler != nil {
+		client = frontend.NewMetricClient(client, cf.metricsHandler, cf.throttledLogger)
+	}
+	return client
+}
+
+func (cf *rpcClientFactory) NewRemoteOperatorClientWithTimeout(
+	rpcAddress string,
+	timeout time.Duration,
+) operatorservice.OperatorServiceClient {
+	connection := cf.rpcFactory.CreateRemoteFrontendGRPCConnection(rpcAddress)
+	client := operatorservice.NewOperatorServiceClient(connection)
+	return cf.newOperatorClient(client, timeout)
+}
+
+func (cf *rpcClientFactory) NewLocalOperatorClientWithTimeout(
+	timeout time.Duration,
+) (operatorservice.OperatorServiceClient, error) {
+	connection := cf.rpcFactory.CreateLocalFrontendGRPCConnection()
+	client := operatorservice.NewOperatorServiceClient(connection)
+	return cf.newOperatorClient(client, timeout), nil
+}
+
+func (cf *rpcClientFactory) newOperatorClient(
+	client operatorservice.OperatorServiceClient,
+	timeout time.Duration,
+) operatorservice.OperatorServiceClient {
+	client = operator.NewClient(timeout, client)
+	if cf.metricsHandler != nil {
+		client = operator.NewMetricClient(client, cf.metricsHandler, cf.throttledLogger)
+	}
+	return client
+}
+
+func newServiceKeyResolver(resolver membership.ServiceResolver) *serviceKeyResolverImpl {
+	return &serviceKeyResolverImpl{
+		resolver: resolver,
+	}
+}
+
+// Lookup returns the address for a node within a batch. key contains the key (including batch
+// number), and index is the index within the batch. If not using batches, index should be 0.
+// Note that Lookup(key) and LookupN(key, n)[0] are equal.
+func (r *serviceKeyResolverImpl) Lookup(key string, index int) (string, error) {
+	hosts := r.resolver.LookupN(key, index+1)
+	if len(hosts) == 0 {
+		return "", membership.ErrInsufficientHosts
+	}
+	if index >= len(hosts) {
+		index %= len(hosts)
+	}
+	return hosts[index].GetAddress(), nil
+}
+
+func (r *serviceKeyResolverImpl) GetAllAddresses() ([]string, error) {
+	var all []string
+
+	for _, host := range r.resolver.Members() {
+		all = append(all, host.GetAddress())
+	}
+
+	return all, nil
+}

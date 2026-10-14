@@ -1,0 +1,160 @@
+// Package wci contains the implementation for the worker controller instances
+package wci
+
+import (
+	"go.uber.org/fx"
+
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workercomponent"
+	computeprovider "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/compute_provider"
+	"github.com/superdurable/xtemporal/common"
+	"github.com/superdurable/xtemporal/common/cluster"
+	"github.com/superdurable/xtemporal/common/config"
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/common/log"
+	"github.com/superdurable/xtemporal/common/membership"
+	"github.com/superdurable/xtemporal/common/metrics"
+	"github.com/superdurable/xtemporal/common/namespace"
+	"github.com/superdurable/xtemporal/common/namespace/nsregistry"
+	"github.com/superdurable/xtemporal/common/persistence"
+	persistenceClient "github.com/superdurable/xtemporal/common/persistence/client"
+	"github.com/superdurable/xtemporal/common/persistence/serialization"
+	"github.com/superdurable/xtemporal/common/pprof"
+	"github.com/superdurable/xtemporal/common/resource"
+	"github.com/superdurable/xtemporal/common/sdk"
+	"github.com/superdurable/xtemporal/service/worker"
+	workercommon "github.com/superdurable/xtemporal/service/worker/common"
+	"github.com/superdurable/xtemporal/temporal"
+)
+
+var Module = fx.Options(
+	serialization.Module,
+	temporal.ServiceTracingModule,
+	dynamicconfig.Module,
+	pprof.Module,
+	resource.DefaultOptions,
+	fx.Provide(resource.HostNameProvider),
+	fx.Provide(ThrottledLoggerRpsFnProvider),
+	membership.GRPCResolverModule,
+
+	fx.Provide(persistenceClient.ClusterNameProvider),
+	fx.Provide(persistenceClient.HealthSignalAggregatorProvider),
+	fx.Provide(persistenceClient.EnableDataLossMetricsProvider),
+	fx.Provide(newMetadataManager, newClusterMetadataManager),
+
+	fx.Provide(resource.ClientFactoryProvider),
+	fx.Provide(namespace.NewDefaultReplicationResolverFactory),
+	fx.Provide(resource.NamespaceRegistryProvider),
+	fx.Provide(func() namespace.NamespaceStateChangedFn { return nsregistry.DefaultNamespaceStateChanged }),
+	nsregistry.RegistryLifetimeHooksModule,
+	cluster.MetadataLifetimeHooksModule,
+
+	fx.Provide(ConfigProvider),
+	fx.Provide(WorkerConfigProvider),
+	fx.Provide(ServiceResolverProvider),
+	fx.Provide(NewService),
+	fx.Provide(PerNamespaceWorkerManagerProvider),
+	fx.Provide(func() computeprovider.GCPImpersonationChainProvider {
+		return computeprovider.NoopGCPImpersonationChainProvider{}
+	}),
+	// Install the (possibly fx.Decorate-replaced) chain provider into the
+	// compute_provider package singleton, where the GCP Cloud Run provider
+	// reads it. fx resolves the decorated value before this Invoke fires.
+	fx.Invoke(func(p computeprovider.GCPImpersonationChainProvider) {
+		computeprovider.SetGCPImpersonationChainProvider(p)
+	}),
+	fx.Invoke(ServiceLifetimeHooks),
+)
+
+func ServiceResolverProvider(
+	membershipMonitor membership.Monitor,
+) (membership.ServiceResolver, error) {
+	return membershipMonitor.GetResolver(ServiceName)
+}
+
+func ConfigProvider(
+	dc *dynamicconfig.Collection,
+	persistenceConfig *config.Persistence,
+) *Config {
+	return NewConfig(
+		dc,
+		persistenceConfig,
+	)
+}
+
+func WorkerConfigProvider(config *Config) *worker.Config {
+	return &config.Config
+}
+
+func newMetadataManager(
+	store persistence.MetadataStore,
+	serializer serialization.Serializer,
+	logger log.Logger,
+	clusterName persistenceClient.ClusterName,
+	metricsHandler metrics.Handler,
+	healthSignals persistence.HealthSignalAggregator,
+	enableDataLossMetrics persistenceClient.EnableDataLossMetrics,
+) (persistence.MetadataManager, error) {
+	result := persistence.NewMetadataManagerImpl(store, serializer, logger, string(clusterName))
+	// if f.systemRateLimiter != nil && f.namespaceRateLimiter != nil {
+	// 	result = persistence.NewMetadataPersistenceRateLimitedClient(result, f.systemRateLimiter, f.namespaceRateLimiter, f.shardRateLimiter, f.logger)
+	// }
+	if metricsHandler != nil && healthSignals != nil {
+		result = persistence.NewMetadataPersistenceMetricsClient(result, metricsHandler, healthSignals, logger, dynamicconfig.BoolPropertyFn(enableDataLossMetrics))
+	}
+	result = persistence.NewMetadataPersistenceRetryableClient(result, common.CreatePersistenceClientRetryPolicy(), persistenceClient.IsPersistenceTransientError)
+	return result, nil
+}
+
+func newClusterMetadataManager(
+	store persistence.ClusterMetadataStore,
+	serializer serialization.Serializer,
+	logger log.Logger,
+	clusterName persistenceClient.ClusterName,
+	metricsHandler metrics.Handler,
+	healthSignals persistence.HealthSignalAggregator,
+	enableDataLossMetrics persistenceClient.EnableDataLossMetrics,
+) (persistence.ClusterMetadataManager, error) {
+	result := persistence.NewClusterMetadataManagerImpl(store, serializer, string(clusterName), logger)
+	// if f.systemRateLimiter != nil && f.namespaceRateLimiter != nil {
+	// 	result = persistence.NewClusterMetadataPersistenceRateLimitedClient(result, f.systemRateLimiter, f.namespaceRateLimiter, f.shardRateLimiter, f.logger)
+	// }
+	if metricsHandler != nil && healthSignals != nil {
+		result = persistence.NewClusterMetadataPersistenceMetricsClient(result, metricsHandler, healthSignals, logger, dynamicconfig.BoolPropertyFn(enableDataLossMetrics))
+	}
+	result = persistence.NewClusterMetadataPersistenceRetryableClient(result, common.CreatePersistenceClientRetryPolicy(), persistenceClient.IsPersistenceTransientError)
+	return result, nil
+}
+
+func ThrottledLoggerRpsFnProvider(serviceConfig *worker.Config) resource.ThrottledLoggerRpsFn {
+	return func() float64 { return float64(serviceConfig.ThrottledLogRPS()) }
+}
+
+func PerNamespaceWorkerManagerProvider(
+	logger log.Logger,
+	sdkClientFactory sdk.ClientFactory,
+	namespaceRegistry namespace.Registry,
+	hostName resource.HostName,
+	config *worker.Config,
+	clusterMetadata cluster.Metadata,
+	dynamicConfig *dynamicconfig.Collection,
+) *worker.PerNamespaceWorkerManager {
+	components := []workercommon.PerNSWorkerComponent{
+		workercomponent.NewWCIPerNSWorkerComponent(dynamicConfig, sdkClientFactory),
+	}
+
+	return worker.NewPerNamespaceWorkerManager(
+		logger,
+		sdkClientFactory,
+		namespaceRegistry,
+		hostName,
+		config,
+		clusterMetadata,
+		components,
+		client.WorkerControllerPerNSWorkerTaskQueue,
+	)
+}
+
+func ServiceLifetimeHooks(lc fx.Lifecycle, svc *Service) {
+	lc.Append(fx.StartStopHook(svc.Start, svc.Stop))
+}
