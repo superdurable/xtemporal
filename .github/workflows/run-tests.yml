@@ -41,7 +41,6 @@ jobs:
         shard: [1, 2, 3]
     env:
       GOMAXPROCS: 2
-      TEST_TIMEOUT: 25m
       CGO_ENABLED: 1
     steps:
       - uses: actions/checkout@v4
@@ -62,14 +61,20 @@ jobs:
           test -s unit-packages.txt
           printf 'packages=%s\n' "$(paste -sd' ' unit-packages.txt)" >> "$GITHUB_OUTPUT"
       - name: Run unit tests
-        run: make unit-test UNIT_TEST_DIRS="${{ steps.packages.outputs.packages }}"
+        run: make unit-test-coverage UNIT_TEST_DIRS="${{ steps.packages.outputs.packages }}" TEST_PARALLEL_FLAGS='-p 1' TEST_TIMEOUT=20m TEST_RUNNER_TIMEOUT=30m
+      - name: Upload JUnit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-junit-${{ matrix.shard }}
+          path: .testoutput/junit.*.xml
+          if-no-files-found: ignore
 
   integration-test:
     name: PostgreSQL persistence and schema tests
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     env:
-      TEST_TIMEOUT: 25m
       CGO_ENABLED: 1
     steps:
       - uses: actions/checkout@v4
@@ -80,7 +85,14 @@ jobs:
       - name: Start PostgreSQL
         run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
       - name: Run PostgreSQL persistence and schema tests
-        run: make integration-test INTEGRATION_TEST_DIRS='./common/persistence/tests ./tools/tests' TEST_ARGS=-run=^Test.*PGX
+        run: make integration-test-coverage INTEGRATION_TEST_DIRS='./common/persistence/tests ./tools/tests' TEST_ARGS=-run=^Test.*PGX TEST_PARALLEL_FLAGS='-p 1' TEST_TIMEOUT=20m TEST_RUNNER_TIMEOUT=30m
+      - name: Upload JUnit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgres-persistence-junit
+          path: .testoutput/junit.*.xml
+          if-no-files-found: ignore
       - name: Show PostgreSQL logs
         if: failure()
         run: docker compose -f "$DOCKER_COMPOSE_FILE" logs --no-color postgresql
@@ -115,7 +127,14 @@ jobs:
           /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database paradedb_update --plugin paradedb setup-schema --version 0.0
           /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database paradedb_update --plugin paradedb update-schema --schema-name paradedb/visibility
       - name: Run ParadeDB visibility persistence suite
-        run: go test -tags test_dep -timeout 20m -count=1 ./common/persistence/tests -run '^TestParadeDBVisibilityPersistence$'
+        run: make integration-test-coverage INTEGRATION_TEST_DIRS='./common/persistence/tests' TEST_ARGS='-run=^TestParadeDBVisibilityPersistence$' TEST_PARALLEL_FLAGS='-p 1' TEST_TIMEOUT=20m TEST_RUNNER_TIMEOUT=30m
+      - name: Upload JUnit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paradedb-persistence-junit
+          path: .testoutput/junit.*.xml
+          if-no-files-found: ignore
       - name: Show ParadeDB logs
         if: failure()
         run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml logs --no-color paradedb
@@ -147,6 +166,13 @@ jobs:
       - name: Start PostgreSQL
         run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
       - run: ./.github/scripts/run-functional-shard.sh postgres12_pgx
+      - name: Upload JUnit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgres-functional-junit-${{ matrix.shard }}
+          path: .testoutput/junit.*.xml
+          if-no-files-found: ignore
       - name: Upload memory diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
@@ -186,6 +212,13 @@ jobs:
         run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml up --detach --wait paradedb
       - name: Run functional tests
         run: ./.github/scripts/run-functional-shard.sh paradedb
+      - name: Upload JUnit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paradedb-functional-junit-${{ matrix.shard }}
+          path: .testoutput/junit.*.xml
+          if-no-files-found: ignore
       - name: Upload memory diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
