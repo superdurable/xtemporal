@@ -7,8 +7,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/client/history"
@@ -18,6 +16,8 @@ import (
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/membership"
 	"github.com/superdurable/xtemporal/common/testing/nettest"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc"
 )

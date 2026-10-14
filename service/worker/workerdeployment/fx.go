@@ -4,9 +4,6 @@ import (
 	"context"
 	"time"
 
-	wciclient "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
-	sdkworker "go.temporal.io/sdk/worker"
-	"go.temporal.io/sdk/workflow"
 	deploymentspb "github.com/superdurable/xtemporal/api/deployment/v1"
 	"github.com/superdurable/xtemporal/common/cache"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
@@ -17,7 +14,10 @@ import (
 	"github.com/superdurable/xtemporal/common/resource"
 	"github.com/superdurable/xtemporal/common/sdk"
 	"github.com/superdurable/xtemporal/common/testing/testhooks"
+	wciclient "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
 	workercommon "github.com/superdurable/xtemporal/service/worker/common"
+	sdkworker "go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 	"go.uber.org/fx"
 )
 

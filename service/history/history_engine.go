@@ -5,9 +5,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
-	commonpb "go.temporal.io/api/common/v1"
-	historypb "go.temporal.io/api/history/v1"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
@@ -100,6 +97,9 @@ import (
 	"github.com/superdurable/xtemporal/service/history/workflow"
 	wcache "github.com/superdurable/xtemporal/service/history/workflow/cache"
 	"github.com/superdurable/xtemporal/service/worker/workerdeployment"
+	"go.opentelemetry.io/otel/trace"
+	commonpb "go.temporal.io/api/common/v1"
+	historypb "go.temporal.io/api/history/v1"
 )
 
 type (

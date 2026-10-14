@@ -7,13 +7,13 @@ import (
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"github.com/stretchr/testify/require"
-	commonpb "go.temporal.io/api/common/v1"
-	historypb "go.temporal.io/api/history/v1"
 	chasmnexus "github.com/superdurable/xtemporal/chasm/lib/nexusoperation"
 	"github.com/superdurable/xtemporal/common/metrics/metricstest"
 	"github.com/superdurable/xtemporal/components/nexusoperations"
 	"github.com/superdurable/xtemporal/service/history/hsm"
 	"github.com/superdurable/xtemporal/service/history/hsm/hsmtest"
+	commonpb "go.temporal.io/api/common/v1"
+	historypb "go.temporal.io/api/history/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

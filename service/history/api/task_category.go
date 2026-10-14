@@ -3,8 +3,8 @@ package api
 import (
 	"fmt"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/service/history/tasks"
+	"go.temporal.io/api/serviceerror"
 )
 
 func GetTaskCategory(categoryID int, registry tasks.TaskCategoryRegistry) (tasks.Category, error) {

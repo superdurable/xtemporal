@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/log"
 	p "github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/persistence/nosql/nosqlplugin/cassandra/gocql"
+	"go.temporal.io/api/serviceerror"
 )
 
 const constMetadataPartition = 0

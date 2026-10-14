@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
@@ -15,6 +14,7 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store/query"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 var elasticsearchQueryInvalidComparisonCounter = metrics.NewCounterDef("elasticsearch_query_invalid_comparison")

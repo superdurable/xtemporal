@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/suite"
-	schedulepb "go.temporal.io/api/schedule/v1"
 	"github.com/superdurable/xtemporal/common/testing/protorequire"
+	schedulepb "go.temporal.io/api/schedule/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

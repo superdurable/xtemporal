@@ -3,10 +3,10 @@ package transitionhistory
 import (
 	"fmt"
 
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/service/history/consts"
+	"go.temporal.io/api/serviceerror"
 )
 
 func CopyVersionedTransitions(

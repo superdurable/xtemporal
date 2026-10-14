@@ -3,7 +3,6 @@ package pauseactivity
 import (
 	"context"
 
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/definition"
@@ -12,6 +11,7 @@ import (
 	"github.com/superdurable/xtemporal/service/history/consts"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
 	"github.com/superdurable/xtemporal/service/history/workflow"
+	"go.temporal.io/api/workflowservice/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

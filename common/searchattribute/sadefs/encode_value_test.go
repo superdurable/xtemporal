@@ -9,9 +9,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/common/payload"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/converter"
-	"github.com/superdurable/xtemporal/common/payload"
 )
 
 func Test_DecodeValue_Success(t *testing.T) {

@@ -4,11 +4,11 @@ import (
 	"context"
 	"database/sql"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin"
 	"github.com/superdurable/xtemporal/common/primitives"
+	"go.temporal.io/api/serviceerror"
 )
 
 type userDataStore struct {

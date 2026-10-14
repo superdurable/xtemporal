@@ -1,9 +1,9 @@
 package interceptor
 
 import (
+	"github.com/superdurable/xtemporal/common/namespace"
 	"go.temporal.io/api/serviceerror"
 	"go.temporal.io/api/workflowservice/v1"
-	"github.com/superdurable/xtemporal/common/namespace"
 )
 
 // gRPC method request must implement either NamespaceNameGetter or NamespaceIDGetter

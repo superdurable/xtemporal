@@ -12,9 +12,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	"go.temporal.io/api/operatorservice/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
@@ -44,6 +41,9 @@ import (
 	"github.com/superdurable/xtemporal/temporal"
 	"github.com/superdurable/xtemporal/temporal/environment"
 	"github.com/superdurable/xtemporal/tests/testutils"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.temporal.io/api/operatorservice/v1"
+	"go.temporal.io/api/workflowservice/v1"
 	"go.uber.org/multierr"
 )
 

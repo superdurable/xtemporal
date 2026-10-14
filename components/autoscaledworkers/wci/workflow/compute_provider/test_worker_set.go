@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	computepb "go.temporal.io/api/compute/v1"
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/sdk"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
+	computepb "go.temporal.io/api/compute/v1"
 )
 
 const (

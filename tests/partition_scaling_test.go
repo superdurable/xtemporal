@@ -9,9 +9,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	taskqueuespb "github.com/superdurable/xtemporal/api/taskqueue/v1"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
@@ -20,6 +17,9 @@ import (
 	"github.com/superdurable/xtemporal/common/testing/taskpoller"
 	"github.com/superdurable/xtemporal/common/testing/testvars"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	enumspb "go.temporal.io/api/enums/v1"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 func scalerEnvOptions(dcPartitions int) []testcore.TestOption {

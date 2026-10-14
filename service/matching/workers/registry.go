@@ -1,9 +1,9 @@
 package workers
 
 import (
+	"github.com/superdurable/xtemporal/common/namespace"
 	commonpb "go.temporal.io/api/common/v1"
 	workerpb "go.temporal.io/api/worker/v1"
-	"github.com/superdurable/xtemporal/common/namespace"
 )
 
 type (

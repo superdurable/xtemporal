@@ -5,10 +5,10 @@ import (
 	"strings"
 	"testing"
 
-	sdkclient "go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/workflow"
 	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	sdkclient "go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/workflow"
 )
 
 // WorkflowTypeEncodingSuite verifies that workflow type names containing

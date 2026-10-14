@@ -11,18 +11,18 @@ import (
 	"time"
 
 	"github.com/dgryski/go-farm"
-	"github.com/temporalio/ringpop-go"
-	"github.com/temporalio/ringpop-go/events"
-	"github.com/temporalio/ringpop-go/hashring"
-	rpmembership "github.com/temporalio/ringpop-go/membership"
-	"github.com/temporalio/ringpop-go/swim"
-	"github.com/temporalio/tchannel-go"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/membership"
 	"github.com/superdurable/xtemporal/common/primitives"
 	"github.com/superdurable/xtemporal/common/util"
+	"github.com/temporalio/ringpop-go"
+	"github.com/temporalio/ringpop-go/events"
+	"github.com/temporalio/ringpop-go/hashring"
+	rpmembership "github.com/temporalio/ringpop-go/membership"
+	"github.com/temporalio/ringpop-go/swim"
+	"github.com/temporalio/tchannel-go"
 )
 
 const (

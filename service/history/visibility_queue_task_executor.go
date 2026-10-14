@@ -5,9 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/definition"
@@ -26,6 +23,9 @@ import (
 	"github.com/superdurable/xtemporal/service/history/queues"
 	"github.com/superdurable/xtemporal/service/history/tasks"
 	wcache "github.com/superdurable/xtemporal/service/history/workflow/cache"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 type (

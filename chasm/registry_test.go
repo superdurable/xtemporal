@@ -7,10 +7,10 @@ import (
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	enumspb "go.temporal.io/api/enums/v1"
 	"go.uber.org/mock/gomock"
 )
 

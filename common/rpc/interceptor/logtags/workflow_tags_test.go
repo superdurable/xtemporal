@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	tokenspb "github.com/superdurable/xtemporal/api/token/v1"
@@ -14,6 +12,8 @@ import (
 	"github.com/superdurable/xtemporal/common/rpc/interceptor/logtags"
 	"github.com/superdurable/xtemporal/common/tasktoken"
 	"github.com/superdurable/xtemporal/common/testing/testvars"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 func TestExtract(t *testing.T) {

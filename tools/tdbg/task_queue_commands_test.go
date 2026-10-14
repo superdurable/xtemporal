@@ -7,9 +7,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/urfave/cli/v2"
 	"go.temporal.io/api/workflowservice/v1"
-	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc"
 )

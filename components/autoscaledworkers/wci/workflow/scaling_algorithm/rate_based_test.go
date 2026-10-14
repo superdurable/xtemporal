@@ -9,7 +9,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
 	computeprovider "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/compute_provider"
 	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 )

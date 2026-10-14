@@ -4,8 +4,6 @@ import (
 	"context"
 	"time"
 
-	otellog "go.opentelemetry.io/otel/log"
-	commonpb "go.temporal.io/api/common/v1"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	clockspb "github.com/superdurable/xtemporal/api/clock/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
@@ -30,6 +28,8 @@ import (
 	"github.com/superdurable/xtemporal/service/history/events"
 	"github.com/superdurable/xtemporal/service/history/hsm"
 	"github.com/superdurable/xtemporal/service/history/tasks"
+	otellog "go.opentelemetry.io/otel/log"
+	commonpb "go.temporal.io/api/common/v1"
 )
 
 //go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination shard_context_mock.go

@@ -1,9 +1,9 @@
 package api
 
 import (
+	"github.com/superdurable/xtemporal/common"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	"github.com/superdurable/xtemporal/common"
 )
 
 // GenerateStartedEventRefLink builds a Link pointing to the WORKFLOW_EXECUTION_STARTED event.

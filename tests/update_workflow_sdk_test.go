@@ -6,6 +6,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
+	"github.com/superdurable/xtemporal/tests/testcore"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/serviceerror"
@@ -15,9 +18,6 @@ import (
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
-	"github.com/superdurable/xtemporal/common/dynamicconfig"
-	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
-	"github.com/superdurable/xtemporal/tests/testcore"
 )
 
 var (

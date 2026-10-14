@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	nexusoperationpb "github.com/superdurable/xtemporal/chasm/lib/nexusoperation/gen/nexusoperationpb/v1"
@@ -20,6 +19,7 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/resource"
 	"github.com/superdurable/xtemporal/common/rpc"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/fx"
 )
 

@@ -7,11 +7,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
 	deploymentspb "github.com/superdurable/xtemporal/api/deployment/v1"
 	"github.com/superdurable/xtemporal/common/cache"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/metrics/metricstest"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 func TestRoutingInfoCache_GetPut(t *testing.T) {

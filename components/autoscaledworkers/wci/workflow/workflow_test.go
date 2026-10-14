@@ -6,12 +6,11 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-
-	enumspb "go.temporal.io/api/enums/v1"
+	"github.com/superdurable/xtemporal/common/sdk"
 	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
+	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/testsuite"
 	sdkworkflow "go.temporal.io/sdk/workflow"
-	"github.com/superdurable/xtemporal/common/sdk"
 )
 
 // TestDeleteInstanceCancelsPendingTimer covers the race this fix targets: a delete

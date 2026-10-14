@@ -7,8 +7,8 @@ import (
 	"errors"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/primitives"
+	"go.temporal.io/api/serviceerror"
 )
 
 // ErrUnknownService is thrown for a service that is not tracked by this instance

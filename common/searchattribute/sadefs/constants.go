@@ -6,8 +6,8 @@ import (
 	"regexp"
 	"strings"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 const (

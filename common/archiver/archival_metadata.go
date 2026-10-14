@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strings"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 type (

@@ -7,11 +7,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"github.com/uber-go/tally/v4"
-	enumspb "go.temporal.io/api/enums/v1"
-	namespacepb "go.temporal.io/api/namespace/v1"
-	replicationpb "go.temporal.io/api/replication/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/superdurable/xtemporal/api/adminservicemock/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
@@ -25,6 +20,11 @@ import (
 	"github.com/superdurable/xtemporal/common/namespace/nsreplication"
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/service/history/shard"
+	"github.com/uber-go/tally/v4"
+	enumspb "go.temporal.io/api/enums/v1"
+	namespacepb "go.temporal.io/api/namespace/v1"
+	replicationpb "go.temporal.io/api/replication/v1"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/mock/gomock"
 )
 

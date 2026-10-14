@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"github.com/uber-go/tally/v4"
 	"github.com/superdurable/xtemporal/common/log"
+	"github.com/uber-go/tally/v4"
 	"go.uber.org/mock/gomock"
 )
 

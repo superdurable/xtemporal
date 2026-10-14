@@ -5,11 +5,6 @@ import (
 	"sync"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/sdk/activity"
-	sdkclient "go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/worker"
-	"go.temporal.io/sdk/workflow"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
@@ -30,6 +25,11 @@ import (
 	"github.com/superdurable/xtemporal/common/sdk"
 	"github.com/superdurable/xtemporal/service/worker/scanner/build_ids"
 	"github.com/superdurable/xtemporal/service/worker/scanner/scheduleinvariants"
+	"go.temporal.io/api/serviceerror"
+	"go.temporal.io/sdk/activity"
+	sdkclient "go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 )
 
 type (

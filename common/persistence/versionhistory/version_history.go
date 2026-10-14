@@ -1,9 +1,9 @@
 package versionhistory
 
 import (
-	"go.temporal.io/api/serviceerror"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
 	"github.com/superdurable/xtemporal/common"
+	"go.temporal.io/api/serviceerror"
 )
 
 // NewVersionHistory create a new instance of VersionHistory.

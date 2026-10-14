@@ -16,9 +16,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
-	sdkclient "go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/workflow"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
@@ -37,6 +34,9 @@ import (
 	"github.com/superdurable/xtemporal/tests/testutils"
 	"github.com/superdurable/xtemporal/tools/tdbg"
 	"github.com/superdurable/xtemporal/tools/tdbg/tdbgtest"
+	enumspb "go.temporal.io/api/enums/v1"
+	sdkclient "go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/workflow"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )

@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/uber-go/tally/v4"
 	"github.com/superdurable/xtemporal/common/log"
+	"github.com/uber-go/tally/v4"
 )
 
 // defaultTagsCacheMaxSize is the default upper bound on cached scope/handler entries.

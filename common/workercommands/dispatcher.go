@@ -7,12 +7,6 @@ import (
 	"time"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	nexuspb "go.temporal.io/api/nexus/v1"
-	workerservicepb "go.temporal.io/api/nexusservices/workerservice/v1"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
-	workerpb "go.temporal.io/api/worker/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	"github.com/superdurable/xtemporal/common/debug"
 	"github.com/superdurable/xtemporal/common/log"
@@ -22,6 +16,12 @@ import (
 	"github.com/superdurable/xtemporal/common/resource"
 	"github.com/superdurable/xtemporal/service/history/configs"
 	"github.com/superdurable/xtemporal/service/history/tasks"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	nexuspb "go.temporal.io/api/nexus/v1"
+	workerservicepb "go.temporal.io/api/nexusservices/workerservice/v1"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
+	workerpb "go.temporal.io/api/worker/v1"
 	"google.golang.org/protobuf/proto"
 )
 

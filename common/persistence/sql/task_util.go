@@ -5,8 +5,8 @@ import (
 	"math"
 
 	"github.com/dgryski/go-farm"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/primitives"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 func getPartitionForRangeHash(rangeHash uint32, totalPartitions uint32) uint32 {

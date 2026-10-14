@@ -5,9 +5,9 @@ import (
 	"math"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/backoff"
 	p "github.com/superdurable/xtemporal/common/persistence"
+	"go.temporal.io/api/serviceerror"
 )
 
 var (
