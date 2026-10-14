@@ -1,0 +1,85 @@
+name: Linters
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: linters-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-code:
+    name: Go lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GOMAXPROCS: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Run Go linters
+        run: make GOLANGCI_LINT_CONCURRENCY=2 GOLANGCI_LINT_FIX=false GOLANGCI_LINT_BASE_REV=origin/main lint-code
+
+  modules:
+    name: Go modules
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Check go mod tidy
+        run: |
+          go mod tidy
+          git diff --exit-code -- go.mod go.sum
+
+  imports:
+    name: Import formatting
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Check imports
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          make fmt-imports
+          git diff --name-only -- '*.go' | sort > /tmp/formatted-go-files
+          git diff --name-only "$BASE_SHA" HEAD -- '*.go' | sort > /tmp/changed-go-files
+          if comm -12 /tmp/formatted-go-files /tmp/changed-go-files | grep .; then
+            echo 'Changed Go files need import formatting.'
+            exit 1
+          fi
+
+  linters-succeed:
+    name: All Linters Succeed
+    if: always()
+    needs: [lint-code, modules, imports]
+    runs-on: ubuntu-24.04-arm
+    env:
+      RESULTS: ${{ toJSON(needs.*.result) }}
+    steps:
+      - name: Check results
+        run: |
+          if jq -e 'all(.[]; . == "success")' <<< "$RESULTS"; then
+            exit 0
+          fi
+          exit 1
