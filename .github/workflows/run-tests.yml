@@ -171,6 +171,8 @@ jobs:
         shard: [0, 1, 2]
     env:
       CGO_ENABLED: 1
+      GOMAXPROCS: 1
+      GOMEMLIMIT: 8GiB
       POSTGRES_PORT: 55432
       TEST_TOTAL_SHARDS: 3
       TEST_SHARD_INDEX: ${{ matrix.shard }}
@@ -183,7 +185,14 @@ jobs:
       - name: Start ParadeDB
         run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml up --detach --wait paradedb
       - name: Run functional tests
-        run: go test -tags disable_grpc_modules,test_dep -race -p 2 -parallel 1 -timeout 60m -count=1 ./tests -persistenceType=sql -persistenceDriver=paradedb
+        run: ./.github/scripts/run-functional-shard.sh paradedb
+      - name: Upload memory diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paradedb-functional-memory-${{ matrix.shard }}
+          path: .testoutput/memory/
+          if-no-files-found: ignore
       - name: Show ParadeDB logs
         if: failure()
         run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml logs --no-color paradedb
