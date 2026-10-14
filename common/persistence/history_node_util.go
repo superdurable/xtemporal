@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sort"
 
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common"
+	"go.temporal.io/api/serviceerror"
 )
 
 type (

@@ -3,9 +3,6 @@ package eventhandler
 import (
 	"context"
 
-	commonpb "go.temporal.io/api/common/v1"
-	historypb "go.temporal.io/api/history/v1"
-	"go.temporal.io/api/serviceerror"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	workflowspb "github.com/superdurable/xtemporal/api/workflow/v1"
@@ -15,6 +12,9 @@ import (
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/persistence/versionhistory"
 	"github.com/superdurable/xtemporal/service/history/shard"
+	commonpb "go.temporal.io/api/common/v1"
+	historypb "go.temporal.io/api/history/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 //go:generate mockgen -package $GOPACKAGE -source $GOFILE -destination history_events_handler_mock.go

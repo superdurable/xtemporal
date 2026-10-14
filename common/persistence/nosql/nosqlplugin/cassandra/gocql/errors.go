@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/gocql/gocql"
+	"github.com/superdurable/xtemporal/common/persistence"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/serviceerror"
-	"github.com/superdurable/xtemporal/common/persistence"
 )
 
 func ConvertError(

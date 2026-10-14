@@ -6,12 +6,12 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/tidwall/btree"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/clock"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/softassert"
 	"github.com/superdurable/xtemporal/common/util"
+	"github.com/tidwall/btree"
 )
 
 const (

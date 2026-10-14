@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"github.com/temporalio/omes/devserver"
 	"github.com/superdurable/xtemporal/common/headers"
+	"github.com/temporalio/omes/devserver"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

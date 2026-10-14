@@ -4,12 +4,6 @@ import (
 	"context"
 	"time"
 
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
-	updatepb "go.temporal.io/api/update/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
@@ -26,6 +20,12 @@ import (
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
 	"github.com/superdurable/xtemporal/service/history/workflow"
 	"github.com/superdurable/xtemporal/service/history/workflow/update"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
+	updatepb "go.temporal.io/api/update/v1"
+	"go.temporal.io/api/workflowservice/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 

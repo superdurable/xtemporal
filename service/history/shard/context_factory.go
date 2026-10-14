@@ -1,7 +1,6 @@
 package shard
 
 import (
-	otellog "go.opentelemetry.io/otel/log"
 	"github.com/superdurable/xtemporal/chasm"
 	chasmworkflow "github.com/superdurable/xtemporal/chasm/lib/workflow"
 	"github.com/superdurable/xtemporal/client"
@@ -23,6 +22,7 @@ import (
 	"github.com/superdurable/xtemporal/service/history/hsm"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
 	"github.com/superdurable/xtemporal/service/history/tasks"
+	otellog "go.opentelemetry.io/otel/log"
 	"go.uber.org/fx"
 )
 

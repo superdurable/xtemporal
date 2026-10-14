@@ -4,15 +4,15 @@ import (
 	"context"
 	"time"
 
+	"github.com/superdurable/xtemporal/common/log/tag"
+	"github.com/superdurable/xtemporal/service/worker/scanner/executions"
+	"github.com/superdurable/xtemporal/service/worker/scanner/history"
+	"github.com/superdurable/xtemporal/service/worker/scanner/taskqueue"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
-	"github.com/superdurable/xtemporal/common/log/tag"
-	"github.com/superdurable/xtemporal/service/worker/scanner/executions"
-	"github.com/superdurable/xtemporal/service/worker/scanner/history"
-	"github.com/superdurable/xtemporal/service/worker/scanner/taskqueue"
 )
 
 const (

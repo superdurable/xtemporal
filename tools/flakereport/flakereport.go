@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/urfave/cli/v2"
 	"github.com/superdurable/xtemporal/common/headers"
 	"github.com/superdurable/xtemporal/tools/common/github"
+	"github.com/urfave/cli/v2"
 )
 
 const (

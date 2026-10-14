@@ -8,6 +8,12 @@ import (
 	"sync"
 	"time"
 
+	deploymentspb "github.com/superdurable/xtemporal/api/deployment/v1"
+	"github.com/superdurable/xtemporal/api/matchingservice/v1"
+	"github.com/superdurable/xtemporal/common"
+	"github.com/superdurable/xtemporal/common/metrics"
+	"github.com/superdurable/xtemporal/common/namespace"
+	"github.com/superdurable/xtemporal/common/worker_versioning"
 	computepb "go.temporal.io/api/compute/v1"
 	deploymentpb "go.temporal.io/api/deployment/v1"
 	enumspb "go.temporal.io/api/enums/v1"
@@ -17,12 +23,6 @@ import (
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/log"
 	"go.temporal.io/sdk/temporal"
-	deploymentspb "github.com/superdurable/xtemporal/api/deployment/v1"
-	"github.com/superdurable/xtemporal/api/matchingservice/v1"
-	"github.com/superdurable/xtemporal/common"
-	"github.com/superdurable/xtemporal/common/metrics"
-	"github.com/superdurable/xtemporal/common/namespace"
-	"github.com/superdurable/xtemporal/common/worker_versioning"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

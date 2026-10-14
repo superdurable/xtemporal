@@ -7,10 +7,6 @@ import (
 	"time"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	nexuspb "go.temporal.io/api/nexus/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/chasm"
@@ -20,6 +16,10 @@ import (
 	commonnexus "github.com/superdurable/xtemporal/common/nexus"
 	"github.com/superdurable/xtemporal/common/nexus/nexusrpc"
 	"github.com/superdurable/xtemporal/common/resource"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	nexuspb "go.temporal.io/api/nexus/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 // startArgs holds the arguments needed to start a Nexus operation invocation.

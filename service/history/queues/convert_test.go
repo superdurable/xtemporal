@@ -8,10 +8,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/api/temporalproto"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/predicates"
 	"github.com/superdurable/xtemporal/service/history/tasks"
+	"go.temporal.io/api/temporalproto"
 )
 
 type (

@@ -2,10 +2,10 @@ package frontend
 
 import (
 	"github.com/google/uuid"
+	"github.com/superdurable/xtemporal/common/priorities"
 	commonpb "go.temporal.io/api/common/v1"
 	"go.temporal.io/api/serviceerror"
 	"go.temporal.io/api/workflowservice/v1"
-	"github.com/superdurable/xtemporal/common/priorities"
 )
 
 var (

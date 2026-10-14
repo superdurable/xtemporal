@@ -4,13 +4,13 @@ import (
 	"context"
 	"sort"
 
-	commonpb "go.temporal.io/api/common/v1"
-	historypb "go.temporal.io/api/history/v1"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/softassert"
+	commonpb "go.temporal.io/api/common/v1"
+	historypb "go.temporal.io/api/history/v1"
 )
 
 // ReadFullPageEvents reads a full page of history events from ExecutionManager. Due to storage format of V2 History

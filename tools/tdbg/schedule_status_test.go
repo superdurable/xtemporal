@@ -8,11 +8,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/service/worker/scheduler"
 	"github.com/superdurable/xtemporal/tools/tdbg"
 	"github.com/superdurable/xtemporal/tools/tdbg/tdbgtest"
+	"go.temporal.io/api/workflowservice/v1"
 	"google.golang.org/grpc"
 )
 

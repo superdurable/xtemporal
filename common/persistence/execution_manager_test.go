@@ -5,8 +5,6 @@ import (
 	"testing"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
@@ -19,6 +17,8 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/versionhistory"
 	"github.com/superdurable/xtemporal/common/testing/testlogger"
 	"github.com/superdurable/xtemporal/service/history/tasks"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/mock/gomock"
 )
 

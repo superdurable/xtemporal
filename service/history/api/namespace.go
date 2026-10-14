@@ -2,9 +2,9 @@ package api
 
 import (
 	"github.com/google/uuid"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/namespace"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	"go.temporal.io/api/serviceerror"
 )
 
 func GetActiveNamespace(

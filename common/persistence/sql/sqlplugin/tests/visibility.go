@@ -8,10 +8,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin"
 	"github.com/superdurable/xtemporal/common/primitives"
 	"github.com/superdurable/xtemporal/common/shuffle"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 type (

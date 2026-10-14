@@ -12,9 +12,9 @@ import (
 	"time"
 
 	"github.com/iancoleman/strcase"
+	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/serviceerror"
-	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 )
 
 var (

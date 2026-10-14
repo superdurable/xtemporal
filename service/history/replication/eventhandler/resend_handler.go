@@ -6,8 +6,6 @@ import (
 	"context"
 	"errors"
 
-	historypb "go.temporal.io/api/history/v1"
-	"go.temporal.io/api/serviceerror"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
 	"github.com/superdurable/xtemporal/client"
 	"github.com/superdurable/xtemporal/common"
@@ -22,6 +20,8 @@ import (
 	"github.com/superdurable/xtemporal/service/history/configs"
 	"github.com/superdurable/xtemporal/service/history/consts"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	historypb "go.temporal.io/api/history/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 type (

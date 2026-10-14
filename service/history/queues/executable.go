@@ -15,10 +15,6 @@ import (
 	"time"
 
 	"github.com/iancoleman/strcase"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/backoff"
@@ -38,6 +34,10 @@ import (
 	queueserrors "github.com/superdurable/xtemporal/service/history/queues/errors"
 	"github.com/superdurable/xtemporal/service/history/shard"
 	"github.com/superdurable/xtemporal/service/history/tasks"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 type (

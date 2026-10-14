@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	schedulepb "go.temporal.io/api/schedule/v1"
 	schedulespb "github.com/superdurable/xtemporal/api/schedule/v1"
 	"github.com/superdurable/xtemporal/chasm/lib/scheduler"
 	"github.com/superdurable/xtemporal/common/metrics"
+	schedulepb "go.temporal.io/api/schedule/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

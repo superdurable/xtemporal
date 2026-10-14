@@ -3,13 +3,13 @@ package deleteexecutions
 import (
 	"time"
 
-	"go.temporal.io/sdk/log"
-	"go.temporal.io/sdk/temporal"
-	"go.temporal.io/sdk/workflow"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/primitives"
 	"github.com/superdurable/xtemporal/service/worker/deletenamespace/errors"
+	"go.temporal.io/sdk/log"
+	"go.temporal.io/sdk/temporal"
+	"go.temporal.io/sdk/workflow"
 )
 
 const (

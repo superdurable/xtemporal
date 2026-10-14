@@ -10,9 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	enumspb "go.temporal.io/api/enums/v1"
-	sdkclient "go.temporal.io/sdk/client"
-	sdkworker "go.temporal.io/sdk/worker"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/cluster"
 	"github.com/superdurable/xtemporal/common/cluster/clustertest"
@@ -25,6 +22,9 @@ import (
 	"github.com/superdurable/xtemporal/common/sdk"
 	"github.com/superdurable/xtemporal/common/testing/mocksdk"
 	workercommon "github.com/superdurable/xtemporal/service/worker/common"
+	enumspb "go.temporal.io/api/enums/v1"
+	sdkclient "go.temporal.io/sdk/client"
+	sdkworker "go.temporal.io/sdk/worker"
 	"go.uber.org/mock/gomock"
 )
 

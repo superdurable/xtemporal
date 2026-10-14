@@ -10,9 +10,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	enumspb "go.temporal.io/api/enums/v1"
-	namespacepb "go.temporal.io/api/namespace/v1"
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/cluster"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
@@ -23,6 +20,9 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/primitives/timestamp"
 	"github.com/superdurable/xtemporal/common/testing/testlogger"
+	enumspb "go.temporal.io/api/enums/v1"
+	namespacepb "go.temporal.io/api/namespace/v1"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/mock/gomock"
 )
 

@@ -10,8 +10,6 @@ import (
 	"sync"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
@@ -20,6 +18,8 @@ import (
 	"github.com/superdurable/xtemporal/common/primitives/timestamp"
 	"github.com/superdurable/xtemporal/common/softassert"
 	"github.com/superdurable/xtemporal/service/matching/counter"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

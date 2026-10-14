@@ -3,8 +3,8 @@ package persistence
 import (
 	"fmt"
 
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

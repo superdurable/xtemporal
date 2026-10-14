@@ -7,11 +7,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/quotas"
+	"go.temporal.io/api/workflowservice/v1"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc"
 )

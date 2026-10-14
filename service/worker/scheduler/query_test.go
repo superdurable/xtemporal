@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
@@ -13,6 +11,8 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store/query"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/mock/gomock"
 )
 

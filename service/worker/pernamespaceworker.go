@@ -11,10 +11,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
-	sdkclient "go.temporal.io/sdk/client"
-	sdkworker "go.temporal.io/sdk/worker"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/backoff"
 	"github.com/superdurable/xtemporal/common/clock"
@@ -30,6 +26,10 @@ import (
 	"github.com/superdurable/xtemporal/common/sdk"
 	"github.com/superdurable/xtemporal/common/util"
 	workercommon "github.com/superdurable/xtemporal/service/worker/common"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
+	sdkclient "go.temporal.io/sdk/client"
+	sdkworker "go.temporal.io/sdk/worker"
 	expmaps "golang.org/x/exp/maps"
 )
 

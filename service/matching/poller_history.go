@@ -3,8 +3,8 @@ package matching
 import (
 	"time"
 
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"github.com/superdurable/xtemporal/common/cache"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )

@@ -4,7 +4,6 @@ import (
 	"context"
 	"os"
 
-	wcicomponent "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workercomponent"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/chasm/lib/callback"
@@ -31,6 +30,7 @@ import (
 	"github.com/superdurable/xtemporal/common/sdk"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/testing/testhooks"
+	wcicomponent "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workercomponent"
 	"github.com/superdurable/xtemporal/service"
 	"github.com/superdurable/xtemporal/service/worker/batcher"
 	workercommon "github.com/superdurable/xtemporal/service/worker/common"

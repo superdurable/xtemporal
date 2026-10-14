@@ -13,10 +13,6 @@ import (
 	"github.com/olivere/elastic/v7"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/api/temporalproto"
 	"github.com/superdurable/xtemporal/api/visibilityservice/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/debug"
@@ -31,6 +27,10 @@ import (
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	"github.com/superdurable/xtemporal/common/testing/protorequire"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
+	"go.temporal.io/api/temporalproto"
 	"go.uber.org/mock/gomock"
 )
 

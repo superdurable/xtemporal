@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/superdurable/xtemporal/chasm"
 	commandpb "go.temporal.io/api/command/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	"github.com/superdurable/xtemporal/chasm"
 )
 
 // ErrDuplicateRegistration is returned by a [Registry] when it detects duplicate registration.

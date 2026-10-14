@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/api/serviceerror"
 	historyspb "github.com/superdurable/xtemporal/api/history/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	replicationspb "github.com/superdurable/xtemporal/api/replication/v1"
@@ -26,6 +24,8 @@ import (
 	ctasks "github.com/superdurable/xtemporal/common/tasks"
 	"github.com/superdurable/xtemporal/common/wideevents"
 	"github.com/superdurable/xtemporal/service/history/consts"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 type (

@@ -3,9 +3,9 @@ package api
 import (
 	"context"
 
-	workflowpb "go.temporal.io/api/workflow/v1"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/worker_versioning"
+	workflowpb "go.temporal.io/api/workflow/v1"
 )
 
 // VersionReactivationSignalerFn is a function type for sending reactivation signals to version workflows.

@@ -5,11 +5,11 @@ import (
 	"errors"
 	"strconv"
 
-	deploymentpb "go.temporal.io/api/deployment/v1"
-	enumspb "go.temporal.io/api/enums/v1"
 	deploymentspb "github.com/superdurable/xtemporal/api/deployment/v1"
 	"github.com/superdurable/xtemporal/common/tqid"
 	"github.com/superdurable/xtemporal/common/worker_versioning"
+	deploymentpb "go.temporal.io/api/deployment/v1"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 const (

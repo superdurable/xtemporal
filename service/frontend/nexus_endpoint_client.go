@@ -8,9 +8,6 @@ import (
 	"regexp"
 
 	"github.com/google/uuid"
-	nexuspb "go.temporal.io/api/nexus/v1"
-	"go.temporal.io/api/operatorservice/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	hlc "github.com/superdurable/xtemporal/common/clock/hybrid_logical_clock"
@@ -22,6 +19,9 @@ import (
 	p "github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/rpc"
 	"github.com/superdurable/xtemporal/common/tqid"
+	nexuspb "go.temporal.io/api/nexus/v1"
+	"go.temporal.io/api/operatorservice/v1"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

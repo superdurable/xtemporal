@@ -2,11 +2,6 @@
 package wci
 
 import (
-	"go.uber.org/fx"
-
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workercomponent"
-	computeprovider "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/compute_provider"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/cluster"
 	"github.com/superdurable/xtemporal/common/config"
@@ -22,9 +17,13 @@ import (
 	"github.com/superdurable/xtemporal/common/pprof"
 	"github.com/superdurable/xtemporal/common/resource"
 	"github.com/superdurable/xtemporal/common/sdk"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workercomponent"
+	computeprovider "github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/compute_provider"
 	"github.com/superdurable/xtemporal/service/worker"
 	workercommon "github.com/superdurable/xtemporal/service/worker/common"
 	"github.com/superdurable/xtemporal/temporal"
+	"go.uber.org/fx"
 )
 
 var Module = fx.Options(

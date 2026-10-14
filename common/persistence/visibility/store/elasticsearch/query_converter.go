@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/olivere/elastic/v7"
-	"github.com/temporalio/sqlparser"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store/query"
 	"github.com/superdurable/xtemporal/common/searchattribute"
+	"github.com/temporalio/sqlparser"
 )
 
 type esQueryConverter struct{}
