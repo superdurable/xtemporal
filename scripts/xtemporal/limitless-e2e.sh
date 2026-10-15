@@ -179,8 +179,10 @@ for step in $steps; do
     dsn) run_step dsn env XTEMPORAL_LIMITLESS_TEST_DSN="$scratch_dsn" \
       go test -tags test_dep -count=1 -p 1 -v -run 'Postgres' ./x/limitless/ ./schema/limitless/ ;;
     # Limitless DDL takes cluster-wide locks and CREATE DATABASE is not transactional, so run serially.
+    # TEMPORAL_DEBUG scales persistence-suite context timeouts: the tests run from the caller's machine
+    # across the internet, and e.g. TestScanAllTrees writes 1002 trees serially under one 30s context.
     persistence) run_step persistence env LIMITLESS_TEST=aurora \
-      go test -tags test_dep -count=1 -p 1 -parallel 1 -timeout 180m -v -run 'Limitless' ./common/persistence/tests/ ;;
+      go test -tags test_dep,TEMPORAL_DEBUG -count=1 -p 1 -parallel 1 -timeout 180m -v -run 'Limitless' ./common/persistence/tests/ ;;
     functional) run_step functional env LIMITLESS_TEST=aurora \
       go test -tags test_dep -count=1 -p 1 -parallel 1 -timeout 240m -run "$functional_run" ./tests/ \
       -persistenceType=sql -persistenceDriver=postgres12_limitless ;;
