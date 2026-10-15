@@ -155,7 +155,9 @@ sql_tool() {
 sql_tool --database temporal create-database --defaultdb postgres_limitless >>"$log_dir/e2e.log" 2>&1
 sql_tool --database temporal_scratch create-database --defaultdb postgres_limitless >>"$log_dir/e2e.log" 2>&1
 
-export LIMITLESS_HOST=$endpoint LIMITLESS_PORT=5432 LIMITLESS_USER=tadmin LIMITLESS_PASSWORD=$password LIMITLESS_DATABASE=temporal
+# Persistence suites and functional clusters each create their own database through the admin database.
+export LIMITLESS_HOST=$endpoint LIMITLESS_PORT=5432 LIMITLESS_USER=tadmin LIMITLESS_PASSWORD=$password \
+  LIMITLESS_ADMIN_DATABASE=postgres_limitless LIMITLESS_SQL_TOOL_DATABASE=temporal
 scratch_dsn="postgres://tadmin:$password@$endpoint:5432/temporal_scratch?sslmode=require"
 
 failed=()
@@ -176,7 +178,7 @@ for step in $steps; do
     sqltool) run_step sqltool scripts/xtemporal/limitless-sql-tool-verify.sh ;;
     dsn) run_step dsn env XTEMPORAL_LIMITLESS_TEST_DSN="$scratch_dsn" \
       go test -tags test_dep -count=1 -p 1 -v -run 'Postgres' ./x/limitless/ ./schema/limitless/ ;;
-    # Every Aurora suite resets the same pre-created database, so packages and tests must run serially.
+    # Limitless DDL takes cluster-wide locks and CREATE DATABASE is not transactional, so run serially.
     persistence) run_step persistence env LIMITLESS_TEST=aurora \
       go test -tags test_dep -count=1 -p 1 -parallel 1 -timeout 180m -v -run 'Limitless' ./common/persistence/tests/ ;;
     functional) run_step functional env LIMITLESS_TEST=aurora \
