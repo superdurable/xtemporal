@@ -1,0 +1,10 @@
+services:
+  pg16:
+    image: postgres:16
+    command: ["postgres", "-c", "max_connections=1000"]
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${PG16_PASSWORD:-postgres}
+      POSTGRES_DB: postgres
+    ports:
+      - "127.0.0.1:55432:5432"

@@ -169,4 +169,6 @@ Static schema tests run with normal unit tests too. They check the table type ma
 go test -tags test_dep ./schema/limitless
 ```
 
+The lower-level semantic verification tool, schema SQL checks, the EXPLAIN reproduction, and the latency comparison live in [`develop/limitless`](../../develop/limitless/README.md).
+
 `x/limitless` (buffered-event inserts) and `schema/limitless` (schema load; on Limitless it also asserts table types and collocation groups) have DSN-gated database tests. Set `XTEMPORAL_LIMITLESS_TEST_DSN` to a disposable test database DSN to run them. `scripts/xtemporal/limitless-e2e.sh` runs everything on demand. It provisions a temporary public shard group restricted to the caller's IP and starts a local PostgreSQL 16 container for visibility. It then runs the sql-tool path, the DSN-gated tests, the persistence suites, and a functional subset (see the header of `common/persistence/tests/limitless_test.go` for the `LIMITLESS_*` variables it sets). It always tears down every AWS resource it created and fails if anything is left behind. Expect an hour or more and the corresponding ACU-hour charges.
