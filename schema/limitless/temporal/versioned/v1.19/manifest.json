@@ -1,0 +1,8 @@
+{
+  "CurrVersion": "1.19",
+  "MinCompatibleVersion": "1.0",
+  "Description": "Aurora PostgreSQL Limitless baseline schema",
+  "SchemaUpdateCqlFiles": [
+    "schema.sql"
+  ]
+}

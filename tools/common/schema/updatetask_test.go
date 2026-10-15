@@ -25,6 +25,11 @@ func TestUpdateTaskTestSuite(t *testing.T) {
 	suite.Run(t, new(UpdateTaskTestSuite))
 }
 
+func TestValidateCQLStmtsCall(t *testing.T) {
+	require.NoError(t, validateCQLStmts([]string{"CALL rds_aurora.limitless_alter_table_type_reference('public.namespaces')"}))
+	require.ErrorContains(t, validateCQLStmts([]string{"SELECT 1"}), "CQL prefix not in whitelist")
+}
+
 var updateTaskTestData = struct {
 	versions []string
 }{
