@@ -56,24 +56,3 @@ func (s *TestCluster) dropLimitlessVisibilityDatabase() {
 		s.logger.Fatal("Drop visibility database", tag.Error(err))
 	}
 }
-
-func (s *TestCluster) resetLimitlessTables() { // xtemporal: reset Aurora suites sequentially without CREATE DATABASE
-	db := s.newAdminDB(sqlplugin.DbKindUnknown, &s.cfg)
-	defer s.closeAdminDB(db)
-	tables, err := db.ListTables(s.cfg.DatabaseName)
-	if err != nil {
-		s.logger.Fatal("ListTables", tag.Error(err))
-	}
-	for _, table := range tables {
-		quoted := `"` + strings.ReplaceAll(table, `"`, `""`) + `"`
-		if err := db.Exec("DROP TABLE " + quoted + " CASCADE"); err != nil {
-			s.logger.Fatal("DropTable", tag.Error(err))
-		}
-	}
-	if err := db.Exec(`DO $$ DECLARE f record; BEGIN FOR f IN
-		SELECT p.proname, pg_get_function_identity_arguments(p.oid) AS args
-		FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'public'
-		LOOP EXECUTE format('DROP FUNCTION public.%I(%s) CASCADE', f.proname, f.args); END LOOP; END $$`); err != nil {
-		s.logger.Fatal("Drop public functions", tag.Error(err))
-	}
-}

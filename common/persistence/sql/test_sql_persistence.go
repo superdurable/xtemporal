@@ -169,8 +169,13 @@ func (s *TestCluster) TearDownTestDatabase() {
 
 // CreateDatabase from PersistenceTestCluster interface
 func (s *TestCluster) CreateDatabase() {
-	if s.cfg.PluginName == "postgres12_limitless" && os.Getenv("LIMITLESS_TEST") == "aurora" { // xtemporal: Aurora databases are pre-created
-		s.resetLimitlessTables()
+	if s.cfg.PluginName == "postgres12_limitless" && os.Getenv("LIMITLESS_TEST") == "aurora" {
+		name, err := CreateLimitlessTestDatabase(&s.cfg, os.Getenv("LIMITLESS_ADMIN_DATABASE"))
+		if err != nil {
+			s.logger.Fatal("Create Limitless database", tag.Error(err))
+		}
+		s.cfg.DatabaseName = name
+		s.dbName = name
 		s.createLimitlessVisibilityDatabase()
 		return
 	}
@@ -191,9 +196,6 @@ func (s *TestCluster) CreateDatabase() {
 
 // DropDatabase from PersistenceTestCluster interface
 func (s *TestCluster) DropDatabase() {
-	if s.cfg.PluginName == "postgres12_limitless" && os.Getenv("LIMITLESS_TEST") == "aurora" { // xtemporal: preserve the pre-created Aurora database
-		return
-	}
 	cfg2 := s.cfg
 
 	if cfg2.PluginName == "sqlite" && cfg2.DatabaseName != ":memory:" && cfg2.ConnectAttributes["mode"] != "memory" {
@@ -209,10 +211,13 @@ func (s *TestCluster) DropDatabase() {
 
 	// NOTE need to connect with empty name to drop the database
 	cfg2.DatabaseName = ""
+	if s.cfg.PluginName == "postgres12_limitless" && os.Getenv("LIMITLESS_TEST") == "aurora" {
+		cfg2.DatabaseName = os.Getenv("LIMITLESS_ADMIN_DATABASE")
+	}
 	db := s.newAdminDB(sqlplugin.DbKindUnknown, &cfg2)
 	defer s.closeAdminDB(db)
 	var err error
-	if dropper, ok := db.(forceDatabaseDropper); ok {
+	if dropper, ok := db.(forceDatabaseDropper); ok && (s.cfg.PluginName != "postgres12_limitless" || os.Getenv("LIMITLESS_TEST") != "aurora") {
 		err = dropper.ForceDropDatabase(s.cfg.DatabaseName)
 	} else {
 		err = db.DropDatabase(s.cfg.DatabaseName)

@@ -107,7 +107,7 @@ func GetPostgreSQLTestClusterOption(
 	}
 	if pluginName == "postgres12_limitless" { // xtemporal: use the Limitless schema for the default store
 		options.SchemaDir = "schema/limitless"
-		configureLimitlessTestOptions(options) // xtemporal: Aurora uses a pre-created database
+		configureLimitlessTestOptions(options)
 	}
 	return options
 }

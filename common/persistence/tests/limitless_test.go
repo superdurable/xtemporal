@@ -2,10 +2,10 @@ package tests
 
 // Run from the repository root:
 //   POSTGRES_SEEDS=127.0.0.1 POSTGRES_PORT=55432 LIMITLESS_TEST=pg go test -tags test_dep -count=1 ./common/persistence/tests/ -run Limitless -timeout 60m
-//   LIMITLESS_TEST=aurora LIMITLESS_HOST=router.example.com LIMITLESS_PORT=5432 LIMITLESS_USER=temporal LIMITLESS_PASSWORD=... LIMITLESS_DATABASE=temporal LIMITLESS_VISIBILITY_HOST=postgres.example.com LIMITLESS_VISIBILITY_PORT=5432 LIMITLESS_VISIBILITY_USER=temporal LIMITLESS_VISIBILITY_PASSWORD=... go test -tags test_dep -count=1 ./common/persistence/tests/ -run Limitless -timeout 60m
+//   LIMITLESS_TEST=aurora LIMITLESS_HOST=router.example.com LIMITLESS_PORT=5432 LIMITLESS_USER=temporal LIMITLESS_PASSWORD=... LIMITLESS_ADMIN_DATABASE=postgres_limitless LIMITLESS_VISIBILITY_HOST=postgres.example.com LIMITLESS_VISIBILITY_PORT=5432 LIMITLESS_VISIBILITY_USER=temporal LIMITLESS_VISIBILITY_PASSWORD=... go test -tags test_dep -count=1 ./common/persistence/tests/ -run Limitless -timeout 60m
 // LIMITLESS_SSLMODE defaults to require; LIMITLESS_VISIBILITY_SSLMODE defaults to disable.
-// Aurora requires a pre-created, dedicated database. Tests reset its public tables and functions between suites.
-// SQL-tool on Aurora (same LIMITLESS_* variables):
+// Aurora creates a separate database per test cluster or suite using LIMITLESS_ADMIN_DATABASE.
+// SQL-tool on Aurora (requires LIMITLESS_SQL_TOOL_DATABASE for the dedicated database):
 //   scripts/xtemporal/limitless-sql-tool-verify.sh
 
 import (
@@ -31,7 +31,7 @@ func TestLimitless(t *testing.T) {
 		t.Skip("set LIMITLESS_TEST=pg or LIMITLESS_TEST=aurora")
 	}
 	if mode == "aurora" {
-		for _, name := range []string{"LIMITLESS_HOST", "LIMITLESS_PORT", "LIMITLESS_USER", "LIMITLESS_PASSWORD", "LIMITLESS_DATABASE"} {
+		for _, name := range []string{"LIMITLESS_HOST", "LIMITLESS_PORT", "LIMITLESS_USER", "LIMITLESS_PASSWORD", "LIMITLESS_ADMIN_DATABASE"} {
 			require.NotEmpty(t, os.Getenv(name), "%s is required", name)
 		}
 		port, err := strconv.Atoi(os.Getenv("LIMITLESS_PORT"))
@@ -47,6 +47,8 @@ func TestLimitlessSQLToolVerifyVersion(t *testing.T) {
 		t.Skip("run scripts/xtemporal/limitless-sql-tool-verify.sh against Aurora")
 	}
 	cfg := limitlessAuroraConfig()
+	cfg.DatabaseName = os.Getenv("LIMITLESS_SQL_TOOL_DATABASE")
+	require.NotEmpty(t, cfg.DatabaseName)
 	db, err := sql.NewSQLAdminDB(sqlplugin.DbKindMain, cfg, resolver.NewNoopResolver(), log.NewTestLogger(), metrics.NoopMetricsHandler)
 	require.NoError(t, err)
 	defer func() { require.NoError(t, db.Close()) }()
@@ -63,7 +65,7 @@ func (s *LimitlessSuite) TestPostgreSQLVisibilitySuite() {
 
 func (s *LimitlessSuite) TestPostgreSQLTestClusterDropsDatabaseWithOpenConnection() {
 	if limitlessAuroraMode() {
-		s.T().Skip("Aurora tests preserve the pre-created database")
+		s.T().Skip("Aurora uses plain DROP DATABASE; open connections are not forcibly terminated")
 	}
 	s.PostgreSQLSuite.TestPostgreSQLTestClusterDropsDatabaseWithOpenConnection()
 }

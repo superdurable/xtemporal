@@ -155,7 +155,9 @@ The insert reports `INSERT 0 1`, but the final query returns no row. The origina
 
 ## Tests
 
-There is no Limitless CI: AWS does not provide a local or Docker Limitless service. The pure-Go plugin tests run with normal unit tests and cover visibility rejection, transaction wrapping, buffered-event ID SQL, and schema-statement rewriting:
+There is no Limitless CI: AWS does not provide a local or Docker Limitless service. For Aurora-mode persistence and functional tests, set `LIMITLESS_ADMIN_DATABASE` to an existing database on the shard group endpoint (typically `postgres_limitless`). The harness creates a separate temporary Limitless database for each test cluster or suite and drops it at teardown. Set `LIMITLESS_VISIBILITY_*` to a separate vanilla PostgreSQL endpoint. The SQL-tool verification script uses the coordinator-provided dedicated database in `LIMITLESS_SQL_TOOL_DATABASE`.
+
+The pure-Go plugin tests run with normal unit tests and cover visibility rejection, transaction wrapping, buffered-event ID SQL, and schema-statement rewriting:
 
 ```sh
 go test -tags test_dep ./x/limitless

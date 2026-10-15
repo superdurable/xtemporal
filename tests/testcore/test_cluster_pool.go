@@ -33,10 +33,6 @@ func init() {
 		}
 		dedicatedSize = n
 	}
-	if os.Getenv("LIMITLESS_TEST") == "aurora" { // xtemporal: Aurora functional tests share one pre-created database
-		sharedSize = 1
-		dedicatedSize = 1
-	}
 
 	// In CI, recreate clusters after 50 tests to prevent resource accumulation.
 	// Locally, clusters are reused indefinitely for faster iteration.

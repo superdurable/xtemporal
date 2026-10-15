@@ -52,26 +52,9 @@ func limitlessAuroraConfig() *config.SQL {
 		User: os.Getenv("LIMITLESS_USER"), Password: os.Getenv("LIMITLESS_PASSWORD"),
 		ConnectAddr:     net.JoinHostPort(os.Getenv("LIMITLESS_HOST"), os.Getenv("LIMITLESS_PORT")),
 		ConnectProtocol: "tcp", PluginName: "postgres12_limitless",
-		DatabaseName:      os.Getenv("LIMITLESS_DATABASE"),
+		DatabaseName:      "test_limitless_" + strings.ReplaceAll(uuid.NewString(), "-", ""),
 		ConnectAttributes: map[string]string{"sslmode": sslmode},
 	}
-}
-
-func resetLimitlessDatabase(t *testing.T, cfg *config.SQL) {
-	t.Helper()
-	db, err := sql.NewSQLAdminDB(sqlplugin.DbKindUnknown, cfg, resolver.NewNoopResolver(), log.NewTestLogger(), metrics.NoopMetricsHandler)
-	require.NoError(t, err)
-	defer func() { require.NoError(t, db.Close()) }()
-	tables, err := db.ListTables(cfg.DatabaseName)
-	require.NoError(t, err)
-	for _, table := range tables {
-		quoted := `"` + strings.ReplaceAll(table, `"`, `""`) + `"`
-		require.NoError(t, db.Exec("DROP TABLE "+quoted+" CASCADE"))
-	}
-	require.NoError(t, db.Exec(`DO $$ DECLARE f record; BEGIN FOR f IN
-		SELECT p.proname, pg_get_function_identity_arguments(p.oid) AS args
-		FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'public'
-		LOOP EXECUTE format('DROP FUNCTION public.%I(%s) CASCADE', f.proname, f.args); END LOOP; END $$`))
 }
 
 func loadLimitlessSchema(t *testing.T, cfg *config.SQL) {
