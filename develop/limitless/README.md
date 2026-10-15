@@ -6,7 +6,6 @@ These tools produced the evidence behind the `postgres12_limitless` plugin and i
 | --- | --- |
 | `verify/` | Standalone Go tool (`limitless-verify`). It checks the row-lock, visibility, and fencing semantics that Temporal's SQL persistence relies on, against vanilla PostgreSQL 16 (control) and Aurora Limitless. |
 | `sql/semantics.sql` | Upstream DML statements run against the Limitless schema: map upserts that SET the shard key, reference-table transactions, per-workflow `buffered_events` ids, and fan-out scans. |
-| `sql/explain-lost-write.sql` | Minimal reproduction of the Limitless silent write loss after `EXPLAIN` with `shard_plans`. |
 | `latency-compare.sh` | Shows that the functional tests skipped by the e2e script fail from round-trip latency alone, using vanilla PostgreSQL behind toxiproxy. |
 
 ## limitless-verify
