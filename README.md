@@ -1,6 +1,8 @@
 # xtemporal
 
-xtemporal is an independent fork of [Temporal Server](https://github.com/temporalio/temporal) that extends the upstream server with additional capabilities, much as Temporal originated from Uber Cadence. It is not affiliated with or endorsed by Temporal Technologies. “Temporal” is a trademark of its owner.
+xtemporal is an independent fork of [Temporal Server](https://github.com/temporalio/temporal) by Temporal/Cadence's core contributor. 
+
+It extends the upstream server with additional capabilities, much as Temporal originated from Uber Cadence. It is not affiliated with or endorsed by Temporal Technologies. “Temporal” is a trademark of its owner.
 
 xtemporal runs and is configured exactly like Temporal Server. For installation, configuration, operations, and SDK usage, follow the [Temporal documentation](https://docs.temporal.io/) and its [self-hosted guide](https://docs.temporal.io/self-hosted-guide). The extensions below are opt-in; without them, server behavior is unchanged.
 
