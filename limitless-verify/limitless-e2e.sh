@@ -7,7 +7,7 @@
 # Visibility cannot live in the Limitless database (GENERATED STORED columns are unsupported on its
 # standard tables), so a throwaway local PostgreSQL 16 container serves as the visibility store.
 #
-# Usage: scripts/xtemporal/limitless-e2e.sh
+# Usage: limitless-verify/limitless-e2e.sh
 # Optional env:
 #   AWS_PROFILE (default superdurable-write), AWS_REGION (default us-west-2)
 #   LIMITLESS_E2E_ENGINE_VERSION (default: latest 16.x-limitless in the region)
@@ -180,7 +180,7 @@ run_step() {
 
 for step in $steps; do
   case $step in
-    sqltool) run_step sqltool scripts/xtemporal/limitless-sql-tool-verify.sh ;;
+    sqltool) run_step sqltool limitless-verify/limitless-sql-tool-verify.sh ;;
     dsn) run_step dsn env XTEMPORAL_LIMITLESS_TEST_DSN="$scratch_dsn" \
       go test -tags test_dep -count=1 -p 1 -v -run 'Postgres' ./x/limitless/ ./schema/limitless/ ;;
     # Limitless DDL takes cluster-wide locks and CREATE DATABASE is not transactional, so run serially.

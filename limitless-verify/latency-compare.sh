@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Reproduces the evidence for the functional tests that scripts/xtemporal/limitless-e2e.sh skips by default.
+# Reproduces the evidence for the functional tests that limitless-verify/limitless-e2e.sh skips by default.
 # Those tests pass with postgres12_limitless at LAN latency, and fail the same way on vanilla PostgreSQL with
 # the stock postgres12_pgx plugin once a toxiproxy adds round-trip latency. So their failures over the
 # internet come from latency, not from Limitless or the plugin.
 #
-# Usage, from the repository root: develop/limitless/latency-compare.sh
+# Usage, from the repository root: limitless-verify/latency-compare.sh
 # Optional env: LATENCY_MS (one-way, default 15), PG_PORT (default 55441), PROXY_PORT (default 55442).
 set -euo pipefail
 

@@ -1,9 +1,11 @@
 # Aurora Limitless verification tools
 
-These tools produced the evidence behind the `postgres12_limitless` plugin and its [operator guide](../../docs/xtemporal/limitless.md). They are run by hand; there is no CI job, because AWS offers no local Limitless. For the on-demand end-to-end run of the plugin, schema, persistence suites, and functional tests, use `scripts/xtemporal/limitless-e2e.sh`.
+These tools produced the evidence behind the `postgres12_limitless` plugin and its [operator guide](../docs/xtemporal/limitless.md). They are run by hand; there is no CI job, because AWS offers no local Limitless. Run them from the repository root.
 
 | Path | What it checks |
 | --- | --- |
+| `limitless-e2e.sh` | On-demand end-to-end run on a temporary real cluster: sql-tool path, DSN-gated tests, persistence suites, and a functional subset. It always tears down what it created. |
+| `limitless-sql-tool-verify.sh` | `temporal-sql-tool` `setup-schema`/`update-schema` with `postgres12_limitless`, then `VerifyVersion`. Called by the e2e script. |
 | `verify/` | Standalone Go tool (`limitless-verify`). It checks the row-lock, visibility, and fencing semantics that Temporal's SQL persistence relies on, against vanilla PostgreSQL 16 (control) and Aurora Limitless. |
 | `sql/semantics.sql` | Upstream DML statements run against the Limitless schema: map upserts that SET the shard key, reference-table transactions, per-workflow `buffered_events` ids, and fan-out scans. |
 | `latency-compare.sh` | Shows that the functional tests skipped by the e2e script fail from round-trip latency alone, using vanilla PostgreSQL behind toxiproxy. |
@@ -11,7 +13,7 @@ These tools produced the evidence behind the `postgres12_limitless` plugin and i
 ## limitless-verify
 
 ```sh
-cd develop/limitless/verify
+cd limitless-verify/verify
 docker compose up -d                       # control PostgreSQL 16 on 127.0.0.1:55432
 printf 'PG16_DSN=postgres://postgres:postgres@127.0.0.1:55432/postgres?sslmode=disable\n' > .env
 go build -o limitless-verify .
@@ -50,4 +52,4 @@ Results on `16.13-limitless` (2 routers, 2 shards):
 
 ## Cost
 
-A Limitless shard group bills per ACU-hour (USD 0.16 in us-west-2 at the time of testing) with a 16 ACU minimum. Delete the shard group and cluster as soon as a run ends. `scripts/xtemporal/limitless-e2e.sh` shows a complete teardown sequence.
+A Limitless shard group bills per ACU-hour (USD 0.16 in us-west-2 at the time of testing) with a 16 ACU minimum. Delete the shard group and cluster as soon as a run ends. `limitless-verify/limitless-e2e.sh` shows a complete teardown sequence.
