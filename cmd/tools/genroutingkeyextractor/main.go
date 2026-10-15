@@ -8,9 +8,9 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/superdurable/xtemporal/cmd/tools/codegen"
 	protometapb "go.temporal.io/api/protometa/v1"
 	_ "go.temporal.io/api/workflowservice/v1" // trigger proto file registration
-	"github.com/superdurable/xtemporal/cmd/tools/codegen"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"

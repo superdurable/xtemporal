@@ -1,0 +1,69 @@
+name: Release xtemporal
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing vX.Y.Z tag to republish
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    outputs:
+      publish: ${{ steps.release.outputs.publish }}
+      tag: ${{ steps.release.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Select release tag
+        id: release
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED_TAG: ${{ inputs.tag }}
+        run: |
+          if [[ "$EVENT_NAME" == workflow_dispatch ]]; then
+            [[ "$REQUESTED_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Expected vX.Y.Z tag' >&2; exit 1; }
+            git rev-parse --verify "refs/tags/$REQUESTED_TAG^{commit}" >/dev/null
+            echo "tag=$REQUESTED_TAG" >> "$GITHUB_OUTPUT"
+            echo 'publish=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          version=$(sed -nE 's/^[[:space:]]*ServerVersion = "([0-9]+\.[0-9]+\.[0-9]+)".*/\1/p' common/headers/version_checker.go)
+          [[ -n "$version" ]] || { echo 'ServerVersion not found' >&2; exit 1; }
+          tag="v$version"
+          latest=$(git tag --list | awk '/^v[0-9]+\.[0-9]+\.[0-9]+$/ {print}' | sort -V | tail -1)
+          if [[ -n "$latest" && "$tag" != "$(printf '%s\n%s\n' "$tag" "$latest" | sort -V | tail -1)" ]]; then
+            echo "ServerVersion $version is behind $latest" >&2
+            exit 1
+          fi
+          if git rev-parse --verify "refs/tags/$tag^{commit}" >/dev/null 2>&1; then
+            echo "tag $tag already exists; no new release"
+            exit 0
+          fi
+          if [[ "$latest" == "$tag" ]]; then
+            echo "tag $tag already exists remotely; no new release"
+            exit 0
+          fi
+          git config user.name 'xtemporal release bot'
+          git config user.email 'xtemporal-release@users.noreply.github.com'
+          git tag -a "$tag" -m "xtemporal $tag" HEAD
+          git push origin "refs/tags/$tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo 'publish=true' >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: prepare
+    if: needs.prepare.outputs.publish == 'true'
+    uses: ./.github/workflows/build-and-publish.yml
+    with:
+      ref: ${{ needs.prepare.outputs.tag }}
+      publish: true
+    secrets: inherit

@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/superdurable/xtemporal/common/headers"
 	commandpb "go.temporal.io/api/command/v1"
 	"go.temporal.io/api/workflowservice/v1"
-	"github.com/superdurable/xtemporal/common/headers"
 )
 
 func TestDisableEagerActivityDispatchForBuggyClients(t *testing.T) {

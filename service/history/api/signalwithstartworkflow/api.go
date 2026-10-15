@@ -3,8 +3,6 @@ package signalwithstartworkflow
 import (
 	"context"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	"github.com/superdurable/xtemporal/common/definition"
@@ -14,6 +12,8 @@ import (
 	"github.com/superdurable/xtemporal/common/worker_versioning"
 	"github.com/superdurable/xtemporal/service/history/api"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 func Invoke(

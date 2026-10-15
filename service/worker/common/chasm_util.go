@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"unicode"
 
-	workflowpb "go.temporal.io/api/workflow/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/payload"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	workflowpb "go.temporal.io/api/workflow/v1"
 )
 
 func ArchetypeIDFromExecutionInfo(

@@ -15,7 +15,6 @@ import (
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
-	"go.temporal.io/api/serviceerror"
 	archiverspb "github.com/superdurable/xtemporal/api/archiver/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/archiver"
@@ -25,6 +24,7 @@ import (
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/persistence"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

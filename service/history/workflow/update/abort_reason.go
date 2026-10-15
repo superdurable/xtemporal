@@ -3,8 +3,8 @@ package update
 import (
 	"fmt"
 
-	failurepb "go.temporal.io/api/failure/v1"
 	"github.com/superdurable/xtemporal/service/history/consts"
+	failurepb "go.temporal.io/api/failure/v1"
 )
 
 type (

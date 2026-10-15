@@ -9,7 +9,6 @@ import (
 	"text/template"
 	_ "time/tzdata" // embed tzdata as a fallback
 
-	"github.com/urfave/cli/v2"
 	"github.com/superdurable/xtemporal/common/authorization"
 	"github.com/superdurable/xtemporal/common/build"
 	"github.com/superdurable/xtemporal/common/config"
@@ -22,6 +21,7 @@ import (
 	_ "github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin/postgresql" // needed to load postgresql plugin
 	_ "github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin/sqlite"     // needed to load sqlite plugin
 	"github.com/superdurable/xtemporal/temporal"
+	"github.com/urfave/cli/v2"
 )
 
 // main entry point for the temporal server

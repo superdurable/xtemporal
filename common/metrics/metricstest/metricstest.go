@@ -12,11 +12,11 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	dto "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/expfmt"
+	"github.com/superdurable/xtemporal/common/log"
+	"github.com/superdurable/xtemporal/common/metrics"
 	exporters "go.opentelemetry.io/otel/exporters/prometheus"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetrics "go.opentelemetry.io/otel/sdk/metric"
-	"github.com/superdurable/xtemporal/common/log"
-	"github.com/superdurable/xtemporal/common/metrics"
 )
 
 type (

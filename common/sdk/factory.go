@@ -8,10 +8,6 @@ import (
 	"errors"
 	"sync"
 
-	"go.temporal.io/api/serviceerror"
-	sdkclient "go.temporal.io/sdk/client"
-	sdklog "go.temporal.io/sdk/log"
-	sdkworker "go.temporal.io/sdk/worker"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/backoff"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
@@ -20,6 +16,10 @@ import (
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/primitives"
+	"go.temporal.io/api/serviceerror"
+	sdkclient "go.temporal.io/sdk/client"
+	sdklog "go.temporal.io/sdk/log"
+	sdkworker "go.temporal.io/sdk/worker"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

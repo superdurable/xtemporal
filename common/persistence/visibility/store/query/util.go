@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/temporalio/sqlparser"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/primitives/timestamp"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	"github.com/temporalio/sqlparser"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 type (

@@ -4,8 +4,6 @@ import (
 	"context"
 	"net"
 
-	"go.temporal.io/api/serviceerror"
-	sdkworker "go.temporal.io/sdk/worker"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	replicationspb "github.com/superdurable/xtemporal/api/replication/v1"
 	"github.com/superdurable/xtemporal/client"
@@ -27,6 +25,8 @@ import (
 	"github.com/superdurable/xtemporal/service/worker/parentclosepolicy"
 	"github.com/superdurable/xtemporal/service/worker/replicator"
 	"github.com/superdurable/xtemporal/service/worker/scanner"
+	"go.temporal.io/api/serviceerror"
+	sdkworker "go.temporal.io/sdk/worker"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"

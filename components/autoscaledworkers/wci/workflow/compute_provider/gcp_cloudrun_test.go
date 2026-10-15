@@ -8,12 +8,11 @@ import (
 	runpb "cloud.google.com/go/run/apiv2/runpb"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/impersonate"
 	"google.golang.org/api/option"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
-
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
 )
 
 type impersonateCall struct {

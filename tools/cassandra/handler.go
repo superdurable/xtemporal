@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/urfave/cli"
 	"github.com/superdurable/xtemporal/common/auth"
 	c "github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/temporal/environment"
 	"github.com/superdurable/xtemporal/tools/common/schema"
+	"github.com/urfave/cli"
 )
 
 const defaultNumReplicas = 1

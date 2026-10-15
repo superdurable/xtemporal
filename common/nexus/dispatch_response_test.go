@@ -5,10 +5,10 @@ import (
 
 	"github.com/nexus-rpc/sdk-go/nexus"
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	failurepb "go.temporal.io/api/failure/v1"
 	nexuspb "go.temporal.io/api/nexus/v1"
 	"go.temporal.io/sdk/temporal"
-	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 )
 
 func TestMatchingDispatchResponseToError_SyncSuccess(t *testing.T) {

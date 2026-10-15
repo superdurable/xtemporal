@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"slices"
 
-	otellog "go.opentelemetry.io/otel/log"
 	"github.com/superdurable/xtemporal/client"
 	"github.com/superdurable/xtemporal/common/archiver/provider"
 	"github.com/superdurable/xtemporal/common/authorization"
@@ -23,6 +22,7 @@ import (
 	"github.com/superdurable/xtemporal/common/rpc/encryption"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/testing/testhooks"
+	otellog "go.opentelemetry.io/otel/log"
 	"google.golang.org/grpc"
 )
 

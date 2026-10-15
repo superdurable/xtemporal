@@ -7,6 +7,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	deploymentspb "github.com/superdurable/xtemporal/api/deployment/v1"
+	"github.com/superdurable/xtemporal/api/matchingservice/v1"
+	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
+	"github.com/superdurable/xtemporal/common/testing/testvars"
+	"github.com/superdurable/xtemporal/tests/testcore"
 	commonpb "go.temporal.io/api/common/v1"
 	deploymentpb "go.temporal.io/api/deployment/v1"
 	enumspb "go.temporal.io/api/enums/v1"
@@ -14,12 +20,6 @@ import (
 	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"go.temporal.io/api/workflowservice/v1"
 	"go.temporal.io/sdk/workflow"
-	deploymentspb "github.com/superdurable/xtemporal/api/deployment/v1"
-	"github.com/superdurable/xtemporal/api/matchingservice/v1"
-	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
-	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
-	"github.com/superdurable/xtemporal/common/testing/testvars"
-	"github.com/superdurable/xtemporal/tests/testcore"
 )
 
 type WorkflowAliasSearchAttributeTestSuite struct {

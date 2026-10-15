@@ -2,9 +2,9 @@
 package worker_versioning
 
 import (
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/cache"
 	"github.com/superdurable/xtemporal/common/metrics"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // VersionMembershipAndReactivationStatusCache caches results of Matching's

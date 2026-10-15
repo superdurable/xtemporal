@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/temporalio/sqlparser"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	"github.com/superdurable/xtemporal/common/sqlquery"
+	"github.com/temporalio/sqlparser"
 )
 
 // Supported Fields

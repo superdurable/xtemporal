@@ -15,6 +15,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	replicationspb "github.com/superdurable/xtemporal/api/replication/v1"
+	"github.com/superdurable/xtemporal/common/log"
+	"github.com/superdurable/xtemporal/common/persistence"
+	"github.com/superdurable/xtemporal/common/testing/mockapi/workflowservicemock/v1"
 	namespacepb "go.temporal.io/api/namespace/v1"
 	"go.temporal.io/api/workflowservice/v1"
 	"go.temporal.io/sdk/interceptor"
@@ -22,10 +26,6 @@ import (
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
-	replicationspb "github.com/superdurable/xtemporal/api/replication/v1"
-	"github.com/superdurable/xtemporal/common/log"
-	"github.com/superdurable/xtemporal/common/persistence"
-	"github.com/superdurable/xtemporal/common/testing/mockapi/workflowservicemock/v1"
 	"go.uber.org/mock/gomock"
 )
 

@@ -15,10 +15,6 @@ import (
 	"time"
 
 	"github.com/nexus-rpc/sdk-go/nexus"
-	enumspb "go.temporal.io/api/enums/v1"
-	nexuspb "go.temporal.io/api/nexus/v1"
-	"go.temporal.io/api/serviceerror"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	chasmnexus "github.com/superdurable/xtemporal/chasm/lib/nexusoperation"
 	"github.com/superdurable/xtemporal/common"
@@ -33,6 +29,10 @@ import (
 	commonnexus "github.com/superdurable/xtemporal/common/nexus"
 	"github.com/superdurable/xtemporal/common/nexus/nexusrpc"
 	"github.com/superdurable/xtemporal/common/rpc/interceptor"
+	enumspb "go.temporal.io/api/enums/v1"
+	nexuspb "go.temporal.io/api/nexus/v1"
+	"go.temporal.io/api/serviceerror"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

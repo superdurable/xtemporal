@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/urfave/cli"
 	"github.com/superdurable/xtemporal/common/auth"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	esclient "github.com/superdurable/xtemporal/common/persistence/visibility/store/elasticsearch/client"
 	"github.com/superdurable/xtemporal/schema"
 	commonschema "github.com/superdurable/xtemporal/tools/common/schema"
+	"github.com/urfave/cli"
 )
 
 func createClient(cli *cli.Context, logger log.Logger) (esclient.CLIClient, error) {

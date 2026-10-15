@@ -3,8 +3,6 @@ package deletenamespace
 import (
 	"context"
 
-	sdkworker "go.temporal.io/sdk/worker"
-	"go.temporal.io/sdk/workflow"
 	"github.com/superdurable/xtemporal/common/cluster"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/headers"
@@ -17,6 +15,8 @@ import (
 	workercommon "github.com/superdurable/xtemporal/service/worker/common"
 	"github.com/superdurable/xtemporal/service/worker/deletenamespace/deleteexecutions"
 	"github.com/superdurable/xtemporal/service/worker/deletenamespace/reclaimresources"
+	sdkworker "go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 	"go.uber.org/fx"
 )
 

@@ -1,0 +1,142 @@
+name: Build and publish xtemporal image
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    paths:
+      - docker/**
+      - .github/workflows/build-and-publish.yml
+      - scripts/xtemporal/image-metadata.sh
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Ref to build without publishing
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      ref:
+        description: Ref to build
+        required: false
+        type: string
+      publish:
+        description: Publish the image and release
+        required: false
+        default: true
+        type: boolean
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: false
+      DOCKERHUB_TOKEN:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  image:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
+
+      - name: Test image metadata
+        run: bash scripts/xtemporal/test-image-metadata.sh
+
+      - name: Determine build metadata
+        id: metadata
+        shell: bash
+        env:
+          REQUESTED_REF: ${{ inputs.ref || github.ref }}
+          EVENT_NAME: ${{ github.event_name }}
+          CALL_PUBLISH: ${{ inputs.publish }}
+        run: |
+          revision=$(git rev-parse HEAD)
+          ref=$REQUESTED_REF
+          if [[ $ref != refs/* ]]; then
+            if [[ $ref == v* ]]; then
+              ref="refs/tags/$ref"
+            else
+              ref="refs/heads/$ref"
+            fi
+          fi
+          bash scripts/xtemporal/image-metadata.sh "$ref" "$revision" "$GITHUB_OUTPUT"
+          if [[ $EVENT_NAME == pull_request || $EVENT_NAME == workflow_dispatch || $CALL_PUBLISH == false ]]; then
+            echo 'publish=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'publish=true' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build server and SQL tool
+        shell: bash
+        env:
+          PUBLISH: ${{ steps.metadata.outputs.publish }}
+        run: |
+          arches=(amd64)
+          if [[ $PUBLISH == true ]]; then
+            arches+=(arm64)
+          fi
+          for arch in "${arches[@]}"; do
+            mkdir -p "docker/build/$arch"
+            CGO_ENABLED=0 GOOS=linux GOARCH="$arch" make temporal-server temporal-sql-tool
+            mv temporal-server temporal-sql-tool "docker/build/$arch/"
+          done
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        if: steps.metadata.outputs.publish == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build image
+        shell: bash
+        env:
+          IMAGE_SHA_TAG: ${{ steps.metadata.outputs.image_sha_tag }}
+          IMAGE_VERSION_TAG: ${{ steps.metadata.outputs.image_version_tag }}
+          IMAGE_MINOR_TAG: ${{ steps.metadata.outputs.image_minor_tag }}
+          TAG_LATEST: ${{ steps.metadata.outputs.tag_latest }}
+          TAG_MAIN: ${{ steps.metadata.outputs.tag_main }}
+          IMAGE_VERSION: ${{ steps.metadata.outputs.image_version }}
+          UPSTREAM_VERSION: ${{ steps.metadata.outputs.upstream_version }}
+          REVISION: ${{ steps.metadata.outputs.revision }}
+          PUBLISH: ${{ steps.metadata.outputs.publish }}
+        run: |
+          if [[ $PUBLISH == true ]]; then
+            docker buildx bake -f docker/docker-bake.hcl --push server
+          else
+            docker buildx bake -f docker/docker-bake.hcl --set server.platform=linux/amd64 server
+          fi
+
+      - name: Create GitHub release
+        if: steps.metadata.outputs.image_version_tag != '' && steps.metadata.outputs.publish == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.metadata.outputs.release_tag }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            exit 0
+          fi
+          bash scripts/xtemporal/release-notes.sh "$RELEASE_TAG" > release-notes.md
+          release_args=()
+          if [[ $RELEASE_TAG == *-* ]]; then
+            release_args+=(--prerelease)
+          fi
+          gh release create "$RELEASE_TAG" --title "xtemporal $RELEASE_TAG" --notes-file release-notes.md "${release_args[@]}"

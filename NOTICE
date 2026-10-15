@@ -1,0 +1,6 @@
+xtemporal is an independent fork derived from temporalio/temporal, which is
+licensed under the MIT License and itself derived from Uber Cadence, also
+licensed under the MIT License.
+
+The upstream copyright notices and MIT license terms are retained in LICENSE.
+xtemporal is not affiliated with or endorsed by Temporal Technologies.

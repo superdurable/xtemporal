@@ -8,7 +8,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/future"
 	"github.com/superdurable/xtemporal/common/headers"
@@ -22,6 +21,7 @@ import (
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
 	"github.com/superdurable/xtemporal/service/history/configs"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	"go.temporal.io/api/serviceerror"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/time/rate"
 )
