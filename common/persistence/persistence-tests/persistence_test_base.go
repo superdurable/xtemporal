@@ -155,7 +155,7 @@ func NewTestBaseWithSQL(options *TestBaseOptions) *TestBase {
 		switch options.SQLDBPluginName {
 		case mysql.PluginName:
 			options.DBPort = environment.GetMySQLPort()
-		case postgresql.PluginName, postgresql.PluginNamePGX, "paradedb": // xtemporal: ParadeDB uses PostgreSQL test connections
+		case postgresql.PluginName, postgresql.PluginNamePGX, "paradedb", "postgres12_limitless": // xtemporal: Limitless uses PostgreSQL test connections
 			options.DBPort = environment.GetPostgreSQLPort()
 		case sqlite.PluginName:
 			options.DBPort = 0
@@ -167,7 +167,7 @@ func NewTestBaseWithSQL(options *TestBaseOptions) *TestBase {
 		switch options.SQLDBPluginName {
 		case mysql.PluginName:
 			options.DBHost = environment.GetMySQLAddress()
-		case postgresql.PluginName, postgresql.PluginNamePGX, "paradedb": // xtemporal: ParadeDB uses PostgreSQL test connections
+		case postgresql.PluginName, postgresql.PluginNamePGX, "paradedb", "postgres12_limitless": // xtemporal: Limitless uses PostgreSQL test connections
 			options.DBHost = environment.GetPostgreSQLAddress()
 		case sqlite.PluginName:
 			options.DBHost = environment.GetLocalhostIP()

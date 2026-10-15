@@ -87,11 +87,19 @@ func (s *TestCluster) SetupTestDatabase() {
 	}
 	s.LoadSchema(path.Join(schemaDir, "temporal", "schema.sql"))
 	visibilitySchema := path.Join(schemaDir, "visibility", "schema.sql")
+	if s.cfg.PluginName == "postgres12_limitless" { // xtemporal: Limitless uses PostgreSQL visibility
+		visibilitySchema = path.Join(testutils.GetRepoRootDirectory(), "schema/postgresql/v12/visibility/schema.sql")
+	}
 	if s.cfg.PluginName == "paradedb" { // xtemporal: ParadeDB has its own visibility schema
 		visibilitySchema = path.Join(testutils.GetRepoRootDirectory(), "schema/paradedb/visibility/schema.sql")
 	}
 	s.LoadSchema(visibilitySchema)
 	s.loadSchemaVersion()
+	if s.cfg.PluginName == "postgres12_limitless" { // xtemporal: one version row must satisfy both store versions in the shared database
+		if err := VerifyCompatibleVersion(s.Config(), resolver.NewNoopResolver(), s.logger); err != nil {
+			s.logger.Fatal("VerifyCompatibleVersion", tag.Error(err))
+		}
+	}
 }
 
 // Config returns the persistence config for connecting to this test cluster
@@ -106,6 +114,19 @@ func (s *TestCluster) Config() config.Persistence {
 			DataStores: map[string]config.DataStore{
 				"test":            {SQL: &mainCfg, FaultInjection: s.faultInjection},
 				"test-visibility": {SQL: &cfg, FaultInjection: s.faultInjection},
+			},
+			TransactionSizeLimit: dynamicconfig.GetIntPropertyFn(primitives.DefaultTransactionSizeLimit),
+		}
+	}
+	if cfg.PluginName == "postgres12_limitless" { // xtemporal: keep visibility on PostgreSQL
+		visibilityCfg := cfg
+		visibilityCfg.PluginName = "postgres12_pgx"
+		return config.Persistence{
+			DefaultStore:    "test",
+			VisibilityStore: "test-visibility",
+			DataStores: map[string]config.DataStore{
+				"test":            {SQL: &cfg, FaultInjection: s.faultInjection},
+				"test-visibility": {SQL: &visibilityCfg, FaultInjection: s.faultInjection},
 			},
 			TransactionSizeLimit: dynamicconfig.GetIntPropertyFn(primitives.DefaultTransactionSizeLimit),
 		}
@@ -127,6 +148,10 @@ func (s *TestCluster) TearDownTestDatabase() {
 
 // CreateDatabase from PersistenceTestCluster interface
 func (s *TestCluster) CreateDatabase() {
+	if s.cfg.PluginName == "postgres12_limitless" && os.Getenv("LIMITLESS_TEST") == "aurora" { // xtemporal: Aurora databases are pre-created
+		s.resetLimitlessTables()
+		return
+	}
 	cfg2 := s.cfg
 	// NOTE need to connect with empty name to create new database
 	if cfg2.PluginName != "sqlite" {
@@ -144,6 +169,9 @@ func (s *TestCluster) CreateDatabase() {
 
 // DropDatabase from PersistenceTestCluster interface
 func (s *TestCluster) DropDatabase() {
+	if s.cfg.PluginName == "postgres12_limitless" && os.Getenv("LIMITLESS_TEST") == "aurora" { // xtemporal: preserve the pre-created Aurora database
+		return
+	}
 	cfg2 := s.cfg
 
 	if cfg2.PluginName == "sqlite" && cfg2.DatabaseName != ":memory:" && cfg2.ConnectAttributes["mode"] != "memory" {

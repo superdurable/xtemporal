@@ -74,6 +74,9 @@ func setUpPostgreSQLTest(t *testing.T, pluginName string, connectAttrs map[strin
 
 // NewPostgreSQLConfig returns a new MySQL config for test
 func NewPostgreSQLConfig(pluginName string, connectAttrs map[string]string) *config.SQL {
+	if pluginName == "postgres12_limitless" && limitlessAuroraMode() { // xtemporal: Aurora uses a pre-created database
+		return limitlessAuroraConfig()
+	}
 	return &config.SQL{
 		User:     testPostgreSQLUser,
 		Password: testPostgreSQLPassword,
@@ -89,6 +92,10 @@ func NewPostgreSQLConfig(pluginName string, connectAttrs map[string]string) *con
 }
 
 func SetupPostgreSQLDatabase(t *testing.T, cfg *config.SQL) {
+	if cfg.PluginName == "postgres12_limitless" && limitlessAuroraMode() { // xtemporal: reset the pre-created Aurora database
+		resetLimitlessDatabase(t, cfg)
+		return
+	}
 	adminCfg := *cfg
 	// NOTE need to connect with empty name to create new database
 	adminCfg.DatabaseName = ""
@@ -106,6 +113,10 @@ func SetupPostgreSQLDatabase(t *testing.T, cfg *config.SQL) {
 }
 
 func SetupPostgreSQLSchema(t *testing.T, cfg *config.SQL) {
+	if cfg.PluginName == "postgres12_limitless" { // xtemporal: use the Limitless schema and PostgreSQL visibility schema
+		loadLimitlessSchema(t, cfg)
+		return
+	}
 	db, err := sql.NewSQLAdminDB(sqlplugin.DbKindUnknown, cfg, resolver.NewNoopResolver(), log.NewTestLogger(), metrics.NoopMetricsHandler)
 	if err != nil {
 		t.Fatalf("unable to create PostgreSQL admin DB: %v", err)
@@ -146,6 +157,9 @@ func SetupPostgreSQLSchema(t *testing.T, cfg *config.SQL) {
 }
 
 func TearDownPostgreSQLDatabase(t *testing.T, cfg *config.SQL) {
+	if cfg.PluginName == "postgres12_limitless" && limitlessAuroraMode() { // xtemporal: preserve the pre-created Aurora database
+		return
+	}
 	adminCfg := *cfg
 	// NOTE need to connect with empty name to create new database
 	adminCfg.DatabaseName = ""
