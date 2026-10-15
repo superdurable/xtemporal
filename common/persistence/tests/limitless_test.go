@@ -2,8 +2,9 @@ package tests
 
 // Run from the repository root:
 //   POSTGRES_SEEDS=127.0.0.1 POSTGRES_PORT=55432 LIMITLESS_TEST=pg go test -tags test_dep -count=1 ./common/persistence/tests/ -run Limitless -timeout 60m
-//   LIMITLESS_TEST=aurora LIMITLESS_HOST=router.example.com LIMITLESS_PORT=5432 LIMITLESS_USER=temporal LIMITLESS_PASSWORD=... LIMITLESS_DATABASE=temporal go test -tags test_dep -count=1 ./common/persistence/tests/ -run Limitless -timeout 60m
-// Aurora requires a pre-created, dedicated database. Tests reset its public tables between suites.
+//   LIMITLESS_TEST=aurora LIMITLESS_HOST=router.example.com LIMITLESS_PORT=5432 LIMITLESS_USER=temporal LIMITLESS_PASSWORD=... LIMITLESS_DATABASE=temporal LIMITLESS_VISIBILITY_HOST=postgres.example.com LIMITLESS_VISIBILITY_PORT=5432 LIMITLESS_VISIBILITY_USER=temporal LIMITLESS_VISIBILITY_PASSWORD=... go test -tags test_dep -count=1 ./common/persistence/tests/ -run Limitless -timeout 60m
+// LIMITLESS_SSLMODE defaults to require; LIMITLESS_VISIBILITY_SSLMODE defaults to disable.
+// Aurora requires a pre-created, dedicated database. Tests reset its public tables and functions between suites.
 // SQL-tool on Aurora (same LIMITLESS_* variables):
 //   scripts/xtemporal/limitless-sql-tool-verify.sh
 
@@ -36,6 +37,7 @@ func TestLimitless(t *testing.T) {
 		port, err := strconv.Atoi(os.Getenv("LIMITLESS_PORT"))
 		require.NoError(t, err)
 		require.Positive(t, port)
+		_ = limitlessVisibilityConfig(t)
 	}
 	suite.Run(t, &LimitlessSuite{PostgreSQLSuite: PostgreSQLSuite{pluginName: "postgres12_limitless"}})
 }

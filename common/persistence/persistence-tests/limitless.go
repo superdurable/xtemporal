@@ -16,6 +16,10 @@ func configureLimitlessTestOptions(options *TestBaseOptions) {
 		options.DBPassword = os.Getenv("LIMITLESS_PASSWORD")
 		options.DBHost = os.Getenv("LIMITLESS_HOST")
 		options.DBPort = port
-		options.ConnectAttributes = map[string]string{"sslmode": "require"}
+		sslmode := os.Getenv("LIMITLESS_SSLMODE")
+		if sslmode == "" {
+			sslmode = "require"
+		}
+		options.ConnectAttributes = map[string]string{"sslmode": sslmode}
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -12,6 +13,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/require"
 	"github.com/superdurable/xtemporal/common/config"
@@ -201,8 +203,26 @@ func TestBufferedInsertPostgres(t *testing.T) {
 	conn, err := connDB.Conn(ctx)
 	require.NoError(t, err)
 	t.Cleanup(func() { require.NoError(t, conn.Close()) })
-	_, err = conn.ExecContext(ctx, "CREATE TEMP TABLE buffered_events (shard_id INTEGER NOT NULL, namespace_id BYTEA NOT NULL, workflow_id VARCHAR(255) NOT NULL, run_id BYTEA NOT NULL, id BIGINT NOT NULL, data BYTEA NOT NULL, data_encoding VARCHAR(16) NOT NULL, PRIMARY KEY (shard_id, namespace_id, workflow_id, run_id, id))")
+	schema := "limitless_buffered_" + strings.ReplaceAll(uuid.NewString(), "-", "")
+	_, err = conn.ExecContext(ctx, "CREATE SCHEMA "+schema)
 	require.NoError(t, err)
+	t.Cleanup(func() {
+		cleanupCtx := context.Background()
+		_, err := conn.ExecContext(cleanupCtx, "DROP TABLE IF EXISTS "+schema+".buffered_events")
+		require.NoError(t, err)
+		_, err = conn.ExecContext(cleanupCtx, "DROP SCHEMA "+schema)
+		require.NoError(t, err)
+	})
+	_, err = conn.ExecContext(ctx, "SET search_path TO "+schema)
+	require.NoError(t, err)
+	_, err = conn.ExecContext(ctx, "CREATE TABLE buffered_events (shard_id INTEGER NOT NULL, namespace_id BYTEA NOT NULL, workflow_id VARCHAR(255) NOT NULL, run_id BYTEA NOT NULL, id BIGINT NOT NULL, data BYTEA NOT NULL, data_encoding VARCHAR(16) NOT NULL, PRIMARY KEY (shard_id, namespace_id, workflow_id, run_id, id))")
+	require.NoError(t, err)
+	var limitless bool
+	require.NoError(t, conn.QueryRowContext(ctx, "SELECT to_regproc('rds_aurora.limitless_alter_table_type_sharded') IS NOT NULL").Scan(&limitless))
+	if limitless {
+		_, err = conn.ExecContext(ctx, fmt.Sprintf("CALL rds_aurora.limitless_alter_table_type_sharded('%s.buffered_events', ARRAY['shard_id'])", schema))
+		require.NoError(t, err)
+	}
 	for _, count := range []int{1, 3, 1} {
 		_, err = insertIntoBufferedEvents(ctx, conn, bufferedRows(count))
 		require.NoError(t, err)

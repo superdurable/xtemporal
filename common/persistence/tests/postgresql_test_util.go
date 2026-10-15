@@ -38,10 +38,11 @@ const (
 
 type (
 	PostgreSQLTestData struct {
-		Cfg     *config.SQL
-		Factory *sql.Factory
-		Logger  log.Logger
-		Metrics *metricstest.Capture
+		Cfg           *config.SQL
+		Factory       *sql.Factory
+		Logger        log.Logger
+		Metrics       *metricstest.Capture
+		VisibilityCfg *config.SQL // xtemporal: Aurora visibility uses vanilla PostgreSQL
 	}
 )
 
@@ -53,6 +54,11 @@ func setUpPostgreSQLTest(t *testing.T, pluginName string, connectAttrs map[strin
 	testData.Metrics = mh.StartCapture()
 	SetupPostgreSQLDatabase(t, testData.Cfg)
 	SetupPostgreSQLSchema(t, testData.Cfg)
+	if pluginName == "postgres12_limitless" && limitlessAuroraMode() { // xtemporal: visibility cannot use Limitless
+		testData.VisibilityCfg = limitlessVisibilityConfig(t)
+		SetupPostgreSQLDatabase(t, testData.VisibilityCfg)
+		loadLimitlessVisibilitySchema(t, testData.VisibilityCfg)
+	}
 
 	testData.Factory = sql.NewFactory(
 		*testData.Cfg,
@@ -66,6 +72,9 @@ func setUpPostgreSQLTest(t *testing.T, pluginName string, connectAttrs map[strin
 	tearDown := func() {
 		testData.Factory.Close()
 		mh.StopCapture(testData.Metrics)
+		if testData.VisibilityCfg != nil { // xtemporal: remove the suite's visibility database
+			TearDownPostgreSQLDatabase(t, testData.VisibilityCfg)
+		}
 		TearDownPostgreSQLDatabase(t, testData.Cfg)
 	}
 
@@ -113,7 +122,7 @@ func SetupPostgreSQLDatabase(t *testing.T, cfg *config.SQL) {
 }
 
 func SetupPostgreSQLSchema(t *testing.T, cfg *config.SQL) {
-	if cfg.PluginName == "postgres12_limitless" { // xtemporal: use the Limitless schema and PostgreSQL visibility schema
+	if cfg.PluginName == "postgres12_limitless" { // xtemporal: use the Limitless schema
 		loadLimitlessSchema(t, cfg)
 		return
 	}
