@@ -32,3 +32,7 @@ To resolve a sync conflict:
 xtemporal uses upstream version numbers. After a sync pull request is merged and validated, the release workflow creates an immutable Go tag such as `v1.32.1` and publishes `superdurable/xtemporal:1.32.1` with `temporal-server` and `temporal-sql-tool`.
 
 To release fork changes on the same upstream version, push an annotated tag `vX.Y.Z-x.N` (for example `v1.32.1-x.2`) on `main`. The build workflow publishes image `X.Y.Z-x.N` and creates a GitHub pre-release (semver pre-release); the `X.Y.Z`, minor, and `latest` image tags and the `vX.Y.Z` Go tag do not move. Go consumers pin the `-x.N` version explicitly, because minimal version selection prefers plain `vX.Y.Z` when another module requires it.
+
+## Authentication
+
+- [Revocable JWT API keys](jti-denylist.md)

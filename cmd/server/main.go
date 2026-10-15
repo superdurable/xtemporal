@@ -21,6 +21,7 @@ import (
 	_ "github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin/postgresql" // needed to load postgresql plugin
 	_ "github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin/sqlite"     // needed to load sqlite plugin
 	"github.com/superdurable/xtemporal/temporal"
+	"github.com/superdurable/xtemporal/x/auth"
 	_ "github.com/superdurable/xtemporal/x/limitless" // xtemporal: register Limitless default-store plugin
 	_ "github.com/superdurable/xtemporal/x/paradedb"  // xtemporal: register ParadeDB visibility plugin
 	"github.com/urfave/cli/v2"
@@ -211,10 +212,11 @@ func buildCLI() *cli.App {
 				}
 
 				// Authorization mappers: claim and audience
-				claimMapper, err := authorization.GetClaimMapperFromConfig(&cfg.Global.Authorization, logger)
+				claimMapper, metricHandler, cancel, err := auth.GetClaimMapperFromConfig(cfg, logger) // xtemporal: frontend JWT revocation mapper
 				if err != nil {
 					return cli.Exit(fmt.Sprintf("Unable to instantiate claim mapper: %v.", err), 1)
 				}
+				defer cancel()
 
 				audienceMapper, err := authorization.GetAudienceMapperFromConfig(&cfg.Global.Authorization)
 				if err != nil {
@@ -227,6 +229,7 @@ func buildCLI() *cli.App {
 					temporal.WithLogger(logger),
 					temporal.InterruptOn(temporal.InterruptCh()),
 					temporal.WithAuthorizer(authorizer),
+					temporal.WithCustomMetricsHandler(metricHandler), // xtemporal: share the revocation metric with the server reporter
 					temporal.WithClaimMapper(func(cfg *config.Config) authorization.ClaimMapper {
 						return claimMapper
 					}),
