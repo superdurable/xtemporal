@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5"
 	"strings"
+
+	"github.com/jackc/pgx/v5"
 )
 
 var tables = []struct{ name, ddl string }{
