@@ -49,6 +49,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.XTEMPORAL_BOT_TOKEN || github.token }}
           AUTO_MERGE_SYNC: ${{ vars.AUTO_MERGE_SYNC }}
+          SYNC_CONFLICT_AGENT_MENTION: ${{ vars.SYNC_CONFLICT_AGENT_MENTION }}
           REQUESTED_TAG: ${{ inputs.tag }}
           DRY_RUN: ${{ inputs.dry_run }}
         run: |

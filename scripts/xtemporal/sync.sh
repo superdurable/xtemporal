@@ -71,14 +71,38 @@ if [[ -z ${new_snapshot:-} ]]; then
   git push origin "$new_snapshot:refs/heads/upstream-snapshots"
 fi
 git worktree add --detach "$tmp/merge" "$main"
-git -C "$tmp/merge" switch -c "$branch"
+git -C "$tmp/merge" switch -C "$branch"
 git -C "$tmp/merge" config merge.ours.driver true
 if ! git -C "$tmp/merge" merge --no-ff -m "Merge upstream temporalio/temporal $tag" "$new_snapshot"; then
   files=$(git -C "$tmp/merge" diff --name-only --diff-filter=U)
   git -C "$tmp/merge" merge --abort
+  title="Upstream sync conflict: $tag"
+  issue_number=$(gh issue list --repo "$repo_name" --state open --label upstream-sync-conflict --limit 1000 --json number,title | python3 -c 'import json,sys; title=sys.argv[1]; print(next((issue["number"] for issue in json.load(sys.stdin) if issue["title"] == title), ""))' "$title")
+  if [[ -n $issue_number ]]; then
+    # shellcheck disable=SC2016
+    changed=$(gh issue view "$issue_number" --repo "$repo_name" --json body,comments | python3 -c '
+import json,re,sys
+issue=json.load(sys.stdin)
+pattern=r"(?:Conflicted files|Conflict file list changed):\n```\n(.*?)\n```"
+tracked=re.findall(pattern, issue["body"], re.S)
+for comment in issue["comments"]:
+    tracked.extend(re.findall(pattern, comment["body"], re.S))
+print(int(not tracked or tracked[-1] != sys.argv[1]))
+' "$files")
+    if [[ $changed == 1 ]]; then
+      # shellcheck disable=SC2016
+      gh issue comment "$issue_number" --repo "$repo_name" --body "$(printf 'Conflict file list changed:\n```\n%s\n```' "$files")"
+    fi
+    echo "conflict already tracked in #$issue_number" >&2
+    exit 1
+  fi
   gh label create upstream-sync-conflict --repo "$repo_name" --color D93F0B --description 'Upstream snapshot merge needs resolution' --force
-  body=$(printf 'The %s snapshot was pushed to upstream-snapshots, but its merge into main conflicts.\n\nConflicted files:\n```\n%s\n```\n\nReproduce:\n```sh\ngit fetch origin main upstream-snapshots\ngit switch -c %s origin/main\ngit config merge.ours.driver true\ngit merge --no-ff origin/upstream-snapshots\n```\n' "$tag" "$files" "$branch")
-  gh issue create --repo "$repo_name" --title "Upstream sync conflict: $tag" --body "$body" --label upstream-sync-conflict
+  # shellcheck disable=SC2016
+  body=$(printf 'The rewritten upstream release %s snapshot was pushed to `upstream-snapshots`, but merging it into `main` produced textual conflicts.\n\nSnapshot commit: `%s`\nMain commit: `%s`\n\nConflicted files:\n```\n%s\n```\n\nReproduce from this repository:\n```sh\ngit fetch origin main upstream-snapshots\ngit switch -c %s %s\ngit config merge.ours.driver true\ngit merge --no-ff -m "Merge upstream temporalio/temporal %s" %s\n```\n\nResolve the conflicts by keeping upstream\047s new code and re-applying only our `xtemporal:`-marked hook lines and fork-owned changes. Do not edit fork-owned files listed in `scripts/xtemporal/fork-owned.txt` by hand. Keep `README.md` and `CONTRIBUTING.md` from our fork.\n\nPush `%s` with a merge commit of `origin/upstream-snapshots` into `origin/main`. Open a PR titled `Sync upstream %s` with the `upstream-sync` and `full-ci` labels. Never squash the merge commit.\n\nAcceptance criteria: PR CI is green, including `required-checks`; `go build ./...` succeeds; no `go.temporal.io/server` imports are reintroduced.\n' "$tag" "$new_snapshot" "$main" "$files" "$branch" "$main" "$tag" "$new_snapshot" "$branch" "$tag")
+  issue=$(gh issue create --repo "$repo_name" --title "$title" --body "$body" --label upstream-sync-conflict)
+  if [[ -n ${SYNC_CONFLICT_AGENT_MENTION:-} ]]; then
+    gh issue comment "$issue" --repo "$repo_name" --body "$SYNC_CONFLICT_AGENT_MENTION please resolve this upstream sync conflict following the instructions in this issue."
+  fi
   exit 1
 fi
 git -C "$tmp/merge" push origin "HEAD:refs/heads/$branch"
