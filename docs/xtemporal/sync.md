@@ -1,0 +1,9 @@
+# Upstream release sync
+
+The daily workflow checks temporalio/temporal's Latest stable release. Only a `vX.Y.Z` version greater than this repository's highest stable version tag is imported. A manual run accepts a tag and a dry-run flag. Locally, run `bash scripts/xtemporal/sync.sh --tag v1.32.1 --dry-run` to check the decision without pushing or opening a PR.
+
+A live run requires the `XTEMPORAL_BOT_TOKEN` secret. Use a GitHub App installation token or a fine-grained PAT with Contents (read/write), Pull requests (read/write), Issues (read/write), and Metadata (read) permissions on `superdurable/xtemporal`. The token must be able to push `upstream-snapshots` and `sync/*` branches and create labeled PRs and issues. The bot token makes the sync PR's push and PR events trigger CI; events made with `GITHUB_TOKEN` would not. The repository's `AUTO_MERGE_SYNC` variable, when `true`, enables merge-commit auto-merge after checks pass. Repository settings must allow merge commits and auto-merge.
+
+The script commits the rewritten tree as the next `upstream-snapshots` commit, then creates `sync/vX.Y.Z` from main and merges the snapshot into it. Fork-owned files listed in `scripts/xtemporal/fork-owned.txt` use the `ours` merge driver. If a merge conflicts, the script leaves the snapshot pushed and opens an `upstream-sync-conflict` issue with the files and reproduction commands. Resolve the issue manually; do not squash a sync PR because the snapshot must remain an ancestor of main.
+
+On main, `release.yml` creates the matching annotated version tag when `ServerVersion` advances, then calls the image workflow directly. It can also be dispatched with an existing tag to republish that release. A tag pushed with `GITHUB_TOKEN` does not trigger a tag-push workflow, which is why the direct call is required.
