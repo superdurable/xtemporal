@@ -7,7 +7,7 @@ xtemporal runs and is configured exactly like Temporal Server. For installation,
 ## Extensions
 
 - **Aurora PostgreSQL Limitless default store.** The `postgres12_limitless` SQL plugin runs Temporal's default (non-visibility) store on Amazon Aurora PostgreSQL Limitless Database for horizontal scale-out. It has been validated on a real Limitless cluster: row-lock fencing, read-after-write across routers, single-shard history transactions, fencing across a shard group reboot, the full persistence suites, and functional tests. See the [Limitless guide](docs/xtemporal/limitless.md).
-- **ParadeDB advanced visibility.** **ParadeDB visibility is EXPERIMENTAL and not for production use:** the pinned ParadeDB 0.26.0 backend exited during a 16-writer benchmark. See the [ParadeDB visibility guide](docs/xtemporal/paradedb.md) and [benchmark release gate](docs/xtemporal/paradedb-benchmark.md).
+- **ParadeDB advanced visibility.** The `paradedb` SQL plugin stores visibility data in ParadeDB while the default store stays on PostgreSQL. See the [ParadeDB visibility guide](docs/xtemporal/paradedb.md) and the [benchmark results](docs/xtemporal/paradedb-benchmark.md).
 
 ## Versions and images
 

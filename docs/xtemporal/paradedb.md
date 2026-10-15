@@ -1,7 +1,5 @@
 # ParadeDB visibility
 
-**EXPERIMENTAL — not for production use.** The pinned ParadeDB 0.26.0 backend exited under 16 concurrent writers and eight readers in the [benchmark release gate](./paradedb-benchmark.md). The release gate failed; use this plugin only for evaluation until the backend failure is diagnosed and the full gate passes.
-
 The `paradedb` SQL plugin stores visibility data in ParadeDB while the default store uses `postgres12_pgx`. It targets `paradedb/paradedb:v0.26.0-pg17` (PostgreSQL 17, `pg_search` 0.26.0). Use a fresh visibility database: its generated `TEXT` search columns differ from the PostgreSQL visibility schema. The plugin always uses the unified query converter, including when `system.visibilityEnableUnifiedQueryConverter` is disabled.
 
 ## Local databases and schema
@@ -47,7 +45,7 @@ persistence:
         password: temporal
 ```
 
-The server and SQL tool import the plugin automatically. Library users must blank-import `github.com/superdurable/xtemporal/x/paradedb` in their executable.
+The `temporal-server` and `temporal-sql-tool` binaries in the xtemporal image include the plugin.
 
 ## Tests
 
