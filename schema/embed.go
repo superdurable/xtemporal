@@ -42,7 +42,7 @@ func PathsByDir(dbSubDir string) []string {
 
 func PathsByDB(dbName string) []string {
 	if dbName == "sql" {
-		return append(append(PathsByDir("mysql"), PathsByDir("postgresql")...), PathsByDir("paradedb")...) // xtemporal: expose ParadeDB schema to SQL tool
+		return append(append(append(PathsByDir("mysql"), PathsByDir("postgresql")...), PathsByDir("paradedb")...), PathsByDir("limitless")...) // xtemporal: expose ParadeDB and Limitless schemas to SQL tool
 	}
 	return PathsByDir(dbName)
 }

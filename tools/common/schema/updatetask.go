@@ -60,7 +60,7 @@ const (
 )
 
 var (
-	whitelistedCQLPrefixes = [5]string{"CREATE", "ALTER", "INSERT", "DROP", "DO"}
+	whitelistedCQLPrefixes = [6]string{"CREATE", "ALTER", "INSERT", "DROP", "DO", "CALL"} // xtemporal: Aurora Limitless converts tables with CALL rds_aurora.limitless_alter_table_type_*.
 	versionDirectoryRegex  = regexp.MustCompile(`^v[\d.]+`)
 )
 
