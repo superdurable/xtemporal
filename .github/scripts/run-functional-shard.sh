@@ -7,12 +7,16 @@ if [[ $# -ne 1 ]]; then
 fi
 
 xt_driver="$1"
+xt_parallelism="${XT_TEST_PARALLELISM:-1}"
 xt_list="$(mktemp "${RUNNER_TEMP:-/tmp}/xt-functional-list.XXXXXX")"
 trap 'rm -f "$xt_list"' EXIT
 
 make prepare-coverage-test
 go test -list '^Test' -tags disable_grpc_modules,test_dep -p 1 ./tests > "$xt_list"
-mapfile -t xt_suites < <(grep '^Test' "$xt_list")
+xt_suites=()
+while IFS= read -r xt_suite; do
+  xt_suites+=("$xt_suite")
+done < <(grep '^Test' "$xt_list")
 if [[ ${#xt_suites[@]} -eq 0 ]]; then
   echo "No functional test suites found." >&2
   exit 1
@@ -26,7 +30,7 @@ for ((xt_start=0; xt_start<${#xt_suites[@]}; xt_start+=xt_batch_size)); do
   xt_report=".testoutput/junit.functional.${TEST_SHARD_INDEX:-0}.${xt_start}.xml"
   xt_coverage=".testoutput/coverage.functional.${TEST_SHARD_INDEX:-0}.${xt_start}.out"
   go run ./cmd/tools/test-runner test --gotestsum-path=.bin/gotestsum-v1.12.3 --max-attempts=3 --junitfile="$xt_report" -- \
-    -tags disable_grpc_modules,test_dep -p 1 -timeout=25m -parallel=1 -shuffle=on \
+    -tags disable_grpc_modules,test_dep -p 1 -timeout=25m -parallel="$xt_parallelism" -shuffle=on \
     -run="^(${xt_pattern})$" -coverprofile="$xt_coverage" ./tests \
     -args -persistenceType=sql -persistenceDriver="$xt_driver"
 done

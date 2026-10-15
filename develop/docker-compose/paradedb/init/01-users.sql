@@ -1,0 +1,1 @@
+CREATE ROLE temporal LOGIN PASSWORD 'temporal' SUPERUSER;
