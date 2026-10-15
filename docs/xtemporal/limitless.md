@@ -1,6 +1,6 @@
 # Aurora PostgreSQL Limitless default store
 
-**Semantics validated on a real `16.13-limitless` cluster; performance not yet benchmarked.** Row-lock fencing, read-after-write across routers, single-shard history transactions, distributed deadlock detection, and fencing across a shard group reboot passed. Only fresh clusters are supported; there is no migration path from vanilla PostgreSQL. Temporal-level end-to-end testing is still pending.
+Validated on a real `16.13-limitless` cluster. Row-lock fencing, read-after-write across routers, single-shard history transactions, distributed deadlock detection, and fencing across a shard group reboot hold. The sql-tool schema path, the full persistence suites, and the functional workflow, signal, activity, child-workflow, continue-as-new, and shard-acquisition suites pass (see [Tests](#tests)). The plugin targets fresh clusters; there is no migration path from vanilla PostgreSQL.
 
 The `postgres12_limitless` SQL plugin is for the **default store only**. Configure visibility as a separate store using `postgres12_pgx` on a separate PostgreSQL server, or another supported visibility backend. The Limitless plugin rejects visibility-store connections. Do not put the PostgreSQL visibility schema in the Limitless database either: its `GENERATED ALWAYS ... STORED` search-attribute columns fail on Limitless standard tables (`GENERATED STORED is not supported on standard tables`).
 
@@ -51,7 +51,7 @@ Select an available `16.x-limitless` version for your Region rather than assumin
 
 ## Set up the default-store schema
 
-**Command status: validated on a real cluster: pending.** The schema lives in `schema/limitless/temporal` and is embedded in `temporal-sql-tool` as `--schema-name limitless/temporal`; on PostgreSQL 16 the versioned path was verified up to the first `CALL`, which needs Limitless. Use the shard group endpoint on port 5432 and the built-in `postgres_limitless` database, or create a fresh database first. Export `SQL_PASSWORD` in the shell or supply another supported SQL tool credential source.
+The schema lives in `schema/limitless/temporal` and is embedded in `temporal-sql-tool` as `--schema-name limitless/temporal`; both paths below were run on a real cluster. Use the shard group endpoint on port 5432 and the built-in `postgres_limitless` database, or create a fresh database first. Export `SQL_PASSWORD` in the shell or supply another supported SQL tool credential source.
 
 From the repository root, build the tool, then choose **one** schema initialization path:
 
