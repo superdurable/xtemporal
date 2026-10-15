@@ -51,7 +51,7 @@ Select an available `16.x-limitless` version for your Region rather than assumin
 
 ## Set up the default-store schema
 
-**Command status: validated on a real cluster: pending.** The `schema/limitless/temporal` SQL files and their embedding in `temporal-sql-tool` are pending on this branch. Run these commands only after that schema lands. Use the shard group endpoint on port 5432 and the built-in `postgres_limitless` database, or create a fresh database first. Export `SQL_PASSWORD` in the shell or supply another supported SQL tool credential source.
+**Command status: validated on a real cluster: pending.** The schema lives in `schema/limitless/temporal` and is embedded in `temporal-sql-tool` as `--schema-name limitless/temporal`; on PostgreSQL 16 the versioned path was verified up to the first `CALL`, which needs Limitless. Use the shard group endpoint on port 5432 and the built-in `postgres_limitless` database, or create a fresh database first. Export `SQL_PASSWORD` in the shell or supply another supported SQL tool credential source.
 
 From the repository root, build the tool, then choose **one** schema initialization path:
 
@@ -161,4 +161,10 @@ There is no Limitless CI: AWS does not provide a local or Docker Limitless servi
 go test -tags test_dep ./x/limitless
 ```
 
-`x/limitless` also has a DSN-gated PostgreSQL test for buffered-event inserts. Set `XTEMPORAL_LIMITLESS_TEST_DSN` to an appropriate test database DSN to run it. Schema tests are pending on this branch; see `schema/limitless` tests when that schema lands. The on-demand end-to-end script `scripts/xtemporal/limitless-e2e.sh` is **planned**, not available yet. Real-cluster schema setup and Temporal-level end-to-end tests remain pending.
+Static schema tests run with normal unit tests too. They check the table type mapping, shard keys in every PK/UNIQUE, collocation anchors, index ordering, and drift against `schema/postgresql/v12`, so an upstream v12 change fails until it is mirrored:
+
+```sh
+go test -tags test_dep ./schema/limitless
+```
+
+`x/limitless` (buffered-event inserts) and `schema/limitless` (schema load; on Limitless it also asserts table types and collocation groups) have DSN-gated database tests. Set `XTEMPORAL_LIMITLESS_TEST_DSN` to a disposable test database DSN to run them. The on-demand end-to-end script `scripts/xtemporal/limitless-e2e.sh` is **planned**, not available yet. Real-cluster schema setup and Temporal-level end-to-end tests remain pending.
