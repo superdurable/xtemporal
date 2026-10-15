@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestVisibilityStatements(t *testing.T) {
@@ -25,6 +27,22 @@ func TestVisibilityStatements(t *testing.T) {
 	}
 	if deleteSQL != "DELETE FROM executions_visibility WHERE namespace_id = $1 AND run_id = $2" {
 		t.Fatal("delete predicate changed")
+	}
+}
+
+func TestDiagnosticFiltersRejectUnknownValues(t *testing.T) {
+	for _, tc := range []struct {
+		name, writeOp, readQuery, want string
+	}{
+		{"write", "replace", "all", "unknown write operation"},
+		{"read", "mixed", "missing", "unknown read query"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := run(context.Background(), "", true, 1, 0, 0, time.Second, tc.writeOp, tc.readQuery)
+			if err == nil || !strings.Contains(err.Error(), tc.want) {
+				t.Fatalf("run error = %v, want %q", err, tc.want)
+			}
+		})
 	}
 }
 
