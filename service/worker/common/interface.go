@@ -3,8 +3,8 @@
 package common
 
 import (
-	sdkworker "go.temporal.io/sdk/worker"
 	"github.com/superdurable/xtemporal/common/namespace"
+	sdkworker "go.temporal.io/sdk/worker"
 )
 
 type (

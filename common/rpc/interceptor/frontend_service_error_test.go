@@ -7,12 +7,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
 	"github.com/superdurable/xtemporal/common/testing/rpctest"
 	"github.com/superdurable/xtemporal/common/testing/testlogger"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

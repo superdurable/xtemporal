@@ -8,10 +8,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	"github.com/superdurable/xtemporal/common/namespace"
+	"go.temporal.io/api/workflowservice/v1"
 	"go.uber.org/mock/gomock"
 )
 

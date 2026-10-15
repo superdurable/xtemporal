@@ -5,12 +5,12 @@ package ndc
 import (
 	"context"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/definition"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/persistence/versionhistory"
 	"github.com/superdurable/xtemporal/common/primitives/timestamp"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	"go.temporal.io/api/serviceerror"
 )
 
 type (

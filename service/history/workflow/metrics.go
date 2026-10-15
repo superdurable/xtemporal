@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/chasm"
@@ -14,6 +13,7 @@ import (
 	"github.com/superdurable/xtemporal/common/tqid"
 	"github.com/superdurable/xtemporal/service/history/configs"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 func emitWorkflowHistoryStats(

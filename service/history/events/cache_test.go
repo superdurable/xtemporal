@@ -8,13 +8,13 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	enumspb "go.temporal.io/api/enums/v1"
-	historypb "go.temporal.io/api/history/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/persistence"
+	enumspb "go.temporal.io/api/enums/v1"
+	historypb "go.temporal.io/api/history/v1"
 	"go.uber.org/mock/gomock"
 )
 

@@ -4,8 +4,6 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"go.temporal.io/api/serviceerror"
-	sdkclient "go.temporal.io/sdk/client"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	commonspb "github.com/superdurable/xtemporal/api/common/v1"
 	"github.com/superdurable/xtemporal/common/config"
@@ -15,6 +13,8 @@ import (
 	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
 	"github.com/superdurable/xtemporal/service/history/tasks"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	"go.temporal.io/api/serviceerror"
+	sdkclient "go.temporal.io/sdk/client"
 	"google.golang.org/grpc/codes"
 )
 

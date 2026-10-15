@@ -6,9 +6,6 @@ import (
 	"iter"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/workflowservice/v1"
-	"go.temporal.io/sdk/activity"
 	"github.com/superdurable/xtemporal/api/visibilityservice/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/chasm/lib/scheduler"
@@ -22,6 +19,9 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/visibility/manager"
 	"github.com/superdurable/xtemporal/common/quotas"
 	"github.com/superdurable/xtemporal/common/sdk"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/workflowservice/v1"
+	"go.temporal.io/sdk/activity"
 )
 
 const (

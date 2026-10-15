@@ -3,9 +3,9 @@ package elasticsearch
 import (
 	"os"
 
-	"github.com/urfave/cli"
 	"github.com/superdurable/xtemporal/common/log"
 	commonschema "github.com/superdurable/xtemporal/tools/common/schema"
+	"github.com/urfave/cli"
 )
 
 const (

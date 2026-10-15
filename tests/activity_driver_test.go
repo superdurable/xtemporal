@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/chasm/lib/activity/model"
 	"github.com/superdurable/xtemporal/common/testing/await"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // TestDriversRecognizeTimeoutObservedBeforeWait reproduces a race in awaitTimeout: a retryable timeout

@@ -8,9 +8,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/superdurable/xtemporal/common"
 	commonpb "go.temporal.io/api/common/v1"
 	workflowpb "go.temporal.io/api/workflow/v1"
-	"github.com/superdurable/xtemporal/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

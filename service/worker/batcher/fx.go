@@ -1,9 +1,6 @@
 package batcher
 
 import (
-	"go.temporal.io/api/workflowservice/v1"
-	sdkworker "go.temporal.io/sdk/worker"
-	"go.temporal.io/sdk/workflow"
 	"github.com/superdurable/xtemporal/api/adminservice/v1"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/log"
@@ -16,6 +13,9 @@ import (
 	"github.com/superdurable/xtemporal/common/resource"
 	"github.com/superdurable/xtemporal/common/sdk"
 	workercommon "github.com/superdurable/xtemporal/service/worker/common"
+	"go.temporal.io/api/workflowservice/v1"
+	sdkworker "go.temporal.io/sdk/worker"
+	"go.temporal.io/sdk/workflow"
 	"go.uber.org/fx"
 )
 

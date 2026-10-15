@@ -5,14 +5,14 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/sdk/temporal"
-	"go.temporal.io/sdk/testsuite"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/primitives"
 	"github.com/superdurable/xtemporal/service/worker/deletenamespace/deleteexecutions"
 	"github.com/superdurable/xtemporal/service/worker/deletenamespace/errors"
 	"github.com/superdurable/xtemporal/service/worker/deletenamespace/reclaimresources"
+	"go.temporal.io/sdk/temporal"
+	"go.temporal.io/sdk/testsuite"
 )
 
 func Test_DeleteNamespaceWorkflow_ByName(t *testing.T) {

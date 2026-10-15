@@ -8,12 +8,12 @@ import (
 	"testing"
 	"time"
 
-	"go.temporal.io/sdk/client"
-	"go.temporal.io/sdk/worker"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/temporal"
 	temporalite "github.com/superdurable/xtemporal/temporaltest/internal"
+	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/worker"
 )
 
 // A TestServer is a Temporal server listening on a system-chosen port on the

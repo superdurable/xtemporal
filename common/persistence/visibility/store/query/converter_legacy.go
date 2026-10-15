@@ -7,12 +7,12 @@ import (
 	"strings"
 
 	"github.com/olivere/elastic/v7"
-	"github.com/temporalio/sqlparser"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/sqlquery"
+	"github.com/temporalio/sqlparser"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 type (

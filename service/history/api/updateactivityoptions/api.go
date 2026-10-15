@@ -4,14 +4,6 @@ import (
 	"context"
 	"strings"
 
-	activitypb "go.temporal.io/api/activity/v1"
-	commandpb "go.temporal.io/api/command/v1"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	historypb "go.temporal.io/api/history/v1"
-	"go.temporal.io/api/serviceerror"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common"
@@ -26,6 +18,14 @@ import (
 	"github.com/superdurable/xtemporal/service/history/consts"
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
 	"github.com/superdurable/xtemporal/service/history/workflow"
+	activitypb "go.temporal.io/api/activity/v1"
+	commandpb "go.temporal.io/api/command/v1"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	historypb "go.temporal.io/api/history/v1"
+	"go.temporal.io/api/serviceerror"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 func Invoke(

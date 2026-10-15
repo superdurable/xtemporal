@@ -8,11 +8,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/number"
 	"github.com/superdurable/xtemporal/common/testing/testhooks"
 	"github.com/superdurable/xtemporal/common/tqid"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 func TestTQLoadBalancerMapping(t *testing.T) {

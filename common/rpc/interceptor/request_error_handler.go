@@ -5,8 +5,6 @@ package interceptor
 import (
 	"errors"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/log"
@@ -16,6 +14,8 @@ import (
 	"github.com/superdurable/xtemporal/common/rpc/interceptor/logtags"
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
 	"github.com/superdurable/xtemporal/common/tasktoken"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 	"google.golang.org/grpc/codes"
 )
 

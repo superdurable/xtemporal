@@ -1,8 +1,8 @@
 package scheduler
 
 import (
-	"go.temporal.io/sdk/workflow"
 	schedulespb "github.com/superdurable/xtemporal/api/schedule/v1"
+	"go.temporal.io/sdk/workflow"
 )
 
 // SchedulerWorkflowWithSpecBuilder exposes the internal workflow constructor to the external

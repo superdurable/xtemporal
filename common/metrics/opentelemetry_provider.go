@@ -8,11 +8,11 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/superdurable/xtemporal/common/log"
+	"github.com/superdurable/xtemporal/common/log/tag"
 	exporters "go.opentelemetry.io/otel/exporters/prometheus"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetrics "go.opentelemetry.io/otel/sdk/metric"
-	"github.com/superdurable/xtemporal/common/log"
-	"github.com/superdurable/xtemporal/common/log/tag"
 )
 
 var _ OpenTelemetryProvider = (*openTelemetryProviderImpl)(nil)

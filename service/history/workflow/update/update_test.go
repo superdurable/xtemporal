@@ -6,6 +6,13 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/common/effect"
+	"github.com/superdurable/xtemporal/common/future"
+	"github.com/superdurable/xtemporal/common/payloads"
+	. "github.com/superdurable/xtemporal/common/testing/protoutils"
+	"github.com/superdurable/xtemporal/common/testing/testvars"
+	"github.com/superdurable/xtemporal/service/history/consts"
+	"github.com/superdurable/xtemporal/service/history/workflow/update"
 	commonpb "go.temporal.io/api/common/v1"
 	. "go.temporal.io/api/enums/v1"
 	failurepb "go.temporal.io/api/failure/v1"
@@ -14,13 +21,6 @@ import (
 	"go.temporal.io/api/serviceerror"
 	updatepb "go.temporal.io/api/update/v1"
 	workflowpb "go.temporal.io/api/workflow/v1"
-	"github.com/superdurable/xtemporal/common/effect"
-	"github.com/superdurable/xtemporal/common/future"
-	"github.com/superdurable/xtemporal/common/payloads"
-	. "github.com/superdurable/xtemporal/common/testing/protoutils"
-	"github.com/superdurable/xtemporal/common/testing/testvars"
-	"github.com/superdurable/xtemporal/service/history/consts"
-	"github.com/superdurable/xtemporal/service/history/workflow/update"
 	"google.golang.org/protobuf/types/known/anypb"
 )
 

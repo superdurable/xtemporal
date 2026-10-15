@@ -7,8 +7,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/clock"
 	"github.com/superdurable/xtemporal/common/definition"
@@ -16,6 +14,8 @@ import (
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/service/history/shard"
 	"github.com/superdurable/xtemporal/service/history/tests"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/mock/gomock"
 )
 

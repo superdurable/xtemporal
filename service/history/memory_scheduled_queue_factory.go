@@ -1,7 +1,6 @@
 package history
 
 import (
-	"go.opentelemetry.io/otel/trace"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/clock"
 	"github.com/superdurable/xtemporal/common/cluster"
@@ -15,6 +14,7 @@ import (
 	historyi "github.com/superdurable/xtemporal/service/history/interfaces"
 	"github.com/superdurable/xtemporal/service/history/queues"
 	wcache "github.com/superdurable/xtemporal/service/history/workflow/cache"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/fx"
 )
 

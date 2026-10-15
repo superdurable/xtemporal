@@ -6,12 +6,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	batchspb "github.com/superdurable/xtemporal/api/batch/v1"
 	batchpb "go.temporal.io/api/batch/v1"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/workflowservice/v1"
 	"go.temporal.io/sdk/testsuite"
-	batchspb "github.com/superdurable/xtemporal/api/batch/v1"
 	"go.uber.org/mock/gomock"
 )
 

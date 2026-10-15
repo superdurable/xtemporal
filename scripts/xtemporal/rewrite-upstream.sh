@@ -39,3 +39,4 @@ if rg -n --hidden --no-ignore -F 'go.temporal.io/server' "$output" -g '!.git/**'
   echo 'safety check failed: go.temporal.io/server remains in tree' >&2
   exit 1
 fi
+"$script_dir/format-imports.sh" "$output"

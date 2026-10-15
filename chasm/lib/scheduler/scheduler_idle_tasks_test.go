@@ -5,13 +5,13 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	schedulepb "go.temporal.io/api/schedule/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/chasm/lib/scheduler"
 	"github.com/superdurable/xtemporal/chasm/lib/scheduler/gen/schedulerpb/v1"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/metrics/metricstest"
+	schedulepb "go.temporal.io/api/schedule/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/api"
 	"github.com/superdurable/xtemporal/common/clock"
@@ -14,6 +13,7 @@ import (
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/namespace"
+	enumspb "go.temporal.io/api/enums/v1"
 	"google.golang.org/grpc"
 )
 

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 
-	enumspb "go.temporal.io/api/enums/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/config"
@@ -21,6 +20,7 @@ import (
 	"github.com/superdurable/xtemporal/common/primitives/timestamp"
 	"github.com/superdurable/xtemporal/common/resolver"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 var (

@@ -8,6 +8,10 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/superdurable/xtemporal/common/authorization"
+	"github.com/superdurable/xtemporal/common/config"
+	"github.com/superdurable/xtemporal/temporal"
+	"github.com/superdurable/xtemporal/temporaltest"
 	enumspb "go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/operatorservice/v1"
 	"go.temporal.io/api/serviceerror"
@@ -18,10 +22,6 @@ import (
 	"go.temporal.io/sdk/interceptor"
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
-	"github.com/superdurable/xtemporal/common/authorization"
-	"github.com/superdurable/xtemporal/common/config"
-	"github.com/superdurable/xtemporal/temporal"
-	"github.com/superdurable/xtemporal/temporaltest"
 	"google.golang.org/grpc/codes"
 )
 

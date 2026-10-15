@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/api/serviceerror"
 	taskqueuespb "github.com/superdurable/xtemporal/api/taskqueue/v1"
 	"github.com/superdurable/xtemporal/client/matching"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
+	"go.temporal.io/api/serviceerror"
 )
 
 func TestValidatePartitionCounts(t *testing.T) {

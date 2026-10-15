@@ -5,13 +5,13 @@ import (
 	"slices"
 	"time"
 
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	schedulepb "go.temporal.io/api/schedule/v1"
 	schedulespb "github.com/superdurable/xtemporal/api/schedule/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/chasm/lib/scheduler/gen/schedulerpb/v1"
 	"github.com/superdurable/xtemporal/common/util"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	schedulepb "go.temporal.io/api/schedule/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

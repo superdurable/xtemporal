@@ -11,11 +11,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	enumspb "go.temporal.io/api/enums/v1"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/namespace"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 const (

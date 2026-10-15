@@ -8,15 +8,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
-	commonpb "go.temporal.io/api/common/v1"
-	deploymentpb "go.temporal.io/api/deployment/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
-	updatepb "go.temporal.io/api/update/v1"
-	"go.temporal.io/api/workflowservice/v1"
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	"github.com/superdurable/xtemporal/api/historyservice/v1"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/backoff"
@@ -29,6 +20,14 @@ import (
 	"github.com/superdurable/xtemporal/common/sdk"
 	"github.com/superdurable/xtemporal/common/testing/testhooks"
 	"github.com/superdurable/xtemporal/common/worker_versioning"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
+	commonpb "go.temporal.io/api/common/v1"
+	deploymentpb "go.temporal.io/api/deployment/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
+	updatepb "go.temporal.io/api/update/v1"
+	"go.temporal.io/api/workflowservice/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

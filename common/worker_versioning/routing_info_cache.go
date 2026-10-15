@@ -2,10 +2,10 @@
 package worker_versioning
 
 import (
-	enumspb "go.temporal.io/api/enums/v1"
 	deploymentspb "github.com/superdurable/xtemporal/api/deployment/v1"
 	"github.com/superdurable/xtemporal/common/cache"
 	"github.com/superdurable/xtemporal/common/metrics"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 // RoutingInfoCache is used to cache results of GetTaskQueueUserData

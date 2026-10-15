@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	commonpb "go.temporal.io/api/common/v1"
 	enumspb "go.temporal.io/api/enums/v1"
-	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 )
 
 type StringifySuite struct {

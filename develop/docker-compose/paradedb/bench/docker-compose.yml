@@ -1,0 +1,27 @@
+services:
+  paradedb:
+    image: paradedb/paradedb:v0.26.0-pg17
+    command: ["postgres", "-c", "max_connections=200"]
+    environment:
+      POSTGRES_PASSWORD: spike
+      POSTGRES_DB: visibility
+    ports:
+      - "127.0.0.1:56432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d visibility"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  postgres:
+    image: postgres:17.11
+    command: ["postgres", "-c", "max_connections=200", "-c", "shared_buffers=8GB", "-c", "effective_cache_size=24GB", "-c", "work_mem=80MB", "-c", "maintenance_work_mem=2GB"]
+    environment:
+      POSTGRES_PASSWORD: spike
+      POSTGRES_DB: visibility
+    ports:
+      - "127.0.0.1:56433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d visibility"]
+      interval: 2s
+      timeout: 2s
+      retries: 30

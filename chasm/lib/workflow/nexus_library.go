@@ -1,9 +1,9 @@
 package workflow
 
 import (
-	enumspb "go.temporal.io/api/enums/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/chasm/lib/nexusoperation"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 type nexusLibrary struct {

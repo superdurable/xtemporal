@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
 	enumsspb "github.com/superdurable/xtemporal/api/enums/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/chasm"
@@ -19,6 +17,8 @@ import (
 	"github.com/superdurable/xtemporal/service/history/queues"
 	"github.com/superdurable/xtemporal/service/history/tasks"
 	"github.com/superdurable/xtemporal/service/history/vclock"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 type (

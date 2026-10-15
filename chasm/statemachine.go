@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/superdurable/xtemporal/common/telemetry"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"go.temporal.io/api/serviceerror"
-	"github.com/superdurable/xtemporal/common/telemetry"
 )
 
 // ErrInvalidTransition is returned from [Transition.Apply] on an invalid state transition.

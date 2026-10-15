@@ -7,8 +7,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	taskqueuespb "github.com/superdurable/xtemporal/api/taskqueue/v1"
@@ -23,6 +21,8 @@ import (
 	"github.com/superdurable/xtemporal/common/number"
 	"github.com/superdurable/xtemporal/common/tqid"
 	"github.com/superdurable/xtemporal/common/worker_versioning"
+	enumspb "go.temporal.io/api/enums/v1"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
 	"google.golang.org/protobuf/proto"
 )
 

@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/superdurable/xtemporal/service/worker/workerdeployment/replaytester"
 	commonpb "go.temporal.io/api/common/v1"
 	computepb "go.temporal.io/api/compute/v1"
 	deploymentpb "go.temporal.io/api/deployment/v1"
@@ -14,7 +15,6 @@ import (
 	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/worker"
 	"go.temporal.io/sdk/workflow"
-	"github.com/superdurable/xtemporal/service/worker/workerdeployment/replaytester"
 )
 
 // computeProviderType is the WCI compute provider used for the compute-config part of this

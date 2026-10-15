@@ -10,8 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	nexuspb "go.temporal.io/api/nexus/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	"github.com/superdurable/xtemporal/api/matchingservicemock/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
@@ -22,6 +20,8 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/testing/protoassert"
 	"github.com/superdurable/xtemporal/common/testing/protorequire"
+	nexuspb "go.temporal.io/api/nexus/v1"
+	"go.temporal.io/api/serviceerror"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

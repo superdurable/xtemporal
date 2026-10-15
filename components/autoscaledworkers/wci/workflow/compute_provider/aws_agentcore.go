@@ -11,10 +11,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
 	agentcore_dp "github.com/aws/aws-sdk-go-v2/service/bedrockagentcore"
 	agentcore_cp "github.com/aws/aws-sdk-go-v2/service/bedrockagentcorecontrol"
-
+	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/client"
 	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
-	"github.com/superdurable/xtemporal/common/dynamicconfig"
 )
 
 const (

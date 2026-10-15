@@ -1,0 +1,200 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 8 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+env:
+  TEMPORAL_VERSION_CHECK_DISABLED: 1
+  DOCKER_COMPOSE_FILE: ./develop/github/docker-compose.yml
+
+jobs:
+  build:
+    name: Build binaries
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: make bins
+
+  unit-test:
+    name: Unit tests (${{ matrix.shard }}/3)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    env:
+      GOMAXPROCS: 2
+      CGO_ENABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Select unit test packages
+        id: packages
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          {
+            go list -tags test_dep -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./... |
+              grep -v -E '^github.com/superdurable/xtemporal/(tests|common/persistence/tests|tools/tests|temporaltest)(/|$)'
+            printf '%s\n' github.com/superdurable/xtemporal/tests/testcore
+          } | sort -u | awk -v shard="$SHARD" 'NR % 3 == shard % 3' > unit-packages.txt
+          test -s unit-packages.txt
+          printf 'packages=%s\n' "$(paste -sd' ' unit-packages.txt)" >> "$GITHUB_OUTPUT"
+      - name: Run unit tests
+        run: make unit-test-coverage UNIT_TEST_DIRS="${{ steps.packages.outputs.packages }}" TEST_PARALLEL_FLAGS='-p 1' TEST_TIMEOUT=20m TEST_RUNNER_TIMEOUT=30m
+      - name: Upload JUnit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-junit-${{ matrix.shard }}
+          path: .testoutput/junit.*.xml
+          if-no-files-found: ignore
+
+  integration-test:
+    name: PostgreSQL persistence and schema tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      CGO_ENABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Start PostgreSQL
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
+      - name: Run PostgreSQL persistence and schema tests
+        run: make integration-test-coverage INTEGRATION_TEST_DIRS='./common/persistence/tests ./tools/tests' TEST_ARGS=-run=^Test.*PGX TEST_PARALLEL_FLAGS='-p 1' TEST_TIMEOUT=20m TEST_RUNNER_TIMEOUT=30m
+      - name: Upload JUnit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgres-persistence-junit
+          path: .testoutput/junit.*.xml
+          if-no-files-found: ignore
+      - name: Show PostgreSQL logs
+        if: failure()
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" logs --no-color postgresql
+      - name: Stop PostgreSQL
+        if: always()
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" down --volumes
+
+  functional-test-postgres:
+    name: PostgreSQL functional tests (${{ matrix.shard }}/6)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5]
+    env:
+      CGO_ENABLED: 1
+      GOMEMLIMIT: 8GiB
+      PERSISTENCE_TYPE: sql
+      PERSISTENCE_DRIVER: postgres12_pgx
+      TEST_TOTAL_SHARDS: 6
+      TEST_SHARD_INDEX: ${{ matrix.shard }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Start PostgreSQL
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
+      - run: ./.github/scripts/run-functional-shard.sh postgres12_pgx
+      - name: Upload JUnit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgres-functional-junit-${{ matrix.shard }}
+          path: .testoutput/junit.*.xml
+          if-no-files-found: ignore
+      - name: Upload memory diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgres-functional-memory-${{ matrix.shard }}
+          path: .testoutput/memory/
+          if-no-files-found: ignore
+      - name: Show PostgreSQL logs
+        if: failure()
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" logs --no-color postgresql
+      - name: Stop PostgreSQL
+        if: always()
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" down --volumes
+
+  functional-test-postgres-multi-cluster:
+    name: PostgreSQL functional tests (${{ matrix.suite }})
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [ndc, xdc]
+    env:
+      CGO_ENABLED: 1
+      GOMEMLIMIT: 8GiB
+      PERSISTENCE_TYPE: sql
+      PERSISTENCE_DRIVER: postgres12_pgx
+      TEST_TIMEOUT: 35m
+      TEST_RACE_FLAG: off
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Start PostgreSQL
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" up --detach --wait postgresql
+      - run: ./develop/github/monitor_test.sh make functional-test-${{ matrix.suite }}-coverage
+      - name: Show PostgreSQL logs
+        if: failure()
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" logs --no-color postgresql
+      - name: Stop PostgreSQL
+        if: always()
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" down --volumes
+
+  tests-succeed:
+    name: All Tests Succeed
+    if: always()
+    needs: [build, unit-test, integration-test, functional-test-postgres, functional-test-postgres-multi-cluster]
+    runs-on: ubuntu-24.04-arm
+    env:
+      RESULTS: ${{ toJSON(needs) }}
+      EVENT_NAME: ${{ github.event_name }}
+    steps:
+      - name: Check results
+        run: |
+          if jq -e --arg event "$EVENT_NAME" '
+            .build.result == "success" and
+            .["unit-test"].result == "success" and
+            .["integration-test"].result == "success" and
+            .["functional-test-postgres"].result == "success" and
+            .["functional-test-postgres-multi-cluster"].result == (if $event == "schedule" then "success" else "skipped" end)
+          ' <<< "$RESULTS"; then
+            exit 0
+          fi
+          exit 1

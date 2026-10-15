@@ -4,11 +4,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	apiactivitypb "go.temporal.io/api/activity/v1" //nolint:importas
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/chasm/lib/activity/gen/activitypb/v1"
 	"github.com/superdurable/xtemporal/chasm/lib/callback"
@@ -17,6 +12,11 @@ import (
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/searchattribute"
+	apiactivitypb "go.temporal.io/api/activity/v1" //nolint:importas
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
+	"go.temporal.io/api/workflowservice/v1"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"

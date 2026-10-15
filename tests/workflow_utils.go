@@ -1,9 +1,9 @@
 package tests
 
 import (
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/common/testing/testvars"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 func mustStartWorkflow(s testcore.Env, tv *testvars.TestVars) string {

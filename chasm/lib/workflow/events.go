@@ -3,9 +3,9 @@ package workflow
 import (
 	"errors"
 
+	"github.com/superdurable/xtemporal/chasm"
 	enumspb "go.temporal.io/api/enums/v1"
 	historypb "go.temporal.io/api/history/v1"
-	"github.com/superdurable/xtemporal/chasm"
 )
 
 // ErrEventNotCherryPickable should be returned by CherryPick if an event should not be cherry picked for whatever reason.

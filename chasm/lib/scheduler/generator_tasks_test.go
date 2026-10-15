@@ -6,8 +6,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	schedulepb "go.temporal.io/api/schedule/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/chasm/lib/scheduler"
 	"github.com/superdurable/xtemporal/chasm/lib/scheduler/gen/schedulerpb/v1"
@@ -16,6 +14,8 @@ import (
 	queueerrors "github.com/superdurable/xtemporal/service/history/queues/errors"
 	"github.com/superdurable/xtemporal/service/history/tasks"
 	legacyscheduler "github.com/superdurable/xtemporal/service/worker/scheduler"
+	schedulepb "go.temporal.io/api/schedule/v1"
+	"go.temporal.io/api/workflowservice/v1"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"

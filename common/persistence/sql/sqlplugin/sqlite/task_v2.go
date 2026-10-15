@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

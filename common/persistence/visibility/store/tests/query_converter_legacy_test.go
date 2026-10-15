@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
@@ -16,6 +15,7 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store/query"
 	vissql "github.com/superdurable/xtemporal/common/persistence/visibility/store/sql"
 	"github.com/superdurable/xtemporal/common/searchattribute"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

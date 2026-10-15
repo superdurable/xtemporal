@@ -5,12 +5,12 @@ import (
 	"net"
 	"net/url"
 
-	"github.com/urfave/cli"
 	"github.com/superdurable/xtemporal/common/auth"
 	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/tools/common/schema"
+	"github.com/urfave/cli"
 )
 
 // setupSchema executes the setupSchemaTask

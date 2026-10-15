@@ -21,8 +21,6 @@ import (
 	"path"
 	"strconv"
 
-	historypb "go.temporal.io/api/history/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/common"
 	"github.com/superdurable/xtemporal/common/archiver"
 	"github.com/superdurable/xtemporal/common/codec"
@@ -31,6 +29,8 @@ import (
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/persistence"
+	historypb "go.temporal.io/api/history/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

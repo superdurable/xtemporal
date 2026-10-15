@@ -6,11 +6,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
-	sdkpb "go.temporal.io/api/sdk/v1"
-	"go.temporal.io/api/serviceerror"
-	"go.temporal.io/api/workflowservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/log"
@@ -18,6 +13,11 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/visibility/manager"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
+	sdkpb "go.temporal.io/api/sdk/v1"
+	"go.temporal.io/api/serviceerror"
+	"go.temporal.io/api/workflowservice/v1"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/protobuf/types/known/durationpb"
 )

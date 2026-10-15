@@ -5,14 +5,14 @@ import (
 	"sync"
 	"time"
 
-	enumspb "go.temporal.io/api/enums/v1"
-	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/metrics"
 	"github.com/superdurable/xtemporal/common/namespace"
+	"github.com/superdurable/xtemporal/components/autoscaledworkers/wci/workflow/iface"
 	"github.com/superdurable/xtemporal/service/matching/hooks"
+	enumspb "go.temporal.io/api/enums/v1"
 )
 
 type (

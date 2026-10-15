@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	commonpb "go.temporal.io/api/common/v1"
 	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/chasm/lib/tests/gen/testspb/v1"
 	"github.com/superdurable/xtemporal/common/namespace"
+	commonpb "go.temporal.io/api/common/v1"
 )
 
 type (

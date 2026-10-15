@@ -7,8 +7,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	commonpb "go.temporal.io/api/common/v1"
-	enumspb "go.temporal.io/api/enums/v1"
 	carchiver "github.com/superdurable/xtemporal/common/archiver"
 	"github.com/superdurable/xtemporal/common/archiver/provider"
 	"github.com/superdurable/xtemporal/common/log"
@@ -20,6 +18,8 @@ import (
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	"github.com/superdurable/xtemporal/common/testing/mocksdk"
 	"github.com/superdurable/xtemporal/service/history/configs"
+	commonpb "go.temporal.io/api/common/v1"
+	enumspb "go.temporal.io/api/enums/v1"
 	"go.uber.org/fx"
 	"go.uber.org/mock/gomock"
 	"go.uber.org/multierr"

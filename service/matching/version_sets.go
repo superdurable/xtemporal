@@ -5,16 +5,16 @@ import (
 	"encoding/base64"
 	"slices"
 
-	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/api/serviceerror"
-	taskqueuepb "go.temporal.io/api/taskqueue/v1"
-	"go.temporal.io/api/workflowservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common"
 	hlc "github.com/superdurable/xtemporal/common/clock/hybrid_logical_clock"
 	serviceerrors "github.com/superdurable/xtemporal/common/serviceerror"
 	"github.com/superdurable/xtemporal/common/util"
 	"github.com/superdurable/xtemporal/common/worker_versioning"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/api/serviceerror"
+	taskqueuepb "go.temporal.io/api/taskqueue/v1"
+	"go.temporal.io/api/workflowservice/v1"
 )
 
 // Error used to signal that a queue has no versioning data. This shouldn't escape matching.

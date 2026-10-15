@@ -3,12 +3,12 @@ package cassandra
 import (
 	"context"
 
-	commonpb "go.temporal.io/api/common/v1"
-	"go.temporal.io/api/serviceerror"
 	p "github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/persistence/nosql/nosqlplugin/cassandra/gocql"
 	"github.com/superdurable/xtemporal/common/persistence/serialization"
 	"github.com/superdurable/xtemporal/common/primitives"
+	commonpb "go.temporal.io/api/common/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 const (

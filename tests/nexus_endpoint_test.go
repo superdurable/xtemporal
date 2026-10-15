@@ -5,10 +5,6 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	commonpb "go.temporal.io/api/common/v1"
-	nexuspb "go.temporal.io/api/nexus/v1"
-	"go.temporal.io/api/operatorservice/v1"
-	"go.temporal.io/api/serviceerror"
 	"github.com/superdurable/xtemporal/api/matchingservice/v1"
 	persistencespb "github.com/superdurable/xtemporal/api/persistence/v1"
 	"github.com/superdurable/xtemporal/common/dynamicconfig"
@@ -16,6 +12,10 @@ import (
 	p "github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/testing/parallelsuite"
 	"github.com/superdurable/xtemporal/tests/testcore"
+	commonpb "go.temporal.io/api/common/v1"
+	nexuspb "go.temporal.io/api/nexus/v1"
+	"go.temporal.io/api/operatorservice/v1"
+	"go.temporal.io/api/serviceerror"
 )
 
 func TestNexusEndpointsCommonSuite(t *testing.T) {
