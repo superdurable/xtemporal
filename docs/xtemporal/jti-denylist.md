@@ -1,6 +1,8 @@
 # Revocable JWT API keys
 
-Set `global.authorization.claimMapper: jtiDenylist` and `global.authorization.authorizer: default` on the frontend. This mapper wraps Temporal's default JWT mapper: signature, expiry, audience, subject, and permissions are checked before the denylist lookup. Internal frontend uses its separate internal claim mapper and is unaffected. The ordinary `default` mapper is unchanged.
+Set `global.authorization.claimMapper: jtiDenylist` and `global.authorization.authorizer: platformNamespaceLifecycle` on the frontend. The mapper wraps Temporal's default JWT mapper: signature, expiry, audience, subject, and permissions are checked before the denylist lookup. Internal frontend uses its separate internal claim mapper and is unaffected. The ordinary `default` mapper is unchanged.
+
+The `platformNamespaceLifecycle` authorizer wraps Temporal's default authorizer. It denies `DeleteNamespace`, `UpdateNamespace`, and `DeprecateNamespace` unless the caller has a system role, even when the token has `<ns>:admin`. The default authorizer still checks the system role's level, so a system admin can perform these operations. All other calls retain default authorization, including `AddSearchAttributes` and `RemoveSearchAttributes` for `<ns>:admin`; the platform-issued Dex credential needs these permissions. `RegisterNamespace` also remains allowed for `<ns>:admin` by the default authorizer; restricting it is outside this change and can be decided by the platform later.
 
 Configure the frontend process with:
 
