@@ -2,10 +2,12 @@ package tests
 
 import (
 	"net"
+	"os"
 	"path/filepath"
 	"strconv"
 	"testing"
 
+	"github.com/stretchr/testify/require"
 	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
@@ -38,10 +40,11 @@ const (
 
 type (
 	PostgreSQLTestData struct {
-		Cfg     *config.SQL
-		Factory *sql.Factory
-		Logger  log.Logger
-		Metrics *metricstest.Capture
+		Cfg           *config.SQL
+		Factory       *sql.Factory
+		Logger        log.Logger
+		Metrics       *metricstest.Capture
+		VisibilityCfg *config.SQL // xtemporal: Aurora visibility uses vanilla PostgreSQL
 	}
 )
 
@@ -53,6 +56,11 @@ func setUpPostgreSQLTest(t *testing.T, pluginName string, connectAttrs map[strin
 	testData.Metrics = mh.StartCapture()
 	SetupPostgreSQLDatabase(t, testData.Cfg)
 	SetupPostgreSQLSchema(t, testData.Cfg)
+	if pluginName == "postgres12_limitless" && limitlessAuroraMode() { // xtemporal: visibility cannot use Limitless
+		testData.VisibilityCfg = limitlessVisibilityConfig(t)
+		SetupPostgreSQLDatabase(t, testData.VisibilityCfg)
+		loadLimitlessVisibilitySchema(t, testData.VisibilityCfg)
+	}
 
 	testData.Factory = sql.NewFactory(
 		*testData.Cfg,
@@ -66,6 +74,9 @@ func setUpPostgreSQLTest(t *testing.T, pluginName string, connectAttrs map[strin
 	tearDown := func() {
 		testData.Factory.Close()
 		mh.StopCapture(testData.Metrics)
+		if testData.VisibilityCfg != nil { // xtemporal: remove the suite's visibility database
+			TearDownPostgreSQLDatabase(t, testData.VisibilityCfg)
+		}
 		TearDownPostgreSQLDatabase(t, testData.Cfg)
 	}
 
@@ -74,6 +85,9 @@ func setUpPostgreSQLTest(t *testing.T, pluginName string, connectAttrs map[strin
 
 // NewPostgreSQLConfig returns a new MySQL config for test
 func NewPostgreSQLConfig(pluginName string, connectAttrs map[string]string) *config.SQL {
+	if pluginName == "postgres12_limitless" && limitlessAuroraMode() {
+		return limitlessAuroraConfig()
+	}
 	return &config.SQL{
 		User:     testPostgreSQLUser,
 		Password: testPostgreSQLPassword,
@@ -89,6 +103,12 @@ func NewPostgreSQLConfig(pluginName string, connectAttrs map[string]string) *con
 }
 
 func SetupPostgreSQLDatabase(t *testing.T, cfg *config.SQL) {
+	if cfg.PluginName == "postgres12_limitless" && limitlessAuroraMode() {
+		name, err := sql.CreateLimitlessTestDatabase(cfg, os.Getenv("LIMITLESS_ADMIN_DATABASE"))
+		require.NoError(t, err)
+		cfg.DatabaseName = name
+		return
+	}
 	adminCfg := *cfg
 	// NOTE need to connect with empty name to create new database
 	adminCfg.DatabaseName = ""
@@ -106,6 +126,10 @@ func SetupPostgreSQLDatabase(t *testing.T, cfg *config.SQL) {
 }
 
 func SetupPostgreSQLSchema(t *testing.T, cfg *config.SQL) {
+	if cfg.PluginName == "postgres12_limitless" { // xtemporal: use the Limitless schema
+		loadLimitlessSchema(t, cfg)
+		return
+	}
 	db, err := sql.NewSQLAdminDB(sqlplugin.DbKindUnknown, cfg, resolver.NewNoopResolver(), log.NewTestLogger(), metrics.NoopMetricsHandler)
 	if err != nil {
 		t.Fatalf("unable to create PostgreSQL admin DB: %v", err)
@@ -149,6 +173,9 @@ func TearDownPostgreSQLDatabase(t *testing.T, cfg *config.SQL) {
 	adminCfg := *cfg
 	// NOTE need to connect with empty name to create new database
 	adminCfg.DatabaseName = ""
+	if cfg.PluginName == "postgres12_limitless" && limitlessAuroraMode() {
+		adminCfg.DatabaseName = os.Getenv("LIMITLESS_ADMIN_DATABASE")
+	}
 
 	db, err := sql.NewSQLAdminDB(sqlplugin.DbKindUnknown, &adminCfg, resolver.NewNoopResolver(), log.NewTestLogger(), metrics.NoopMetricsHandler)
 	if err != nil {

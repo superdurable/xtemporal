@@ -10,7 +10,8 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin/postgresql"
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin/sqlite"
 	"github.com/superdurable/xtemporal/temporal/environment"
-	_ "github.com/superdurable/xtemporal/x/paradedb" // xtemporal: register ParadeDB for persistence tests
+	_ "github.com/superdurable/xtemporal/x/limitless" // xtemporal: register Limitless for persistence tests
+	_ "github.com/superdurable/xtemporal/x/paradedb"  // xtemporal: register ParadeDB for persistence tests
 )
 
 const (
@@ -38,7 +39,7 @@ func GetTestClusterOption(storeType, driver string) *TestBaseOptions {
 		switch driver {
 		case mysql.PluginName:
 			return GetMySQLTestClusterOption()
-		case postgresql.PluginName, postgresql.PluginNamePGX, "paradedb": // xtemporal: ParadeDB uses PostgreSQL test setup
+		case postgresql.PluginName, postgresql.PluginNamePGX, "paradedb", "postgres12_limitless": // xtemporal: Limitless uses PostgreSQL test setup
 			return GetPostgreSQLTestClusterOption(driver, nil)
 		case sqlite.PluginName:
 			return GetSQLiteMemoryTestClusterOption()
@@ -83,7 +84,7 @@ func GetPostgreSQLTestClusterOption(
 	connectAttributes map[string]string,
 ) *TestBaseOptions {
 	switch pluginName {
-	case postgresql.PluginName, postgresql.PluginNamePGX, "paradedb": // xtemporal: ParadeDB uses PostgreSQL connections
+	case postgresql.PluginName, postgresql.PluginNamePGX, "paradedb", "postgres12_limitless": // xtemporal: Limitless uses PostgreSQL connections
 		// no-op
 	default:
 		panic(fmt.Sprintf(
@@ -93,7 +94,7 @@ func GetPostgreSQLTestClusterOption(
 			postgresql.PluginNamePGX,
 		))
 	}
-	return &TestBaseOptions{
+	options := &TestBaseOptions{
 		SQLDBPluginName:   pluginName,
 		DBName:            GenerateRandomDBName(),
 		DBUsername:        testPostgreSQLUser,
@@ -104,6 +105,11 @@ func GetPostgreSQLTestClusterOption(
 		StoreType:         config.StoreTypeSQL,
 		ConnectAttributes: connectAttributes,
 	}
+	if pluginName == "postgres12_limitless" { // xtemporal: use the Limitless schema for the default store
+		options.SchemaDir = "schema/limitless"
+		configureLimitlessTestOptions(options)
+	}
+	return options
 }
 
 // GetSQLiteFileTestClusterOption return test options

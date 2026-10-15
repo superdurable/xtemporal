@@ -27,6 +27,7 @@ type TestCluster struct {
 	cfg            config.SQL
 	faultInjection *config.FaultInjection
 	logger         log.Logger
+	visibilityCfg  *config.SQL // xtemporal: Aurora visibility uses a separate PostgreSQL database
 }
 
 type forceDatabaseDropper interface {
@@ -63,6 +64,13 @@ func NewTestCluster(
 	}
 
 	result.faultInjection = faultInjection
+	if pluginName == "postgres12_limitless" && os.Getenv("LIMITLESS_TEST") == "aurora" { // xtemporal: separate visibility from Limitless
+		visibilityCfg, err := limitlessVisibilityConfig()
+		if err != nil {
+			logger.Fatal("Invalid Limitless visibility configuration", tag.Error(err))
+		}
+		result.visibilityCfg = &visibilityCfg
+	}
 	return &result
 }
 
@@ -87,11 +95,26 @@ func (s *TestCluster) SetupTestDatabase() {
 	}
 	s.LoadSchema(path.Join(schemaDir, "temporal", "schema.sql"))
 	visibilitySchema := path.Join(schemaDir, "visibility", "schema.sql")
+	if s.cfg.PluginName == "postgres12_limitless" { // xtemporal: Limitless uses PostgreSQL visibility
+		visibilitySchema = path.Join(testutils.GetRepoRootDirectory(), "schema/postgresql/v12/visibility/schema.sql")
+	}
 	if s.cfg.PluginName == "paradedb" { // xtemporal: ParadeDB has its own visibility schema
 		visibilitySchema = path.Join(testutils.GetRepoRootDirectory(), "schema/paradedb/visibility/schema.sql")
 	}
-	s.LoadSchema(visibilitySchema)
+	if s.visibilityCfg != nil { // xtemporal: visibility schema is unsupported on Limitless
+		s.loadSchemaForConfig(visibilitySchema, s.visibilityCfg)
+	} else {
+		s.LoadSchema(visibilitySchema)
+	}
 	s.loadSchemaVersion()
+	if s.visibilityCfg != nil { // xtemporal: record the visibility version in its own database
+		s.loadSchemaVersionForConfig(sqlplugin.DbKindVisibility, s.visibilityCfg)
+	}
+	if s.cfg.PluginName == "postgres12_limitless" { // xtemporal: verify both configured stores
+		if err := VerifyCompatibleVersion(s.Config(), resolver.NewNoopResolver(), s.logger); err != nil {
+			s.logger.Fatal("VerifyCompatibleVersion", tag.Error(err))
+		}
+	}
 }
 
 // Config returns the persistence config for connecting to this test cluster
@@ -110,6 +133,22 @@ func (s *TestCluster) Config() config.Persistence {
 			TransactionSizeLimit: dynamicconfig.GetIntPropertyFn(primitives.DefaultTransactionSizeLimit),
 		}
 	}
+	if cfg.PluginName == "postgres12_limitless" { // xtemporal: keep visibility on PostgreSQL
+		visibilityCfg := cfg
+		visibilityCfg.PluginName = "postgres12_pgx"
+		if s.visibilityCfg != nil { // xtemporal: Aurora visibility is on vanilla PostgreSQL
+			visibilityCfg = *s.visibilityCfg
+		}
+		return config.Persistence{
+			DefaultStore:    "test",
+			VisibilityStore: "test-visibility",
+			DataStores: map[string]config.DataStore{
+				"test":            {SQL: &cfg, FaultInjection: s.faultInjection},
+				"test-visibility": {SQL: &visibilityCfg, FaultInjection: s.faultInjection},
+			},
+			TransactionSizeLimit: dynamicconfig.GetIntPropertyFn(primitives.DefaultTransactionSizeLimit),
+		}
+	}
 	return config.Persistence{
 		DefaultStore:    "test",
 		VisibilityStore: "test",
@@ -123,10 +162,23 @@ func (s *TestCluster) Config() config.Persistence {
 // TearDownTestDatabase from PersistenceTestCluster interface
 func (s *TestCluster) TearDownTestDatabase() {
 	s.DropDatabase()
+	if s.visibilityCfg != nil { // xtemporal: remove each suite's visibility database
+		s.dropLimitlessVisibilityDatabase()
+	}
 }
 
 // CreateDatabase from PersistenceTestCluster interface
 func (s *TestCluster) CreateDatabase() {
+	if s.cfg.PluginName == "postgres12_limitless" && os.Getenv("LIMITLESS_TEST") == "aurora" {
+		name, err := CreateLimitlessTestDatabase(&s.cfg, os.Getenv("LIMITLESS_ADMIN_DATABASE"))
+		if err != nil {
+			s.logger.Fatal("Create Limitless database", tag.Error(err))
+		}
+		s.cfg.DatabaseName = name
+		s.dbName = name
+		s.createLimitlessVisibilityDatabase()
+		return
+	}
 	cfg2 := s.cfg
 	// NOTE need to connect with empty name to create new database
 	if cfg2.PluginName != "sqlite" {
@@ -159,10 +211,13 @@ func (s *TestCluster) DropDatabase() {
 
 	// NOTE need to connect with empty name to drop the database
 	cfg2.DatabaseName = ""
+	if s.cfg.PluginName == "postgres12_limitless" && os.Getenv("LIMITLESS_TEST") == "aurora" {
+		cfg2.DatabaseName = os.Getenv("LIMITLESS_ADMIN_DATABASE")
+	}
 	db := s.newAdminDB(sqlplugin.DbKindUnknown, &cfg2)
 	defer s.closeAdminDB(db)
 	var err error
-	if dropper, ok := db.(forceDatabaseDropper); ok {
+	if dropper, ok := db.(forceDatabaseDropper); ok && (s.cfg.PluginName != "postgres12_limitless" || os.Getenv("LIMITLESS_TEST") != "aurora") {
 		err = dropper.ForceDropDatabase(s.cfg.DatabaseName)
 	} else {
 		err = db.DropDatabase(s.cfg.DatabaseName)
@@ -175,17 +230,21 @@ func (s *TestCluster) DropDatabase() {
 
 // LoadSchema from PersistenceTestCluster interface
 func (s *TestCluster) LoadSchema(schemaFile string) {
+	s.loadSchemaForConfig(schemaFile, &s.cfg)
+}
+
+func (s *TestCluster) loadSchemaForConfig(schemaFile string, cfg *config.SQL) { // xtemporal: load visibility on its own PostgreSQL connection
 	statements, err := p.LoadAndSplitQuery([]string{schemaFile})
 	if err != nil {
 		s.logger.Fatal(
 			fmt.Sprintf("LoadSchema %s: %v", schemaFile, err),
 			tag.Error(err),
-			tag.String("database", s.cfg.DatabaseName),
+			tag.String("database", cfg.DatabaseName),
 			tag.String("schema-file", schemaFile),
 		)
 	}
 
-	db := s.newAdminDB(sqlplugin.DbKindUnknown, &s.cfg)
+	db := s.newAdminDB(sqlplugin.DbKindUnknown, cfg)
 	defer s.closeAdminDB(db)
 
 	if rewriter, ok := db.(sqlplugin.SchemaStatementRewriter); ok {
@@ -195,9 +254,9 @@ func (s *TestCluster) LoadSchema(schemaFile string) {
 	for i, stmt := range statements {
 		if err = db.Exec(stmt); err != nil {
 			s.logger.Fatal(
-				fmt.Sprintf("LoadSchema statement %d for database %s: %v", i, s.cfg.DatabaseName, err),
+				fmt.Sprintf("LoadSchema statement %d for database %s: %v", i, cfg.DatabaseName, err),
 				tag.Error(err),
-				tag.String("database", s.cfg.DatabaseName),
+				tag.String("database", cfg.DatabaseName),
 				tag.String("schema-file", schemaFile),
 				tag.Int("statement-index", i),
 				tag.String("statement", stmt),
@@ -208,14 +267,18 @@ func (s *TestCluster) LoadSchema(schemaFile string) {
 }
 
 func (s *TestCluster) loadSchemaVersion() {
-	db := s.newAdminDB(sqlplugin.DbKindMain, &s.cfg)
+	s.loadSchemaVersionForConfig(sqlplugin.DbKindMain, &s.cfg)
+}
+
+func (s *TestCluster) loadSchemaVersionForConfig(kind sqlplugin.DbKind, cfg *config.SQL) { // xtemporal: keep store versions in their respective databases
+	db := s.newAdminDB(kind, cfg)
 	defer s.closeAdminDB(db)
 
 	expectedVersion := db.ExpectedVersion()
 	if err := db.CreateSchemaVersionTables(); err != nil {
 		s.logger.Fatal("CreateSchemaVersionTables", tag.Error(err))
 	}
-	if err := db.UpdateSchemaVersion(s.cfg.DatabaseName, expectedVersion, expectedVersion); err != nil {
+	if err := db.UpdateSchemaVersion(cfg.DatabaseName, expectedVersion, expectedVersion); err != nil {
 		s.logger.Fatal("UpdateSchemaVersion", tag.Error(err))
 	}
 	if err := db.WriteSchemaUpdateLog("0", expectedVersion, "", "initial version"); err != nil {
