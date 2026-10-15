@@ -34,14 +34,31 @@ jobs:
             const deadline = Date.now() + 85 * 60 * 1000;
 
             while (Date.now() < deadline) {
-              const { data } = await github.rest.checks.listForRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: headSHA,
-                filter: "latest",
-                per_page: 100,
-              });
-              const checks = data.check_runs.filter((check) => requiredChecks.has(check.name));
+              let checks;
+              try {
+                // Query each required check by name: listing every check run of a commit with many jobs has
+                // returned HTTP 500 repeatedly.
+                checks = [];
+                for (const name of requiredChecks) {
+                  const { data } = await github.rest.checks.listForRef({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: headSHA,
+                    check_name: name,
+                    filter: "latest",
+                    per_page: 10,
+                  });
+                  checks.push(...data.check_runs);
+                }
+              } catch (error) {
+                // Transient GitHub API errors must not fail the gate; the deadline still bounds the wait.
+                if (error.status && error.status < 500) {
+                  throw error;
+                }
+                core.warning(`Retrying after GitHub API error: ${error.message}`);
+                await new Promise((resolve) => setTimeout(resolve, 30_000));
+                continue;
+              }
               const failed = checks.filter((check) => check.status === "completed" && check.conclusion !== "success");
 
               if (failed.length > 0) {
