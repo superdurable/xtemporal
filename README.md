@@ -2,7 +2,7 @@
 
 xtemporal is an independent fork of [Temporal Server](https://github.com/temporalio/temporal) that extends the upstream server with additional capabilities, much as Temporal originated from Uber Cadence. It is not affiliated with or endorsed by Temporal Technologies. “Temporal” is a trademark of its owner.
 
-The first planned extension is advanced visibility backed by ParadeDB. **ParadeDB support is not available yet.** See the [maintainer documentation](docs/xtemporal/README.md) for the extension layout and upstream sync process.
+The first extension is advanced visibility backed by ParadeDB. **ParadeDB visibility is EXPERIMENTAL and not for production use:** the pinned ParadeDB 0.26.0 backend exited during a 16-writer benchmark. See the [ParadeDB visibility guide](docs/xtemporal/paradedb.md), [benchmark release gate](docs/xtemporal/paradedb-benchmark.md), and [maintainer documentation](docs/xtemporal/README.md).
 
 ## Versions and releases
 

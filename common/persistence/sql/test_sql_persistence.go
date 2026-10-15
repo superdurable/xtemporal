@@ -86,13 +86,30 @@ func (s *TestCluster) SetupTestDatabase() {
 		schemaDir = path.Join(temporalPackageDir, schemaDir)
 	}
 	s.LoadSchema(path.Join(schemaDir, "temporal", "schema.sql"))
-	s.LoadSchema(path.Join(schemaDir, "visibility", "schema.sql"))
+	visibilitySchema := path.Join(schemaDir, "visibility", "schema.sql")
+	if s.cfg.PluginName == "paradedb" { // xtemporal: ParadeDB has its own visibility schema
+		visibilitySchema = path.Join(testutils.GetRepoRootDirectory(), "schema/paradedb/visibility/schema.sql")
+	}
+	s.LoadSchema(visibilitySchema)
 	s.loadSchemaVersion()
 }
 
 // Config returns the persistence config for connecting to this test cluster
 func (s *TestCluster) Config() config.Persistence {
 	cfg := s.cfg
+	if cfg.PluginName == "paradedb" { // xtemporal: keep the default store on PostgreSQL
+		mainCfg := cfg
+		mainCfg.PluginName = "postgres12_pgx"
+		return config.Persistence{
+			DefaultStore:    "test",
+			VisibilityStore: "test-visibility",
+			DataStores: map[string]config.DataStore{
+				"test":            {SQL: &mainCfg, FaultInjection: s.faultInjection},
+				"test-visibility": {SQL: &cfg, FaultInjection: s.faultInjection},
+			},
+			TransactionSizeLimit: dynamicconfig.GetIntPropertyFn(primitives.DefaultTransactionSizeLimit),
+		}
+	}
 	return config.Persistence{
 		DefaultStore:    "test",
 		VisibilityStore: "test",
