@@ -1,32 +1,16 @@
-variable "SERVER_VERSION" {
-  default = "unknown"
+variable "IMAGE_NAME" {
+  default = "superdurable/xtemporal"
 }
 
-variable "CLI_VERSION" {
-  default = "unknown"
+variable "IMAGE_SHA_TAG" {
+  default = "dev"
 }
 
-variable "IMAGE_REPO" {
-  default = "temporaliotest"
-}
-
-variable "IMAGE_SHA_SHORT_TAG" {
+variable "IMAGE_VERSION_TAG" {
   default = ""
 }
 
-variable "IMAGE_SHA_FULL_TAG" {
-  default = ""
-}
-
-variable "IMAGE_BRANCH_TAG" {
-  default = ""
-}
-
-variable "SAFE_IMAGE_BRANCH_TAG" {
-  default = join("-", [for c in regexall("[a-z0-9]+", lower(IMAGE_BRANCH_TAG)) : c])
-}
-
-variable "TEMPORAL_SHA" {
+variable "IMAGE_MINOR_TAG" {
   default = ""
 }
 
@@ -34,61 +18,49 @@ variable "TAG_LATEST" {
   default = false
 }
 
-# ALPINE_TAG is the single source of truth for the Alpine base image version.
-# NOTE: We use just the tag without a digest pin because digest-pinned manifest lists
-# cause platform resolution issues in multi-arch buildx builds (InvalidBaseImagePlatform warnings).
-variable "ALPINE_TAG" {
-  default = "3.24.1"
+variable "TAG_MAIN" {
+  default = false
 }
 
-target "admin-tools" {
-  context = "docker"
-  dockerfile = "targets/admin-tools.Dockerfile"
-  args = {
-    ALPINE_TAG = "${ALPINE_TAG}"
-  }
-  tags = compact([
-    "${IMAGE_REPO}/admin-tools:${IMAGE_SHA_SHORT_TAG}",
-    "${IMAGE_REPO}/admin-tools:${IMAGE_SHA_FULL_TAG}",
-    "${IMAGE_REPO}/admin-tools:${SAFE_IMAGE_BRANCH_TAG}",
-    TAG_LATEST ? "${IMAGE_REPO}/admin-tools:latest" : "",
-  ])
-  platforms = ["linux/amd64", "linux/arm64"]
-  labels = {
-    "org.opencontainers.image.title" = "admin-tools"
-    "org.opencontainers.image.description" = "Temporal admin tools"
-    "org.opencontainers.image.url" = "https://github.com/temporalio/temporal"
-    "org.opencontainers.image.source" = "https://github.com/temporalio/temporal"
-    "org.opencontainers.image.licenses" = "MIT"
-    "org.opencontainers.image.revision" = "${TEMPORAL_SHA}"
-    "org.opencontainers.image.created" = timestamp()
-    "com.temporal.server.version" = "${SERVER_VERSION}"
-    "com.temporal.cli.version" = "${CLI_VERSION}"
-  }
+variable "IMAGE_VERSION" {
+  default = "unknown"
+}
+
+variable "UPSTREAM_VERSION" {
+  default = "unknown"
+}
+
+variable "REVISION" {
+  default = "unknown"
+}
+
+variable "ALPINE_TAG" {
+  default = "3.24.1"
 }
 
 target "server" {
   context = "docker"
   dockerfile = "targets/server.Dockerfile"
   args = {
-    ALPINE_TAG = "${ALPINE_TAG}"
+    ALPINE_TAG = ALPINE_TAG
   }
   tags = compact([
-    "${IMAGE_REPO}/server:${IMAGE_SHA_SHORT_TAG}",
-    "${IMAGE_REPO}/server:${IMAGE_SHA_FULL_TAG}",
-    "${IMAGE_REPO}/server:${SAFE_IMAGE_BRANCH_TAG}",
-    TAG_LATEST ? "${IMAGE_REPO}/server:latest" : "",
+    "${IMAGE_NAME}:${IMAGE_SHA_TAG}",
+    IMAGE_VERSION_TAG != "" ? "${IMAGE_NAME}:${IMAGE_VERSION_TAG}" : "",
+    IMAGE_MINOR_TAG != "" ? "${IMAGE_NAME}:${IMAGE_MINOR_TAG}" : "",
+    TAG_LATEST ? "${IMAGE_NAME}:latest" : "",
+    TAG_MAIN ? "${IMAGE_NAME}:main" : "",
   ])
   platforms = ["linux/amd64", "linux/arm64"]
   labels = {
-    "org.opencontainers.image.title" = "server"
-    "org.opencontainers.image.description" = "Temporal Server"
-    "org.opencontainers.image.url" = "https://github.com/temporalio/temporal"
-    "org.opencontainers.image.source" = "https://github.com/temporalio/temporal"
+    "org.opencontainers.image.title" = "xtemporal"
+    "org.opencontainers.image.description" = "xtemporal server and SQL administration tool"
+    "org.opencontainers.image.source" = "https://github.com/superdurable/xtemporal"
+    "org.opencontainers.image.url" = "https://github.com/superdurable/xtemporal"
     "org.opencontainers.image.licenses" = "MIT"
-    "org.opencontainers.image.version" = "${SERVER_VERSION}"
-    "org.opencontainers.image.revision" = "${TEMPORAL_SHA}"
+    "org.opencontainers.image.version" = IMAGE_VERSION
+    "org.opencontainers.image.revision" = REVISION
     "org.opencontainers.image.created" = timestamp()
-    "com.temporal.server.version" = "${SERVER_VERSION}"
+    "com.superdurable.xtemporal.upstream-version" = UPSTREAM_VERSION
   }
 }

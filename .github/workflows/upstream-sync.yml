@@ -1,0 +1,58 @@
+name: Sync upstream release
+
+on:
+  schedule:
+    - cron: '17 7 * * *'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Upstream release tag (defaults to Latest)
+        required: false
+        type: string
+      dry_run:
+        description: Check without changing refs or creating a PR
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require bot token for a live sync
+        env:
+          BOT_TOKEN: ${{ secrets.XTEMPORAL_BOT_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          if [[ "$DRY_RUN" != true && -z "$BOT_TOKEN" ]]; then
+            echo 'XTEMPORAL_BOT_TOKEN is required for non-dry-run sync' >&2
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.XTEMPORAL_BOT_TOKEN || github.token }}
+          fetch-depth: 0
+      - name: Fetch snapshot branch and tags
+        run: git fetch origin main upstream-snapshots --tags
+      - name: Configure Git author
+        run: |
+          git config user.name 'xtemporal sync bot'
+          git config user.email 'xtemporal-sync@users.noreply.github.com'
+      - name: Sync upstream
+        env:
+          GH_TOKEN: ${{ secrets.XTEMPORAL_BOT_TOKEN || github.token }}
+          AUTO_MERGE_SYNC: ${{ vars.AUTO_MERGE_SYNC }}
+          REQUESTED_TAG: ${{ inputs.tag }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          args=()
+          if [[ -n "$REQUESTED_TAG" ]]; then args+=(--tag "$REQUESTED_TAG"); fi
+          if [[ "$DRY_RUN" == true ]]; then args+=(--dry-run); fi
+          bash scripts/xtemporal/sync.sh "${args[@]}"
