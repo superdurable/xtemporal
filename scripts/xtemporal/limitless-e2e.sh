@@ -4,6 +4,8 @@
 #
 # The shard group is public and its security group only admits the caller's current public IP,
 # because the tests run from the caller's machine. Use it for validation only, never for production.
+# Visibility cannot live in the Limitless database (GENERATED STORED columns are unsupported on its
+# standard tables), so a throwaway local PostgreSQL 16 container serves as the visibility store.
 #
 # Usage: scripts/xtemporal/limitless-e2e.sh
 # Optional env:
@@ -38,6 +40,8 @@ log() { printf '%s %s\n' "$(date +%T)" "$*" | tee -a "$log_dir/e2e.log" >&2; }
 
 created_role=false
 sg_id=""
+visibility_container=$run_id-visibility
+visibility_port=${LIMITLESS_E2E_VISIBILITY_PORT:-55439}
 rdsosmetrics_existed=$(aws logs describe-log-groups --log-group-name-prefix RDSOSMetrics --query 'length(logGroups)' --output text)
 
 cleanup() {
@@ -48,13 +52,22 @@ cleanup() {
     exit "$status"
   fi
   log "teardown of $run_id"
+  docker rm -f "$visibility_container" >/dev/null 2>&1
   if aws rds describe-db-shard-groups --db-shard-group-identifier "$shard_group_id" >/dev/null 2>&1; then
     aws rds delete-db-shard-group --db-shard-group-identifier "$shard_group_id" >/dev/null
     while aws rds describe-db-shard-groups --db-shard-group-identifier "$shard_group_id" >/dev/null 2>&1; do sleep 20; done
   fi
   if aws rds describe-db-clusters --db-cluster-identifier "$cluster_id" >/dev/null 2>&1; then
-    aws rds delete-db-cluster --db-cluster-identifier "$cluster_id" --skip-final-snapshot --delete-automated-backups >/dev/null
-    aws rds wait db-cluster-deleted --db-cluster-identifier "$cluster_id"
+    # The cluster stays "modifying" for a while after its shard group is deleted; the AWS waiter treats
+    # that as terminal, so retry the delete and poll until the cluster is gone.
+    for _ in $(seq 1 60); do
+      aws rds delete-db-cluster --db-cluster-identifier "$cluster_id" --skip-final-snapshot --delete-automated-backups >/dev/null 2>&1 && break
+      sleep 20
+    done
+    for _ in $(seq 1 120); do
+      aws rds describe-db-clusters --db-cluster-identifier "$cluster_id" >/dev/null 2>&1 || break
+      sleep 20
+    done
   fi
   if [[ -n $sg_id ]]; then
     # ENIs of a just-deleted cluster can hold the security group for a short while.
@@ -71,12 +84,17 @@ cleanup() {
     [[ $(aws rds describe-db-instances --query 'length(DBInstances[?MonitoringInterval>`0`])' --output text) == 0 ]]; then
     aws logs delete-log-group --log-group-name RDSOSMetrics 2>/dev/null
   fi
-  local leftovers
-  leftovers=$(aws resourcegroupstaggingapi get-resources --tag-filters Key=run,Values="$run_id" --query 'ResourceTagMappingList[].ResourceARN' --output text)
-  if [[ -n $leftovers ]]; then
-    log "WARNING: tagged resources still present (tag index can lag a few minutes): $leftovers"
+  local leftovers=()
+  aws rds describe-db-shard-groups --db-shard-group-identifier "$shard_group_id" >/dev/null 2>&1 && leftovers+=("shard group $shard_group_id")
+  aws rds describe-db-clusters --db-cluster-identifier "$cluster_id" >/dev/null 2>&1 && leftovers+=("cluster $cluster_id")
+  [[ $(aws rds describe-db-cluster-automated-backups --query "length(DBClusterAutomatedBackups[?DBClusterIdentifier=='$cluster_id'])" --output text) != 0 ]] && leftovers+=("automated backups of $cluster_id")
+  [[ -n $sg_id ]] && aws ec2 describe-security-groups --group-ids "$sg_id" >/dev/null 2>&1 && leftovers+=("security group $sg_id")
+  [[ $created_role == true ]] && aws iam get-role --role-name "$role_name" >/dev/null 2>&1 && leftovers+=("IAM role $role_name")
+  if ((${#leftovers[@]})); then
+    log "ERROR: resources left behind, delete them manually: ${leftovers[*]}"
+    status=1
   else
-    log "teardown complete; no tagged resources left"
+    log "teardown complete; no resources left"
   fi
   exit "$status"
 }
@@ -122,6 +140,12 @@ log "shard group creating; billing starts now"
 until [[ $(aws rds describe-db-shard-groups --db-shard-group-identifier "$shard_group_id" --query 'DBShardGroups[0].Status' --output text) == available ]]; do sleep 30; done
 endpoint=$(aws rds describe-db-shard-groups --db-shard-group-identifier "$shard_group_id" --query 'DBShardGroups[0].Endpoint' --output text)
 log "shard group available at $endpoint"
+
+docker run -d --name "$visibility_container" -p "127.0.0.1:$visibility_port:5432" \
+  -e POSTGRES_USER=temporal -e POSTGRES_PASSWORD=temporal postgres:16 >/dev/null
+until docker exec "$visibility_container" pg_isready -U temporal >/dev/null 2>&1; do sleep 2; done
+export LIMITLESS_VISIBILITY_HOST=127.0.0.1 LIMITLESS_VISIBILITY_PORT=$visibility_port \
+  LIMITLESS_VISIBILITY_USER=temporal LIMITLESS_VISIBILITY_PASSWORD=temporal LIMITLESS_VISIBILITY_SSLMODE=disable
 
 go build -o "$log_dir/temporal-sql-tool" ./cmd/tools/sql
 sql_tool() {
