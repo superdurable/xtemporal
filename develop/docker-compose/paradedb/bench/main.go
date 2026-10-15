@@ -152,11 +152,27 @@ var queries = []query{
 	{"group_count", `SELECT status, count(*) FROM executions_visibility WHERE namespace_id = $1 GROUP BY status`, `SELECT status, count(*) FROM executions_visibility WHERE namespace_id @@@ $1 GROUP BY status`},
 }
 
-func run(ctx context.Context, dsn string, parade bool, preloadRows, writers, readers int, duration time.Duration) (map[string]any, error) {
+func run(ctx context.Context, dsn string, parade bool, preloadRows, writers, readers int, duration time.Duration, writeOp, readQuery string) (map[string]any, error) {
+	if writeOp != "mixed" && writeOp != "insert" && writeOp != "upsert" && writeOp != "delete" {
+		return nil, fmt.Errorf("unknown write operation %q", writeOp)
+	}
+	selectedQueries := queries
+	if readQuery != "all" {
+		selectedQueries = nil
+		for _, q := range queries {
+			if q.name == readQuery {
+				selectedQueries = []query{q}
+				break
+			}
+		}
+		if len(selectedQueries) == 0 {
+			return nil, fmt.Errorf("unknown read query %q", readQuery)
+		}
+	}
 	var write sample
 	var affected atomic.Int64
 	var inserts, updates, deletes atomic.Int64
-	read := make([]*sample, len(queries))
+	read := make([]*sample, len(selectedQueries))
 	for i := range read {
 		read[i] = &sample{}
 	}
@@ -184,11 +200,11 @@ func run(ctx context.Context, dsn string, parade bool, preloadRows, writers, rea
 				var err error
 				var tag pgconn.CommandTag
 				switch {
-				case op < 3:
+				case writeOp == "insert" || (writeOp == "mixed" && op < 3):
 					inserts.Add(1)
 					id = int(next.Add(1))
 					tag, err = conn.Exec(runCtx, insertSQL, values(id, 1, true)...)
-				case op < 9:
+				case writeOp == "upsert" || (writeOp == "mixed" && op < 9):
 					updates.Add(1)
 					tag, err = conn.Exec(runCtx, upsertSQL, values(id, time.Now().UnixNano(), false)...)
 				default:
@@ -219,10 +235,10 @@ func run(ctx context.Context, dsn string, parade bool, preloadRows, writers, rea
 			}
 			defer closeConn(conn)
 			for n := 0; runCtx.Err() == nil; n++ {
-				i := (n + reader) % len(queries)
-				q := queries[i].postgres
+				i := (n + reader) % len(selectedQueries)
+				q := selectedQueries[i].postgres
 				if parade {
-					q = queries[i].parade
+					q = selectedQueries[i].parade
 				}
 				ns, _ := key(n % 10)
 				begun := time.Now()
@@ -245,13 +261,13 @@ func run(ctx context.Context, dsn string, parade bool, preloadRows, writers, rea
 	wg.Wait()
 	seconds := time.Since(start).Seconds()
 	result := map[string]any{"seconds": seconds, "writers": writers, "readers": readers, "write": write.result(seconds), "affected_rows": affected.Load(), "attempts": map[string]int64{"insert": inserts.Load(), "update": updates.Load(), "delete": deletes.Load()}, "reads": map[string]any{}}
-	for i, q := range queries {
+	for i, q := range selectedQueries {
 		result["reads"].(map[string]any)[q.name] = read[i].result(seconds)
 	}
 	if write.errors.Load() != 0 {
 		return result, fmt.Errorf("write workload had %d errors", write.errors.Load())
 	}
-	for i, q := range queries {
+	for i, q := range selectedQueries {
 		if read[i].errors.Load() != 0 {
 			return result, fmt.Errorf("%s query had %d errors", q.name, read[i].errors.Load())
 		}
@@ -298,6 +314,8 @@ func main() {
 	readers := flag.Int("readers", 8, "concurrent readers")
 	duration := flag.Duration("duration", 15*time.Minute, "write duration")
 	allowErrors := flag.Bool("allow-errors", false, "return success despite workload errors (crash probe only)")
+	writeOp := flag.String("write-op", "mixed", "mixed, insert, upsert, or delete")
+	readQuery := flag.String("read-query", "all", "all, status_time, type_status, text, keyword, keyword_list, count, or group_count")
 	flag.Parse()
 	ctx := context.Background()
 	var result any
@@ -306,7 +324,7 @@ func main() {
 	case "preload":
 		err = preload(ctx, *dsn, *rows)
 	case "run":
-		result, err = run(ctx, *dsn, *parade, *rows, *writers, *readers, *duration)
+		result, err = run(ctx, *dsn, *parade, *rows, *writers, *readers, *duration, *writeOp, *readQuery)
 		if *allowErrors {
 			err = nil
 		}
