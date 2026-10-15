@@ -197,7 +197,7 @@ func buildCLI() *cli.App {
 					tag.Bool("debug-mode", debug.Enabled),
 				)
 
-				authorizer, err := authorization.GetAuthorizerFromConfig(
+				authorizer, err := auth.GetAuthorizerFromConfig( // xtemporal: platform namespace lifecycle authorizer
 					&cfg.Global.Authorization,
 				)
 				if err != nil {
