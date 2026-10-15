@@ -2,7 +2,7 @@
 
 **Semantics validated on a real `16.13-limitless` cluster; performance not yet benchmarked.** Row-lock fencing, read-after-write across routers, single-shard history transactions, distributed deadlock detection, and fencing across a shard group reboot passed. Only fresh clusters are supported; there is no migration path from vanilla PostgreSQL. Temporal-level end-to-end testing is still pending.
 
-The `postgres12_limitless` SQL plugin is for the **default store only**. Configure visibility as a separate store using `postgres12_pgx` on PostgreSQL or another supported visibility backend. The Limitless plugin rejects visibility-store connections.
+The `postgres12_limitless` SQL plugin is for the **default store only**. Configure visibility as a separate store using `postgres12_pgx` on a separate PostgreSQL server, or another supported visibility backend. The Limitless plugin rejects visibility-store connections. Do not put the PostgreSQL visibility schema in the Limitless database either: its `GENERATED ALWAYS ... STORED` search-attribute columns fail on Limitless standard tables (`GENERATED STORED is not supported on standard tables`).
 
 ## How the schema is distributed
 
@@ -169,4 +169,4 @@ Static schema tests run with normal unit tests too. They check the table type ma
 go test -tags test_dep ./schema/limitless
 ```
 
-`x/limitless` (buffered-event inserts) and `schema/limitless` (schema load; on Limitless it also asserts table types and collocation groups) have DSN-gated database tests. Set `XTEMPORAL_LIMITLESS_TEST_DSN` to a disposable test database DSN to run them. The on-demand end-to-end script `scripts/xtemporal/limitless-e2e.sh` is **planned**, not available yet. Real-cluster schema setup and Temporal-level end-to-end tests remain pending.
+`x/limitless` (buffered-event inserts) and `schema/limitless` (schema load; on Limitless it also asserts table types and collocation groups) have DSN-gated database tests. Set `XTEMPORAL_LIMITLESS_TEST_DSN` to a disposable test database DSN to run them. `scripts/xtemporal/limitless-e2e.sh` runs everything on demand. It provisions a temporary public shard group restricted to the caller's IP and starts a local PostgreSQL 16 container for visibility. It then runs the sql-tool path, the DSN-gated tests, the persistence suites, and a functional subset (see the header of `common/persistence/tests/limitless_test.go` for the `LIMITLESS_*` variables it sets). It always tears down every AWS resource it created and fails if anything is left behind. Expect an hour or more and the corresponding ACU-hour charges.
