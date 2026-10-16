@@ -1,36 +1,36 @@
-# Visibility 基准测试结果（2026-10-16，4 核云主机）
+# Visibility benchmark results (2026-10-16, 4-CPU cloud host)
 
-## 环境
+## Environment
 
-- 4 vCPU / 15 GB 内存云容器，Docker 29.8，PostgreSQL 17.11（`postgres:17.11` 和 `paradedb/paradedb:v0.26.1-pg17`）。
-- 压测程序与数据库在同一台主机上；测试期间没有其他容器占用 CPU。
-- 每个变体用全新 volume，预加载 1,000,000 行。
+- 4 vCPU / 15 GB RAM cloud container, Docker 29.8, PostgreSQL 17.11 (`postgres:17.11` and `paradedb/paradedb:v0.26.1-pg17`).
+- The load generator ran on the same host as the database; no other containers used CPU during the runs.
+- Every variant started from a fresh volume preloaded with 1,000,000 rows.
 
-| 运行 | 脚本 | 配置 |
+| Run | Script | Configuration |
 |---|---|---|
-| `baseline/` | 原版 `compare.sh`（仅加 `shm_size: 2gb`） | `shared_buffers=8GB`，16/64 writers 各 15 分钟，8 个闭环 reader，每个变体 1 轮 |
-| `fixed/` | 修正版 `compare.sh` | `shared_buffers=4GB`，计时前 VACUUM + CHECKPOINT，单查询读容量各 60 秒，16/64 writers 各 10 分钟，8 个 reader 按每条查询 2 次/秒固定速率发起读，2 轮并轮换变体顺序 |
+| `baseline/` | original `compare.sh` (plus `shm_size: 2gb` only) | `shared_buffers=8GB`, 16 and 64 writers for 15 minutes each, 8 closed-loop readers, one round per variant |
+| `fixed/` | fixed `compare.sh` | `shared_buffers=4GB`, VACUUM + CHECKPOINT before timing, 60 s read-only capacity per query, 16 and 64 writers for 10 minutes each, 8 readers offering a fixed 2 reads/s per query, two rounds with rotated variant order |
 
-复现修正版：
+To reproduce the fixed run:
 
 ```sh
 BENCH_REPEATS=2 BENCH_DURATION=10m BENCH_READ_RATE=2 BENCH_SHARED_BUFFERS=4GB BENCH_EFFECTIVE_CACHE_SIZE=10GB ./compare.sh <output-dir>
 ```
 
-## 基线的已知缺陷
+## Known flaws in the baseline
 
-1. 除 namespace 外的属性都由 `id` 派生，导致 `type-0`、`tenant-0/20`、`tag-0` 和 `hello` 只出现在 namespace 0。约 90% 的搜索属性查询返回空结果。
-2. reader 轮流执行 7 条查询，每条查询的 Reads/s 被最慢的查询拖住，没有意义。
-3. 闭环读使各变体承受的读压力不同，写入数据不在同等条件下。
-4. Docker 默认 64 MB `/dev/shm` 使并行查询报 `could not resize shared memory segment`。
+1. Every attribute except the namespace was derived from `id`, so `type-0`, `tenant-0/20`, `tag-0` and `hello` only existed in namespace 0. About 90% of search-attribute reads returned nothing.
+2. Readers ran the 7 queries in strict rotation, so every query's reads/s was paced by the slowest one and is not meaningful.
+3. Closed-loop reads put different read pressure on each variant, so writes were not measured under equal conditions.
+4. Docker's default 64 MB `/dev/shm` made parallel queries fail with `could not resize shared memory segment`.
 
-修正版逐一修复了以上问题，并在 10 个 namespace 上校验结果一致。
+The fixed run addresses each of these and checks that results match across variants in all 10 namespaces.
 
-## 修正版结果（2 轮中位数）
+## Fixed run results (median of two rounds)
 
-### 读容量（无写入，单查询闭环）
+### Read capacity (no writes, one query at a time, closed loop)
 
-| 查询 | postgres | pdb-cols | pdb-cols-hybrid | pdb-json-hybrid |
+| Query | postgres | pdb-cols | pdb-cols-hybrid | pdb-json-hybrid |
 |---|---:|---:|---:|---:|
 | status_time QPS (p50 ms) | 16554 (0.4) | 119 (64) | **19634 (0.4)** | 5288 (1.3) |
 | type_status | 16384 (0.4) | 126 (61) | **19813 (0.3)** | 5289 (1.4) |
@@ -40,19 +40,19 @@ BENCH_REPEATS=2 BENCH_DURATION=10m BENCH_READ_RATE=2 BENCH_SHARED_BUFFERS=4GB BE
 | keyword | **2671 (2.8)** | 129 (60) | 123 (62) | 108 (71) |
 | keyword_list | **4422 (1.6)** | 137 (57) | 124 (61) | 108 (71) |
 
-### 写入
+### Writes
 
-| 指标 | postgres | pdb-cols | pdb-cols-hybrid | pdb-json-hybrid |
+| Metric | postgres | pdb-cols | pdb-cols-hybrid | pdb-json-hybrid |
 |---|---:|---:|---:|---:|
-| 16 writers 写入/s（第 1 / 2 轮） | 595 / 641 | 1749 / 1969 | 1829 / 1608 | **3745 / 3074** |
-| 16 writers p50 / p99 ms | 14.5 / 170 | 7.2 / 29 | 8.0 / 29 | **3.5 / 19** |
-| 64 writers 写入/s（第 1 / 2 轮） | 1052 / 1100 | 2229 / 2576 | 2205 / 1905 | **5189 / 4727** |
-| 64 writers p50 / p99 ms | 36 / 316 | 22 / 133 | 24 / 164 | **10.8 / 47** |
-| 64 级结束后索引大小 | 17.9 GB | 9.2 GB | 10.0 GB | **2.3 GB** |
+| 16 writers, writes/s (round 1 / 2) | 595 / 641 | 1749 / 1969 | 1829 / 1608 | **3745 / 3074** |
+| 16 writers, p50 / p99 ms | 14.5 / 170 | 7.2 / 29 | 8.0 / 29 | **3.5 / 19** |
+| 64 writers, writes/s (round 1 / 2) | 1052 / 1100 | 2229 / 2576 | 2205 / 1905 | **5189 / 4727** |
+| 64 writers, p50 / p99 ms | 36 / 316 | 22 / 133 | 24 / 164 | **10.8 / 47** |
+| Index size after the 64-writer level | 17.9 GB | 9.2 GB | 10.0 GB | **2.3 GB** |
 
-### 混合负载下的读 p50 / p99 ms（括号内为 2 轮 missed 合计）
+### Reads under mixed load, p50 / p99 ms (missed reads summed over both rounds)
 
-| 查询 | postgres | pdb-cols | pdb-cols-hybrid | pdb-json-hybrid |
+| Query | postgres | pdb-cols | pdb-cols-hybrid | pdb-json-hybrid |
 |---|---:|---:|---:|---:|
 | status_time @16 | **1.8 / 13** (0) | 179 / 1134 (26) | 3.3 / 19 (3) | 3.3 / 16 (1) |
 | count @16 | **52 / 198** (0) | 178 / 914 (34) | 126 / 277 (1) | 161 / 359 (5) |
@@ -62,13 +62,13 @@ BENCH_REPEATS=2 BENCH_DURATION=10m BENCH_READ_RATE=2 BENCH_SHARED_BUFFERS=4GB BE
 | text @64 | **4.0 / 62** (0) | 412 / 4171 (766) | 400 / 3587 (588) | 1165 / 11782 (968) |
 | keyword @64 | **9.4 / 101** (0) | 394 / 3275 (761) | 401 / 4197 (520) | 1098 / 10923 (1122) |
 
-完整表格见 `fixed/summary.md`，基线见 `baseline/summary.md`，原始数据在各变体目录下。
+A missed read is a scheduled read the client dropped because all readers were busy; it is not a wrong or empty result. Full tables are in `fixed/summary.md`, the baseline in `baseline/summary.md`, and raw data under each variant directory.
 
-## 结论
+## Conclusions
 
-1. **写入**：`pdb-json-hybrid` 写入吞吐约为 postgres 的 4.5–5 倍，p99 低一个数量级，索引约为 1/8；列式 ParadeDB 变体约为 2–3 倍。基线与修正版结论一致，主要源于 v12 schema 的大量 B-tree/GIN 索引维护成本。
-2. **核心字段查询**必须走 B-tree：`pdb-cols` 全走 BM25 时 `status_time` 只有 119 QPS，hybrid 变体与 postgres 持平。
-3. **搜索属性查询取决于选择性**：匹配率 2%–10% 时，`LIMIT 20` 配合按时间排序的 B-tree 很快就能凑满结果，postgres 比 BM25 快 20–60 倍。基线中多为空 namespace，postgres 需要扫完整个 namespace（约 700 ms），BM25 反而更快。需要补充低选择性场景再下结论。
-4. ParadeDB BM25 查询有约 60 ms 固定开销，单查询上限约 110–140 QPS；64 writers 下恶化到 p50 0.4–1.2 秒，`pdb-json-hybrid` 的 p99 约 11 秒。
-5. `missed` 来自共享 reader 池被慢的 BM25 查询占满，并不代表该查询本身慢；postgres 两轮均为 0。
-6. `pdb-json-hybrid` 两轮写入相差约 20%，需要更多轮次才能给出精确倍数。
+1. **Writes:** `pdb-json-hybrid` sustains 4.5–5x the write throughput of `postgres`, with p99 an order of magnitude lower and about 1/8 of the index size. The column-based ParadeDB variants reach 2–3x. Baseline and fixed runs agree; the gap comes mostly from maintaining the many B-tree/GIN indexes in the v12 schema.
+2. **Core-field queries need B-tree.** With every query routed through BM25, `pdb-cols` serves `status_time` at only 119 QPS; the hybrid variants match `postgres`.
+3. **Search-attribute queries depend on selectivity.** At 2–10% match rates, `LIMIT 20` over the time-ordered B-tree fills quickly, and `postgres` is 20–60x faster than BM25. In the baseline most reads hit empty namespaces, where `postgres` had to scan the whole namespace (about 700 ms) and BM25 came out ahead. A low-selectivity scenario is still needed before drawing a conclusion.
+4. ParadeDB BM25 queries carry about 60 ms of fixed cost and top out around 110–140 QPS per query. At 64 writers they degrade to 0.4–1.2 s p50, with `pdb-json-hybrid` reaching about 11 s p99.
+5. Missed reads come from the shared reader pool filling up behind slow BM25 queries, not from the query that missed being slow itself; `postgres` missed none in either round.
+6. `pdb-json-hybrid` write throughput differed by about 20% between rounds; more rounds are needed for precise ratios.
