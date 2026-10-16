@@ -45,6 +45,7 @@ func main() {
 	heavyBrowsers := flag.Float64("heavy-browsers", 0.05, "share of browsers on the heavy namespace")
 	heavyWrites := flag.Float64("heavy-writes", 0.1, "share of starts in the heavy namespace")
 	readyz := flag.Float64("readyz-qps", 0.6, "readiness probe QPS (0.2 per replica, 3 replicas)")
+	btreePlan := flag.String("btree-plan-mode", "", "plan_cache_mode for B-tree shapes: empty (auto), force_custom_plan or force_generic_plan")
 	reps := flag.Int("reps", 20, "worst-case repetitions per variant")
 	bounds := flag.String("bounds", "1000 10000", "bounded B-tree scan sizes for the worst case")
 	pageDelay := flag.Duration("page-delay", 10*time.Millisecond, "pause between pages in the paging test")
@@ -66,7 +67,7 @@ func main() {
 			return explainAll(ctx, *dsn, d)
 		case "mix":
 			return runMix(ctx, *dsn, d, mixConfig{Writers: *writers, Browsers: *browsers, FlowsPerBrowser: *flows, Pool: *pool,
-				Duration: *duration, PollInterval: *poll, HeavyBrowsers: *heavyBrowsers, HeavyWrites: *heavyWrites, ReadyzQPS: *readyz})
+				Duration: *duration, PollInterval: *poll, HeavyBrowsers: *heavyBrowsers, HeavyWrites: *heavyWrites, ReadyzQPS: *readyz, BtreePlanMode: *btreePlan})
 		case "c3":
 			t := time.Now()
 			if _, err := conn.Exec(ctx, c3IndexDDL); err != nil {

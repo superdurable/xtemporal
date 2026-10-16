@@ -55,40 +55,39 @@ def exec_ms(plan):
     return float(m.group(1)) if m else None
 
 
+VARIANTS = (('no-c3', 'no C3'), ('c3', 'C3'), ('c3-custom', 'C3, custom plans'))
+
+
 def mix_section(root):
     lines = []
     for writers in (16, 64):
-        a, b = load(root, f'mix-no-c3-{writers}.json'), load(root, f'mix-c3-{writers}.json')
-        if not a and not b:
+        data = [(label, load(root, f'mix-{key}-{writers}.json')) for key, label in VARIANTS]
+        data = [(label, d) for label, d in data if d]
+        if not data:
             continue
         lines += [f'### {writers} writers', '']
-        header = ['Shape', 'no C3 QPS', 'no C3 p50', 'no C3 p95', 'no C3 p99', 'C3 QPS', 'C3 p50', 'C3 p95', 'C3 p99']
+        header = ['Shape'] + [f'{label} {m}' for label, _ in data for m in ('QPS', 'p50', 'p95', 'p99')]
         rows = []
         for s in SHAPES:
             row = [s]
-            for d in (a, b):
-                r = (d or {}).get('reads', {}).get(s, {})
+            for _, d in data:
+                r = d.get('reads', {}).get(s, {})
                 row += [r.get('per_second'), r.get('p50_ms'), r.get('p95_ms'), r.get('p99_ms')]
             rows.append(row)
         lines.append(table(header, rows))
         wrows = []
-        for label, d in (('no C3', a), ('C3', b)):
-            if not d:
-                continue
-            all_lat = {k: v for k, v in d['writes'].items()}
-            wrows.append([label, d['write_statements_per_second']] +
-                         [max((v.get(p, 0) for v in all_lat.values()), default=None) for p in ('p50_ms', 'p95_ms', 'p99_ms')] +
-                         [d['polls'], d['late_polls']])
-        lines.append(table(['Variant', 'write statements/s', 'max op p50', 'max op p95', 'max op p99', 'polls', 'late polls'], wrows))
-        ops = sorted({op for d in (a, b) if d for op in d['writes']})
+        for label, d in data:
+            wrows.append([label, d['write_statements_per_second'], d['polls'], d['late_polls']])
+        lines.append(table(['Variant', 'write statements/s', 'polls', 'late polls'], wrows))
+        ops = sorted({op for _, d in data for op in d['writes']})
         orows = []
         for op in ops:
             row = [op]
-            for d in (a, b):
-                r = (d or {}).get('writes', {}).get(op, {})
+            for _, d in data:
+                r = d.get('writes', {}).get(op, {})
                 row += [r.get('per_second'), r.get('p50_ms'), r.get('p99_ms')]
             orows.append(row)
-        lines.append(table(['Write op', 'no C3 /s', 'no C3 p50', 'no C3 p99', 'C3 /s', 'C3 p50', 'C3 p99'], orows))
+        lines.append(table(['Write op'] + [f'{label} {m}' for label, _ in data for m in ('/s', 'p50', 'p99')], orows))
     return lines
 
 
@@ -153,7 +152,7 @@ def paging_section(root):
 def sizes_section(root):
     rows = []
     for name in ('sizes-before.json', 'mix-no-c3-16-sizes.json', 'mix-c3-16-sizes.json', 'mix-c3-64-sizes.json',
-                 'mix-no-c3-64-sizes.json', 'sizes-after.json'):
+                 'mix-no-c3-64-sizes.json', 'mix-c3-custom-16-sizes.json', 'mix-c3-custom-64-sizes.json', 'sizes-after.json'):
         d = load(root, name)
         if not d:
             continue

@@ -84,13 +84,13 @@ set_c3() {
 }
 
 mix_step() {
-  local label=$1 c3=$2 writers=$3
+  local label=$1 c3=$2 writers=$3 plan_mode=${4:-}
   done_step "$label" && return
   set_c3 "$c3"
   psql_exec 'CHECKPOINT' > /dev/null
   capture_background "$label"
   : > "$output/$label-docker-stats.csv"
-  "${bench[@]}" -mode mix -writers "$writers" -browsers "$browsers" -pool "$pool" -duration "$duration" > "$output/$label.json" &
+  "${bench[@]}" -mode mix -btree-plan-mode "$plan_mode" -writers "$writers" -browsers "$browsers" -pool "$pool" -duration "$duration" > "$output/$label.json" &
   local pid=$!
   while kill -0 "$pid" 2>/dev/null; do
     docker stats --no-stream --format '{{.CPUPerc}},{{.MemUsage}}' "$container" >> "$output/$label-docker-stats.csv" || true
@@ -126,6 +126,10 @@ if ! done_step explain-c3; then set_c3 on; "${bench[@]}" -mode explain > "$outpu
 mix_step mix-c3-16 on 16
 mix_step mix-c3-64 on 64
 mix_step mix-no-c3-64 off 64
+# Plan stability: with C3 the generic plan sorts a whole flow for shapes without a status equality,
+# so also measure C3 with custom plans.
+mix_step mix-c3-custom-16 on 16 force_custom_plan
+mix_step mix-c3-custom-64 on 64 force_custom_plan
 
 if ! done_step worst; then
   set_c3 off

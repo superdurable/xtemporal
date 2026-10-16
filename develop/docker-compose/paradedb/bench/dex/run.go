@@ -83,26 +83,27 @@ func (r *recorder) results(seconds float64) map[string]any {
 // (a generic plan with JSON keys loses the ParadeDB custom scan on 0.26.1).
 type pools struct{ btree, bm25 *pgxpool.Pool }
 
-func newPools(ctx context.Context, dsn string, size int) (*pools, error) {
-	mk := func(custom bool) (*pgxpool.Pool, error) {
+// btreeMode optionally sets plan_cache_mode on the B-tree pool; the BM25 pool always uses custom plans.
+func newPools(ctx context.Context, dsn string, size int, btreeMode string) (*pools, error) {
+	mk := func(mode string) (*pgxpool.Pool, error) {
 		cfg, err := pgxpool.ParseConfig(dsn)
 		if err != nil {
 			return nil, err
 		}
 		cfg.MaxConns = int32(size)
-		if custom {
+		if mode != "" {
 			cfg.AfterConnect = func(ctx context.Context, c *pgx.Conn) error {
-				_, err := c.Exec(ctx, "SET plan_cache_mode = force_custom_plan")
+				_, err := c.Exec(ctx, "SET plan_cache_mode = "+mode)
 				return err
 			}
 		}
 		return pgxpool.NewWithConfig(ctx, cfg)
 	}
-	b, err := mk(false)
+	b, err := mk(btreeMode)
 	if err != nil {
 		return nil, err
 	}
-	m, err := mk(true)
+	m, err := mk("force_custom_plan")
 	if err != nil {
 		b.Close()
 		return nil, err
@@ -196,11 +197,12 @@ type mixConfig struct {
 	HeavyBrowsers   float64 // share of browsers polling the heavy namespace
 	HeavyWrites     float64 // share of starts in the heavy namespace
 	ReadyzQPS       float64
+	BtreePlanMode   string // auto (empty), force_custom_plan or force_generic_plan for B-tree shapes
 }
 
 // runMix drives concurrent console browsers and store writers for cfg.Duration.
 func runMix(ctx context.Context, dsn string, d *Dataset, cfg mixConfig) (map[string]any, error) {
-	p, err := newPools(ctx, dsn, cfg.Pool)
+	p, err := newPools(ctx, dsn, cfg.Pool, cfg.BtreePlanMode)
 	if err != nil {
 		return nil, err
 	}
@@ -325,7 +327,7 @@ func runMix(ctx context.Context, dsn string, d *Dataset, cfg mixConfig) (map[str
 	}
 	result := map[string]any{
 		"seconds": seconds, "writers": cfg.Writers, "browsers": cfg.Browsers, "flows_per_browser": cfg.FlowsPerBrowser,
-		"pool": cfg.Pool, "polls": polls.Load(), "late_polls": latePolls.Load(),
+		"pool": cfg.Pool, "btree_plan_mode": cfg.BtreePlanMode, "polls": polls.Load(), "late_polls": latePolls.Load(),
 		"reads": reads.results(seconds), "writes": writeResults, "write_statements_per_second": total,
 	}
 	if errs > 0 {
