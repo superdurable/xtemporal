@@ -27,7 +27,7 @@ if [[ ${BENCH_SKIP_SETUP:-0} != 1 ]]; then
   "${compose[@]}" up -d --wait
   docker exec -i xtpdbbench-paradedb-1 psql -v ON_ERROR_STOP=1 -U postgres -d visibility < "$bench_dir/../spike/paradedb-schema.sql" > "$output/schema-paradedb.log"
   docker exec -i xtpdbbench-postgres-1 psql -v ON_ERROR_STOP=1 -U postgres -d visibility < "$repo_root/schema/postgresql/v12/visibility/schema.sql" > "$output/schema-postgres.log"
-  for database in postgres paradedb; do
+  for database in ${BENCH_DATABASES:-postgres paradedb}; do
     port=56433
     if [[ $database == paradedb ]]; then port=56432; fi
     "$output/bench" -mode preload -rows "$rows" -dsn "postgres://postgres:spike@127.0.0.1:$port/visibility?sslmode=disable" > "$output/preload-$database.log" 2>&1
