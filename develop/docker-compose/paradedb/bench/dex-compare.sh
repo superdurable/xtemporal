@@ -94,6 +94,12 @@ mix_step() {
   local pid=$!
   while kill -0 "$pid" 2>/dev/null; do
     docker stats --no-stream --format '{{.CPUPerc}},{{.MemUsage}}' "$container" >> "$output/$label-docker-stats.csv" || true
+    # A full disk crashes the database and invalidates the run, so stop early instead.
+    if [[ $(df --output=avail -BM "$output" | tail -1 | tr -dc 0-9) -lt ${BENCH_MIN_FREE_MB:-1500} ]]; then
+      kill "$pid" 2>/dev/null || true
+      echo "aborting $label: free disk below ${BENCH_MIN_FREE_MB:-1500} MB" >&2
+      exit 1
+    fi
     sleep 10
   done
   wait "$pid"
