@@ -6,6 +6,19 @@
 - The load generator ran on the same host as the database; no other containers used CPU during the runs.
 - Every variant started from a fresh volume preloaded with 1,000,000 rows.
 
+## Variants
+
+| Variant | Database | Schema | Read routing |
+|---|---|---|---|
+| `postgres` | stock PostgreSQL | Temporal's v12 visibility schema: pre-allocated search-attribute columns with B-tree/GIN indexes; `Text` attributes use tsvector | every query uses B-tree/GIN indexes |
+| `pdb-cols` | ParadeDB (PostgreSQL + pg_search) | the current column-based ParadeDB schema: the same pre-allocated search-attribute columns, covered by one BM25 index (`visibility_core_bm25`) | every query is anchored with `namespace_id @@@ $1` so it runs through BM25 (status quo) |
+| `pdb-cols-hybrid` | ParadeDB | `pdb-cols` plus the core-field B-tree indexes from `core-indexes.sql` (status, workflow type, workflow ID, task queue, execution time) | core-field queries (`status_time`, `type_status`, `count`, `group_count`) use plain SQL on B-tree; search-attribute queries (`text`, `keyword`, `keyword_list`) use BM25 |
+| `pdb-json-hybrid` | ParadeDB | Elasticsearch-style model: search attributes stored in typed JSONB columns (`sa_keyword`, `sa_text`, `sa_number`, `sa_datetime`, `sa_bool`) with one BM25 index, plus the same core B-tree indexes | same routing as `pdb-cols-hybrid`; search-attribute queries use JSON paths such as `sa_keyword->'Keyword01' @@@ pdb.term_set(...)` with `plan_cache_mode=force_custom_plan` |
+
+Index sets differ by design: `postgres` has the most indexes (the full v12 B-tree/GIN set) and `pdb-json-hybrid` the fewest (one BM25 index plus the core B-tree set), which accounts for much of the write-cost difference.
+
+## Runs
+
 | Run | Script | Configuration |
 |---|---|---|
 | `baseline/` | original `compare.sh` (plus `shm_size: 2gb` only) | `shared_buffers=8GB`, 16 and 64 writers for 15 minutes each, 8 closed-loop readers, one round per variant |
