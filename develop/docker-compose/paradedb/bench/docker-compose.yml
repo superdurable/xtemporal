@@ -1,10 +1,13 @@
 services:
   paradedb:
-    image: paradedb/paradedb:v0.26.0-pg17
-    command: ["postgres", "-c", "max_connections=200"]
+    image: paradedb/paradedb:${PARADEDB_TAG:-v0.26.1-pg17}
+    command: ["postgres", "-c", "max_connections=200", "-c", "log_error_verbosity=verbose"]
     environment:
       POSTGRES_PASSWORD: spike
       POSTGRES_DB: visibility
+      RUST_BACKTRACE: full
+    ulimits:
+      core: -1
     ports:
       - "127.0.0.1:56432:5432"
     healthcheck:
