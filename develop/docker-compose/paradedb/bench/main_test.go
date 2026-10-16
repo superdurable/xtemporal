@@ -25,8 +25,37 @@ func TestVisibilityStatements(t *testing.T) {
 			t.Fatalf("upsert does not update %s", field)
 		}
 	}
+	if len(jsonFields) != len(jsonValues(1, 1, true)) {
+		t.Fatalf("json fields=%d, values=%d", len(jsonFields), len(jsonValues(1, 1, true)))
+	}
+	for _, field := range []string{"sa_keyword", "sa_text", "sa_number", "sa_datetime", "sa_bool"} {
+		if !strings.Contains(jsonUpsertSQL, field+" = excluded."+field) {
+			t.Fatalf("json upsert does not update %s", field)
+		}
+	}
+	if !strings.Contains(jsonUpsertSQL, "WHERE executions_visibility._version < EXCLUDED._version") {
+		t.Fatal("json upsert version guard missing")
+	}
 	if deleteSQL != "DELETE FROM executions_visibility WHERE namespace_id = $1 AND run_id = $2" {
 		t.Fatal("delete predicate changed")
+	}
+}
+
+func TestQueryRouting(t *testing.T) {
+	for _, variant := range []string{"postgres", "pdb-cols", "pdb-cols-hybrid", "pdb-json-hybrid"} {
+		for _, q := range queries {
+			sql := querySQL(q, variant)
+			if sql == "" {
+				t.Fatalf("%s %s has no query", variant, q.name)
+			}
+			core := q.name == "status_time" || q.name == "type_status" || q.name == "count" || q.name == "group_count"
+			if core && strings.Contains(variant, "hybrid") && sql != q.postgres {
+				t.Fatalf("%s %s should use PostgreSQL SQL", variant, q.name)
+			}
+			if !core && variant == "pdb-json-hybrid" && !strings.Contains(sql, "sa_") {
+				t.Fatalf("%s does not query typed JSON", q.name)
+			}
+		}
 	}
 }
 
@@ -38,7 +67,7 @@ func TestDiagnosticFiltersRejectUnknownValues(t *testing.T) {
 		{"read", "mixed", "missing", "unknown read query"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			_, err := run(context.Background(), "", true, 1, 0, 0, time.Second, tc.writeOp, tc.readQuery)
+			_, err := run(context.Background(), "", "pdb-cols", 1, 0, 0, time.Second, tc.writeOp, tc.readQuery)
 			if err == nil || !strings.Contains(err.Error(), tc.want) {
 				t.Fatalf("run error = %v, want %q", err, tc.want)
 			}
