@@ -74,10 +74,12 @@ func TestXTJTIRevocation(t *testing.T) {
 		apiName    string
 		decision   authorization.Decision
 	}{
+		{"namespace admin register", "default:admin", api.WorkflowServicePrefix + "RegisterNamespace", authorization.DecisionDeny},
 		{"namespace admin delete", "default:admin", api.OperatorServicePrefix + "DeleteNamespace", authorization.DecisionDeny},
 		{"namespace admin update", "default:admin", api.WorkflowServicePrefix + "UpdateNamespace", authorization.DecisionDeny},
 		{"namespace admin deprecate", "default:admin", api.WorkflowServicePrefix + "DeprecateNamespace", authorization.DecisionDeny},
 		{"namespace admin add search attributes", "default:admin", api.OperatorServicePrefix + "AddSearchAttributes", authorization.DecisionAllow},
+		{"system admin register", "temporal-system:admin", api.WorkflowServicePrefix + "RegisterNamespace", authorization.DecisionAllow},
 		{"system admin delete", "temporal-system:admin", api.OperatorServicePrefix + "DeleteNamespace", authorization.DecisionAllow},
 		{"system admin update", "temporal-system:admin", api.WorkflowServicePrefix + "UpdateNamespace", authorization.DecisionAllow},
 		{"system admin deprecate", "temporal-system:admin", api.WorkflowServicePrefix + "DeprecateNamespace", authorization.DecisionAllow},

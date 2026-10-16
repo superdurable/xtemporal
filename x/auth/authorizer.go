@@ -22,6 +22,7 @@ func GetAuthorizerFromConfig(cfg *config.Authorization) (authorization.Authorize
 
 func (a *platformNamespaceLifecycleAuthorizer) Authorize(ctx context.Context, claims *authorization.Claims, target *authorization.CallTarget) (authorization.Result, error) {
 	if (target.APIName == api.OperatorServicePrefix+"DeleteNamespace" ||
+		target.APIName == api.WorkflowServicePrefix+"RegisterNamespace" ||
 		target.APIName == api.WorkflowServicePrefix+"UpdateNamespace" ||
 		target.APIName == api.WorkflowServicePrefix+"DeprecateNamespace") &&
 		(claims == nil || claims.System == authorization.RoleUndefined) {
