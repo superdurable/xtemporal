@@ -1,4 +1,4 @@
-module github.com/superdurable/xtemporal/limitless-verify/verify
+module github.com/superdurable/xtemporal/x/limitless-verify/verify
 
 go 1.26.0
 
