@@ -1,6 +1,6 @@
 # Aurora Limitless verification tools
 
-These tools produced the evidence behind the `postgres12_limitless` plugin and its [operator guide](../docs/xtemporal/limitless.md). They are run by hand; there is no CI job, because AWS offers no local Limitless. Run them from the repository root.
+These tools produced the evidence behind the `postgres12_limitless` plugin and its [operator guide](../../docs/xtemporal/limitless.md). They are run by hand; there is no CI job, because AWS offers no local Limitless. Run them from the repository root.
 
 | Path | What it checks |
 | --- | --- |
@@ -13,7 +13,7 @@ These tools produced the evidence behind the `postgres12_limitless` plugin and i
 ## limitless-verify
 
 ```sh
-cd limitless-verify/verify
+cd x/limitless-verify/verify
 docker compose up -d                       # control PostgreSQL 16 on 127.0.0.1:55432
 printf 'PG16_DSN=postgres://postgres:postgres@127.0.0.1:55432/postgres?sslmode=disable\n' > .env
 go build -o limitless-verify .
@@ -52,4 +52,4 @@ Results on `16.13-limitless` (2 routers, 2 shards):
 
 ## Cost
 
-A Limitless shard group bills per ACU-hour (USD 0.16 in us-west-2 at the time of testing) with a 16 ACU minimum. Delete the shard group and cluster as soon as a run ends. `limitless-verify/limitless-e2e.sh` shows a complete teardown sequence.
+A Limitless shard group bills per ACU-hour (USD 0.16 in us-west-2 at the time of testing) with a 16 ACU minimum. Delete the shard group and cluster as soon as a run ends. `x/limitless-verify/limitless-e2e.sh` shows a complete teardown sequence.
