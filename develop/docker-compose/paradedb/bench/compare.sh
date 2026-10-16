@@ -13,9 +13,14 @@ rows=${BENCH_ROWS:-1000000}
 duration=${BENCH_DURATION:-15m}
 connections=${BENCH_CONNECTIONS:-"16 64"}
 readers=${BENCH_READERS:-8}
+read_rate=${BENCH_READ_RATE:-10}
+capacity_duration=${BENCH_CAPACITY_DURATION:-60s}
+repeats=${BENCH_REPEATS:-1}
+queries="status_time type_status text keyword keyword_list count group_count"
 variants=${BENCH_VARIANTS:-"postgres pdb-cols pdb-cols-hybrid pdb-json-hybrid"}
 container="$project-db-1"
 dsn="postgres://postgres:spike@127.0.0.1:$BENCH_PORT/visibility?sslmode=disable"
+read -r -a variant_list <<< "$variants"
 
 cleanup() {
   "${compose[@]}" down -v >/dev/null 2>&1 || true
@@ -50,15 +55,19 @@ open(sys.argv[3], 'w').write(note + '\n')
 PY
 }
 
-for variant in $variants; do
+psql_exec() {
+  docker exec "$container" psql -v ON_ERROR_STOP=1 -U postgres -d visibility -c "$1"
+}
+
+run_variant() {
+  local variant=$1 dir=$2 schema writers query bench_pid crash_pid initialized recovered attempt
   case "$variant" in
     postgres) export BENCH_IMAGE=postgres:17.11; schema="$repo_root/schema/postgresql/v12/visibility/schema.sql" ;;
     pdb-cols|pdb-cols-hybrid) export BENCH_IMAGE="paradedb/paradedb:${PARADEDB_TAG:-v0.26.1-pg17}"; schema="$bench_dir/../spike/paradedb-schema.sql" ;;
     pdb-json-hybrid) export BENCH_IMAGE="paradedb/paradedb:${PARADEDB_TAG:-v0.26.1-pg17}"; schema="$bench_dir/json-hybrid-schema.sql" ;;
     *) echo "unknown variant: $variant" >&2; exit 1 ;;
   esac
-  dir="$output/$variant"
-  if [[ -f $dir/done ]]; then echo "Skipping completed $variant"; continue; fi
+  if [[ -f $dir/done ]]; then echo "Skipping completed $dir"; return; fi
   rm -rf "$dir"
   mkdir -p "$dir"
   "${compose[@]}" down -v >/dev/null 2>&1
@@ -78,13 +87,14 @@ for variant in $variants; do
     docker exec -i "$container" psql -v ON_ERROR_STOP=1 -U postgres -d visibility < "$bench_dir/core-indexes.sql" >> "$dir/schema.log"
   fi
   "$output/bench" -mode preload -variant "$variant" -rows "$rows" -dsn "$dsn" > "$dir/preload.log"
-  docker exec "$container" psql -v ON_ERROR_STOP=1 -U postgres -d visibility -c 'ANALYZE executions_visibility' > "$dir/analyze.log"
+  # Flush preload dirt so its checkpoint and vacuum work do not land inside a timed window.
+  { psql_exec 'VACUUM ANALYZE executions_visibility'; psql_exec 'CHECKPOINT'; } > "$dir/analyze.log"
   snapshot "$dir" before "$variant"
   "$output/bench" -mode check -variant "$variant" -dsn "$dsn" > "$dir/check.json"
-  python3 - "$output" "$variant" <<'PY'
+  python3 - "$output" "$dir/check.json" "$variant" <<'PY'
 import json, pathlib, sys
-root, variant = pathlib.Path(sys.argv[1]), sys.argv[2]
-actual = json.loads((root / variant / 'check.json').read_text())['results']
+root, check, variant = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), sys.argv[3]
+actual = json.loads(check.read_text())['results']
 reference = root / 'reference-results.json'
 if reference.exists():
     expected = json.loads(reference.read_text())
@@ -94,10 +104,15 @@ if reference.exists():
 else:
     reference.write_text(json.dumps(actual, indent=2, sort_keys=True) + '\n')
 PY
+  for query in $queries; do
+    psql_exec 'CHECKPOINT' > /dev/null
+    "$output/bench" -mode run -variant "$variant" -rows "$rows" -writers 0 -readers "$readers" -read-query "$query" -duration "$capacity_duration" -dsn "$dsn" > "$dir/capacity-$query.json"
+  done
   for writers in $connections; do
+    psql_exec 'CHECKPOINT' > /dev/null
     capture_background "$dir" "$writers"
     : > "$dir/$writers-docker-stats.csv"
-    "$output/bench" -mode run -variant "$variant" -rows "$rows" -writers "$writers" -readers "$readers" -duration "$duration" -dsn "$dsn" > "$dir/$writers.json" &
+    "$output/bench" -mode run -variant "$variant" -rows "$rows" -writers "$writers" -readers "$readers" -read-rate "$read_rate" -duration "$duration" -dsn "$dsn" > "$dir/$writers.json" &
     bench_pid=$!
     while kill -0 "$bench_pid" 2>/dev/null; do
       docker stats --no-stream --format '{{.CPUPerc}},{{.MemUsage}}' "$container" >> "$dir/$writers-docker-stats.csv"
@@ -129,5 +144,14 @@ PY
   docker logs "$container" > "$dir/container.log" 2>&1
   "${compose[@]}" down -v > "$dir/compose-down.log"
   touch "$dir/done"
+}
+
+# Rotating the order each round keeps any drift on a shared host from always favoring the same variant.
+for ((round=1; round<=repeats; round++)); do
+  count=${#variant_list[@]}
+  for ((i=0; i<count; i++)); do
+    variant=${variant_list[$(( (i + round - 1) % count ))]}
+    run_variant "$variant" "$output/$variant/r$round"
+  done
 done
 python3 "$bench_dir/summarize.py" "$output"

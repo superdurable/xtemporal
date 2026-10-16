@@ -101,6 +101,9 @@ func key(id int) (string, string) {
 	return hex.EncodeToString(ns[:]), hex.EncodeToString(run[:])
 }
 
+// attr drives every filterable value except the namespace (id % 10), so each namespace sees the same selectivity.
+func attr(id int) int { return id / 10 }
+
 func coreValues(id int, running bool) []any {
 	ns, run := key(id)
 	start := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC).Add(time.Duration(id%86400) * time.Second)
@@ -110,22 +113,24 @@ func coreValues(id int, running bool) []any {
 		status = 2 + id%6
 		closeTime = start.Add(time.Minute)
 	}
-	return []any{ns, run, "type-" + fmt.Sprint(id%10), "workflow-" + fmt.Sprint(id), start, start,
+	return []any{ns, run, "type-" + fmt.Sprint(attr(id)%10), "workflow-" + fmt.Sprint(id), start, start,
 		status, closeTime, id % 10000, id % 100000, id % 3600, id % 100, nil,
-		"json/plain", "queue-" + fmt.Sprint(id%10)}
+		"json/plain", "queue-" + fmt.Sprint(attr(id)%10)}
 }
 
 func values(id int, version int64, running bool) []any {
+	a := attr(id)
 	attrs := fmt.Sprintf(`{"Keyword01":"tenant-%d","Keyword02":"prefix-%d","KeywordList01":["tag-%d"],"Text01":"%s","Int01":%d,"Bool01":%t}`,
-		id%100, id%1000, id%20, map[bool]string{true: "hello world", false: "ordinary document"}[id%10 == 0], id%1000, id%2 == 0)
+		a%100, a%1000, a%20, map[bool]string{true: "hello world", false: "ordinary document"}[a%10 == 0], a%1000, a%2 == 0)
 	return append(coreValues(id, running), attrs, nil, nil, "", "", version)
 }
 
 func jsonValues(id int, version int64, running bool) []any {
+	a := attr(id)
 	return append(coreValues(id, running),
-		fmt.Sprintf(`{"Keyword01":"tenant-%d","Keyword02":"prefix-%d","KeywordList01":["tag-%d"]}`, id%100, id%1000, id%20),
-		map[bool]string{true: `{"Text01":"hello world"}`, false: `{"Text01":"ordinary document"}`}[id%10 == 0],
-		fmt.Sprintf(`{"Int01":%d}`, id%1000), `{}`, fmt.Sprintf(`{"Bool01":%t}`, id%2 == 0), version)
+		fmt.Sprintf(`{"Keyword01":"tenant-%d","Keyword02":"prefix-%d","KeywordList01":["tag-%d"]}`, a%100, a%1000, a%20),
+		map[bool]string{true: `{"Text01":"hello world"}`, false: `{"Text01":"ordinary document"}`}[a%10 == 0],
+		fmt.Sprintf(`{"Int01":%d}`, a%1000), `{}`, fmt.Sprintf(`{"Bool01":%t}`, a%2 == 0), version)
 }
 
 func connect(ctx context.Context, dsn, variant string) (*pgx.Conn, error) {
@@ -156,22 +161,22 @@ func preload(ctx context.Context, dsn string, rows int, variant string) error {
 	defer closeConn(conn)
 	// Server-side generation keeps preload network cost out of the measured single-row workload.
 	selectedFields := fields
-	attributes := `jsonb_build_object('Keyword01', 'tenant-' || (g % 100), 'Keyword02', 'prefix-' || (g % 1000),
-	 'KeywordList01', jsonb_build_array('tag-' || (g % 20)), 'Text01', CASE WHEN g % 10 = 0 THEN 'hello world' ELSE 'ordinary document' END,
-	 'Int01', g % 1000, 'Bool01', g % 2 = 0), NULL, NULL, '', '', 1`
+	attributes := `jsonb_build_object('Keyword01', 'tenant-' || (g / 10 % 100), 'Keyword02', 'prefix-' || (g / 10 % 1000),
+	 'KeywordList01', jsonb_build_array('tag-' || (g / 10 % 20)), 'Text01', CASE WHEN g / 10 % 10 = 0 THEN 'hello world' ELSE 'ordinary document' END,
+	 'Int01', g / 10 % 1000, 'Bool01', g / 10 % 2 = 0), NULL, NULL, '', '', 1`
 	if variant == "pdb-json-hybrid" {
 		selectedFields = jsonFields
-		attributes = `jsonb_build_object('Keyword01', 'tenant-' || (g % 100), 'Keyword02', 'prefix-' || (g % 1000),
-	 'KeywordList01', jsonb_build_array('tag-' || (g % 20))),
-	 jsonb_build_object('Text01', CASE WHEN g % 10 = 0 THEN 'hello world' ELSE 'ordinary document' END),
-	 jsonb_build_object('Int01', g % 1000), '{}'::jsonb, jsonb_build_object('Bool01', g % 2 = 0), 1`
+		attributes = `jsonb_build_object('Keyword01', 'tenant-' || (g / 10 % 100), 'Keyword02', 'prefix-' || (g / 10 % 1000),
+	 'KeywordList01', jsonb_build_array('tag-' || (g / 10 % 20))),
+	 jsonb_build_object('Text01', CASE WHEN g / 10 % 10 = 0 THEN 'hello world' ELSE 'ordinary document' END),
+	 jsonb_build_object('Int01', g / 10 % 1000), '{}'::jsonb, jsonb_build_object('Bool01', g / 10 % 2 = 0), 1`
 	}
 	_, err = conn.Exec(ctx, `INSERT INTO executions_visibility (`+strings.Join(selectedFields, ", ")+`)
-	SELECT md5((g % 10)::text), md5(g::text), 'type-' || (g % 10), 'workflow-' || g,
+	SELECT md5((g % 10)::text), md5(g::text), 'type-' || (g / 10 % 10), 'workflow-' || g,
 	 timestamp '2026-01-01' + (g % 86400) * interval '1 second', timestamp '2026-01-01' + (g % 86400) * interval '1 second',
 	 CASE WHEN g % 7 = 0 THEN 1 ELSE 2 + g % 6 END,
 	 CASE WHEN g % 7 = 0 THEN NULL ELSE timestamp '2026-01-01' + (g % 86400) * interval '1 second' + interval '1 minute' END,
-	 g % 10000, g % 100000, g % 3600, g % 100, NULL, 'json/plain', 'queue-' || (g % 10),
+	 g % 10000, g % 100000, g % 3600, g % 100, NULL, 'json/plain', 'queue-' || (g / 10 % 10),
 	 `+attributes+`
 	FROM generate_series(1, $1) g`, rows)
 	if err != nil {
@@ -218,7 +223,20 @@ func querySQL(q query, variant string) string {
 	return ""
 }
 
-func run(ctx context.Context, dsn, variant string, preloadRows, writers, readers int, duration time.Duration, writeOp, readQuery string) (map[string]any, error) {
+func readOnce(ctx context.Context, conn *pgx.Conn, sql string, n int) error {
+	ns, _ := key(n % 10)
+	rows, err := conn.Query(ctx, sql, ns)
+	if err != nil {
+		return err
+	}
+	for rows.Next() { /* count and list rows are drained for comparable work */
+	}
+	err = rows.Err()
+	rows.Close()
+	return err
+}
+
+func run(ctx context.Context, dsn, variant string, preloadRows, writers, readers int, duration time.Duration, writeOp, readQuery string, readRate float64) (map[string]any, error) {
 	if writeOp != "mixed" && writeOp != "insert" && writeOp != "upsert" && writeOp != "delete" {
 		return nil, fmt.Errorf("unknown write operation %q", writeOp)
 	}
@@ -242,6 +260,7 @@ func run(ctx context.Context, dsn, variant string, preloadRows, writers, readers
 	for i := range read {
 		read[i] = &sample{}
 	}
+	missed := make([]atomic.Int64, len(selectedQueries))
 	var wg sync.WaitGroup
 	runCtx, cancel := context.WithTimeout(ctx, duration)
 	defer cancel()
@@ -307,42 +326,93 @@ func run(ctx context.Context, dsn, variant string, preloadRows, writers, readers
 			}
 		}(w)
 	}
-	for r := 0; r < readers; r++ {
-		wg.Add(1)
-		go func(reader int) {
-			defer wg.Done()
-			conn, err := connect(ctx, dsn, variant)
-			if err != nil {
-				read[0].add(time.Now(), err)
-				return
-			}
-			defer closeConn(conn)
-			for n := 0; runCtx.Err() == nil; n++ {
-				i := (n + reader) % len(selectedQueries)
-				q := querySQL(selectedQueries[i], variant)
-				ns, _ := key(n % 10)
-				begun := time.Now()
-				rows, err := conn.Query(runCtx, q, ns)
-				if err == nil {
-					for rows.Next() { /* count and list rows are drained for comparable work */
+	if readRate > 0 {
+		// A fixed offered rate per query keeps the read pressure on writers identical across variants,
+		// and stops the slowest query from pacing the throughput of the others.
+		type job struct{ query, n int }
+		jobs := make(chan job, readers)
+		var schedulers sync.WaitGroup
+		for i := range selectedQueries {
+			schedulers.Add(1)
+			go func(i int) {
+				defer schedulers.Done()
+				ticker := time.NewTicker(time.Duration(float64(time.Second) / readRate))
+				defer ticker.Stop()
+				for n := 0; ; n++ {
+					select {
+					case <-runCtx.Done():
+						return
+					case <-ticker.C:
 					}
-					err = rows.Err()
-					rows.Close()
+					select {
+					case jobs <- job{i, n}:
+					default:
+						missed[i].Add(1)
+					}
 				}
-				if runCtx.Err() == nil {
-					read[i].add(begun, err)
-				}
-				if conn.IsClosed() {
+			}(i)
+		}
+		go func() {
+			schedulers.Wait()
+			close(jobs)
+		}()
+		for r := 0; r < readers; r++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				conn, err := connect(ctx, dsn, variant)
+				if err != nil {
+					read[0].add(time.Now(), err)
+					for j := range jobs {
+						missed[j.query].Add(1)
+					}
 					return
 				}
-			}
-		}(r)
+				defer closeConn(conn)
+				for j := range jobs {
+					if runCtx.Err() != nil || conn.IsClosed() {
+						continue
+					}
+					begun := time.Now()
+					err := readOnce(runCtx, conn, querySQL(selectedQueries[j.query], variant), j.n)
+					if runCtx.Err() == nil {
+						read[j.query].add(begun, err)
+					}
+				}
+			}()
+		}
+	} else {
+		for r := 0; r < readers; r++ {
+			wg.Add(1)
+			go func(reader int) {
+				defer wg.Done()
+				conn, err := connect(ctx, dsn, variant)
+				if err != nil {
+					read[0].add(time.Now(), err)
+					return
+				}
+				defer closeConn(conn)
+				for n := 0; runCtx.Err() == nil; n++ {
+					i := (n + reader) % len(selectedQueries)
+					begun := time.Now()
+					err := readOnce(runCtx, conn, querySQL(selectedQueries[i], variant), n)
+					if runCtx.Err() == nil {
+						read[i].add(begun, err)
+					}
+					if conn.IsClosed() {
+						return
+					}
+				}
+			}(r)
+		}
 	}
 	wg.Wait()
 	seconds := time.Since(start).Seconds()
-	result := map[string]any{"seconds": seconds, "writers": writers, "readers": readers, "write": write.result(seconds), "affected_rows": affected.Load(), "attempts": map[string]int64{"insert": inserts.Load(), "update": updates.Load(), "delete": deletes.Load()}, "reads": map[string]any{}}
+	result := map[string]any{"seconds": seconds, "writers": writers, "readers": readers, "read_rate": readRate, "write": write.result(seconds), "affected_rows": affected.Load(), "attempts": map[string]int64{"insert": inserts.Load(), "update": updates.Load(), "delete": deletes.Load()}, "reads": map[string]any{}}
 	for i, q := range selectedQueries {
-		result["reads"].(map[string]any)[q.name] = read[i].result(seconds)
+		r := read[i].result(seconds)
+		r["missed"] = missed[i].Load()
+		result["reads"].(map[string]any)[q.name] = r
 	}
 	if write.errors.Load() != 0 {
 		return result, fmt.Errorf("write workload had %d errors", write.errors.Load())
@@ -391,37 +461,21 @@ func check(ctx context.Context, dsn, variant string) (map[string]any, error) {
 		return nil, err
 	}
 	defer closeConn(conn)
-	ns, _ := key(0)
 	results := make(map[string][]string)
 	plans := make(map[string]string)
 	for _, q := range queries {
 		sql := querySQL(q, variant)
-		rows, err := conn.Query(ctx, sql, ns)
-		if err != nil {
-			return nil, fmt.Errorf("%s: %w", q.name, err)
-		}
-		var values []string
-		for rows.Next() {
-			columns, err := rows.Values()
+		for n := 0; n < 10; n++ {
+			values, err := checkQuery(ctx, conn, sql, n)
 			if err != nil {
-				rows.Close()
 				return nil, fmt.Errorf("%s: %w", q.name, err)
 			}
-			parts := make([]string, len(columns))
-			for i, column := range columns {
-				parts[i] = strings.TrimSpace(fmt.Sprint(column))
+			if q.name == "group_count" {
+				sort.Strings(values)
 			}
-			values = append(values, strings.Join(parts, "|"))
+			results[fmt.Sprintf("%s/ns%d", q.name, n)] = values
 		}
-		err = rows.Err()
-		rows.Close()
-		if err != nil {
-			return nil, fmt.Errorf("%s: %w", q.name, err)
-		}
-		if q.name == "group_count" {
-			sort.Strings(values)
-		}
-		results[q.name] = values
+		ns, _ := key(0)
 		planRows, err := conn.Query(ctx, "EXPLAIN "+sql, ns)
 		if err != nil {
 			return nil, fmt.Errorf("EXPLAIN %s: %w", q.name, err)
@@ -445,6 +499,28 @@ func check(ctx context.Context, dsn, variant string) (map[string]any, error) {
 	return map[string]any{"results": results, "plans": plans}, nil
 }
 
+func checkQuery(ctx context.Context, conn *pgx.Conn, sql string, n int) ([]string, error) {
+	ns, _ := key(n)
+	rows, err := conn.Query(ctx, sql, ns)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	values := []string{}
+	for rows.Next() {
+		columns, err := rows.Values()
+		if err != nil {
+			return nil, err
+		}
+		parts := make([]string, len(columns))
+		for i, column := range columns {
+			parts[i] = strings.TrimSpace(fmt.Sprint(column))
+		}
+		values = append(values, strings.Join(parts, "|"))
+	}
+	return values, rows.Err()
+}
+
 func main() {
 	mode := flag.String("mode", "run", "preload, run, check, or verify")
 	dsn := flag.String("dsn", "postgres://postgres:spike@127.0.0.1:56432/visibility?sslmode=disable", "database URL")
@@ -456,6 +532,7 @@ func main() {
 	duration := flag.Duration("duration", 15*time.Minute, "write duration")
 	allowErrors := flag.Bool("allow-errors", false, "return success despite workload errors (crash probe only)")
 	writeOp := flag.String("write-op", "mixed", "mixed, insert, upsert, or delete")
+	readRate := flag.Float64("read-rate", 0, "offered reads per second for each query; 0 runs readers in a closed loop")
 	readQuery := flag.String("read-query", "all", "all, status_time, type_status, text, keyword, keyword_list, count, or group_count")
 	flag.Parse()
 	variant := *variantFlag
@@ -476,7 +553,7 @@ func main() {
 	case "preload":
 		err = preload(ctx, *dsn, *rows, variant)
 	case "run":
-		result, err = run(ctx, *dsn, variant, *rows, *writers, *readers, *duration, *writeOp, *readQuery)
+		result, err = run(ctx, *dsn, variant, *rows, *writers, *readers, *duration, *writeOp, *readQuery, *readRate)
 		if *allowErrors {
 			err = nil
 		}
