@@ -9,10 +9,11 @@ xtemporal tracks upstream [Temporal Server](https://github.com/temporalio/tempor
 | `x/` | Fork specific Go packages: `x/limitless` (Aurora Limitless default store) and `x/paradedb` (ParadeDB visibility). |
 | `schema/limitless/` | Aurora Limitless default-store schema; must mirror `schema/postgresql/v12` (a drift test enforces this). |
 | `schema/paradedb/` | ParadeDB visibility schema. |
-| `scripts/xtemporal/` | Upstream rewrite, sync, release tooling, and the on-demand `limitless-e2e.sh`. |
+| `scripts/xtemporal/` | Upstream rewrite, sync, and release tooling. |
+| `limitless-verify/` | Aurora Limitless end-to-end script and verification tools (run on demand). |
 | `docs/xtemporal/` | Fork maintenance and extension documentation. |
 
-When an extension must touch upstream owned code, keep the hook small and mark it with an `xtemporal:` comment so it can be found during a sync. When an upstream release changes `schema/postgresql/v12/temporal`, mirror the change in `schema/limitless/temporal` (including a conversion `CALL` for any new table) and run `scripts/xtemporal/limitless-e2e.sh`.
+When an extension must touch upstream owned code, keep the hook small and mark it with an `xtemporal:` comment so it can be found during a sync. When an upstream release changes `schema/postgresql/v12/temporal`, mirror the change in `schema/limitless/temporal` (including a conversion `CALL` for any new table) and run `limitless-verify/limitless-e2e.sh`.
 
 ## Upstream sync
 

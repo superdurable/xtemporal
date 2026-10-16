@@ -6,7 +6,7 @@ package tests
 // LIMITLESS_SSLMODE defaults to require; LIMITLESS_VISIBILITY_SSLMODE defaults to disable.
 // Aurora creates a separate database per test cluster or suite using LIMITLESS_ADMIN_DATABASE.
 // SQL-tool on Aurora (requires LIMITLESS_SQL_TOOL_DATABASE for the dedicated database):
-//   scripts/xtemporal/limitless-sql-tool-verify.sh
+//   limitless-verify/limitless-sql-tool-verify.sh
 
 import (
 	"os"
@@ -44,7 +44,7 @@ func TestLimitless(t *testing.T) {
 
 func TestLimitlessSQLToolVerifyVersion(t *testing.T) {
 	if os.Getenv("LIMITLESS_SQL_TOOL_VERIFY") != "1" || !limitlessAuroraMode() {
-		t.Skip("run scripts/xtemporal/limitless-sql-tool-verify.sh against Aurora")
+		t.Skip("run limitless-verify/limitless-sql-tool-verify.sh against Aurora")
 	}
 	cfg := limitlessAuroraConfig()
 	cfg.DatabaseName = os.Getenv("LIMITLESS_SQL_TOOL_DATABASE")
