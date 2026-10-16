@@ -17,6 +17,52 @@
 
 Index sets differ by design: `postgres` has the most indexes (the full v12 B-tree/GIN set) and `pdb-json-hybrid` the fewest (one BM25 index plus the core B-tree set), which accounts for much of the write-cost difference.
 
+### How the variants differ, by example
+
+**Two kinds of index.**
+- A **B-tree** (built into PostgreSQL) is like the ordered index of a book. Lookups such as `ExecutionStatus = 'Running'` or `WorkflowId = 'order-123'` take well under a millisecond. Each queryable field needs its own index, and every write updates all of them.
+- **BM25** (ParadeDB's `pg_search`, the same model as Elasticsearch) is like a search engine. One index covers many fields and handles text and combined conditions, but every query pays a fixed cost of about 60 ms. A table can have only one BM25 index.
+
+**Two ways to store search attributes.** Take a workflow with `CustomerId = "c-42"` (Keyword), `Region = "us-west"` (Keyword) and `Priority = 5` (Int).
+
+The column-based layout (`postgres`, `pdb-cols`, `pdb-cols-hybrid`) pre-allocates fixed typed slots: `Keyword01..10`, `Text01..03`, `KeywordList01..03`, and `Int`, `Double`, `Bool`, `Datetime` `01..03`. Attributes are mapped to slots per namespace:
+
+```
+search_attributes = {"Keyword01": "c-42", "Keyword02": "us-west", "Int01": 5}
+Keyword01 = 'c-42'       -- generated column extracted from search_attributes
+Keyword02 = 'us-west'
+Int01     = 5
+Keyword03 … Keyword10, Text01 …   -- about 60 generated columns in total, mostly NULL
+```
+
+The slot count is a hard limit: an eleventh Keyword attribute has nowhere to go.
+
+The JSON-based layout (`pdb-json-hybrid`) has no slots. Attributes keep their real names in one JSONB column per type, and the BM25 index covers every key:
+
+```
+sa_keyword = {"CustomerId": "c-42", "Region": "us-west"}
+sa_number  = {"Priority": 5}
+sa_text = {}   sa_datetime = {}   sa_bool = {}
+```
+
+**Index inventory of the column-based ParadeDB schema** (`develop/docker-compose/paradedb/spike/paradedb-schema.sql`):
+
+| Group | Count | Examples |
+|---|---:|---|
+| Primary key | 1 | `(namespace_id, run_id)` |
+| BM25 | 1 | `visibility_core_bm25`: core fields plus the `Keyword`, `Text` and `KeywordList` slots |
+| Default list order | 1 | `default_idx` |
+| Parent and root execution | 4 | `by_parent_workflow_id`, `by_root_run_id` |
+| Temporal system attributes | 16 | `by_build_ids`, `by_temporal_worker_deployment_version`, `by_batcher_user` (6 are GIN) |
+| Custom `Int`/`Double`/`Bool`/`Datetime` slots, not covered by BM25 | 12 | `by_int_01..03`, `by_datetime_01..03` |
+| Temporal-reserved slots | 15 | `by_temporal_keyword_01..04`, `by_temporal_keyword_list_01..02` |
+
+`pdb-cols` has these 50 indexes. `pdb-cols-hybrid` adds the five core B-tree indexes from `core-indexes.sql`, for 55. `pdb-json-hybrid` keeps only the primary key, the BM25 index, `default_idx` and the same five core B-tree indexes: 8 in total. Every write updates each of these indexes, even when the indexed column is NULL.
+
+**Routing by example.**
+- Core-field query, such as `WorkflowType = 'OrderFlow' AND ExecutionStatus = 'Running'`: `pdb-cols` runs it through BM25 at about 60 ms; both hybrid variants use a B-tree at about 1 ms or less.
+- Search-attribute query, such as `CustomerId = 'c-42'`: all three ParadeDB variants use BM25 at about 60–70 ms. `pdb-cols-hybrid` queries the `Keyword01` slot and `pdb-json-hybrid` queries `sa_keyword->'CustomerId'`.
+
 ## Runs
 
 | Run | Script | Configuration |
@@ -85,3 +131,14 @@ A missed read is a scheduled read the client dropped because all readers were bu
 4. ParadeDB BM25 queries carry about 60 ms of fixed cost and top out around 110–140 QPS per query. At 64 writers they degrade to 0.4–1.2 s p50, with `pdb-json-hybrid` reaching about 11 s p99.
 5. Missed reads come from the shared reader pool filling up behind slow BM25 queries, not from the query that missed being slow itself; `postgres` missed none in either round.
 6. `pdb-json-hybrid` write throughput differed by about 20% between rounds; more rounds are needed for precise ratios.
+
+## Decision: `pdb-json-hybrid`
+
+The ParadeDB visibility store will adopt the `pdb-json-hybrid` design:
+- **Writes:** about 5x the write throughput of `postgres` and about 2x that of `pdb-cols-hybrid`, with write p99 an order of magnitude lower and indexes a quarter of `pdb-cols-hybrid`'s size. The workload is write-heavy, and most of the gap comes from maintaining 8 indexes per write instead of 55.
+- **Core-field reads:** Web UI and CLI queries filter on namespace plus `WorkflowType`, `WorkflowId`, `ExecutionStatus` or start/close time. Both hybrid variants serve these from B-tree indexes in a few milliseconds under write load. The default visibility rate limit (`frontend.namespaceRPS.visibility` = 10 per namespace per frontend instance) keeps read volume far below either variant's ceiling.
+- **Server-internal reads:** they are rare. There are no visibility reads on the workflow hot path. The only automatic readers are the Worker Versioning v3 drainage and deployment-limit checks, which run only when deployments are used and can be disabled with `system.enableDeploymentVersions=false`.
+- **No slot limit:** the JSON layout has no per-type search-attribute cap.
+- **Accepted trade-off:** search-attribute queries pay BM25's fixed cost of about 60 ms, are 20–60x slower than `postgres` for common values, and have long tail latency under heavy writes. They are a small share of this workload's reads.
+
+The full rationale, the prerequisites before production and the server work still needed are in [`docs/xtemporal/paradedb-schema-decision.md`](../../../../../../docs/xtemporal/paradedb-schema-decision.md).

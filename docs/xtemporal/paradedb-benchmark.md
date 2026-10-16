@@ -54,3 +54,7 @@ Image `paradedb/paradedb:v0.26.1-pg17` (pg_search 0.26.1) was run with `BENCH_DA
   - Write throughput was the same at 16 and 64 writers, so writes saturate on the ParadeDB side at about 220/s with this schema.
 - Raw JSON results, segment and merge snapshots, and the recovery log are in `.local/plan/reports/T15-data/`.
 
+
+## Schema comparison (2026-10-16)
+
+`develop/docker-compose/paradedb/bench/compare.sh` compares four visibility variants under identical tuning. Its results are in `develop/docker-compose/paradedb/bench/results/2026-10-16-cloud-4cpu/`. The resulting schema choice and its rationale are recorded in [paradedb-schema-decision.md](paradedb-schema-decision.md).
