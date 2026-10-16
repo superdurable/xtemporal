@@ -74,7 +74,7 @@ for variant in $variants; do
   if [[ $initialized != 1 ]]; then echo "database initialization timed out: $variant" >&2; exit 1; fi
   "${compose[@]}" up -d --wait >> "$dir/compose-up.log"
   docker exec -i "$container" psql -v ON_ERROR_STOP=1 -U postgres -d visibility < "$schema" > "$dir/schema.log"
-  if [[ $variant == pdb-cols-hybrid ]]; then
+  if [[ $variant == pdb-cols-hybrid || $variant == pdb-json-hybrid ]]; then
     docker exec -i "$container" psql -v ON_ERROR_STOP=1 -U postgres -d visibility < "$bench_dir/core-indexes.sql" >> "$dir/schema.log"
   fi
   "$output/bench" -mode preload -variant "$variant" -rows "$rows" -dsn "$dsn" > "$dir/preload.log"
