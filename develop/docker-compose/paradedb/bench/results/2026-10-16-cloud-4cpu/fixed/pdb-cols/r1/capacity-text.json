@@ -1,0 +1,1 @@
+{"affected_rows":0,"attempts":{"delete":0,"insert":0,"update":0},"read_rate":0,"readers":8,"reads":{"text":{"count":7483,"errors":0,"missed":0,"p50_ms":61.795,"p95_ms":96.085,"p99_ms":118.489,"per_second":124.71191333652433}},"seconds":60.002286869,"write":{"count":0,"errors":0,"per_second":0},"writers":0}
