@@ -921,6 +921,12 @@ This config is EXPERIMENTAL and may be changed or removed in a later release.`,
 		false,
 		`DisableListVisibilityByFilter is config to disable list open/close workflow using filter`,
 	)
+	// xtemporal: Dex visibility does not support counting executions.
+	DisableCountWorkflowExecutions = NewNamespaceBoolSetting(
+		"xtemporal.frontend.disableCountWorkflowExecutions",
+		false,
+		`DisableCountWorkflowExecutions disables the frontend CountWorkflowExecutions and CountSchedules APIs for a namespace.`,
+	)
 	ExposeAuthorizerErrors = NewGlobalBoolSetting(
 		"frontend.exposeAuthorizerErrors",
 		false,

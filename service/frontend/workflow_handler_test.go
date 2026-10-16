@@ -2526,6 +2526,59 @@ func (s *WorkflowHandlerSuite) TestCountWorkflowExecutions() {
 	s.Equal(int64(5), resp.Count)
 }
 
+func (s *WorkflowHandlerSuite) TestCountWorkflowExecutionsDisabled() {
+	config := s.newConfig()
+	config.DisableCountWorkflowExecutions = dc.GetBoolPropertyFnFilteredByNamespace(true)
+	wh := s.getWorkflowHandler(config)
+
+	resp, err := wh.CountWorkflowExecutions(context.Background(), &workflowservice.CountWorkflowExecutionsRequest{
+		Namespace: s.testNamespace.String(),
+	})
+	s.Require().Nil(resp)
+	var unimplemented *serviceerror.Unimplemented
+	s.Require().ErrorAs(err, &unimplemented)
+	s.Require().Equal("CountWorkflowExecutions is disabled for this namespace", err.Error())
+}
+
+func (s *WorkflowHandlerSuite) TestCountSchedulesDisabled() {
+	config := s.newConfig()
+	config.DisableCountWorkflowExecutions = dc.GetBoolPropertyFnFilteredByNamespace(true)
+	wh := s.getWorkflowHandler(config)
+
+	resp, err := wh.CountSchedules(context.Background(), &workflowservice.CountSchedulesRequest{
+		Namespace: s.testNamespace.String(),
+	})
+	s.Require().Nil(resp)
+	var unimplemented *serviceerror.Unimplemented
+	s.Require().ErrorAs(err, &unimplemented)
+	s.Require().Equal("CountSchedules is disabled for this namespace", err.Error())
+}
+
+func (s *WorkflowHandlerSuite) TestCountSchedulesEnabled() {
+	config := s.newConfig()
+	config.EnableCHASMSchedulerRouting = dc.GetBoolPropertyFnFilteredByNamespace(false)
+	wh := s.getWorkflowHandler(config)
+	s.mockNamespaceCache.EXPECT().GetNamespaceID(s.testNamespace).Return(s.testNamespaceID, nil)
+	s.mockVisibilityMgr.EXPECT().CountWorkflowExecutions(gomock.Any(), gomock.Any()).Return(&manager.CountWorkflowExecutionsResponse{Count: 3}, nil)
+
+	resp, err := wh.CountSchedules(context.Background(), &workflowservice.CountSchedulesRequest{
+		Namespace: s.testNamespace.String(),
+	})
+	s.Require().NoError(err)
+	s.Require().Equal(int64(3), resp.GetCount())
+}
+
+func (s *WorkflowHandlerSuite) TestCountSchedulesInternalVisibilityPathWhenCountDisabled() {
+	config := s.newConfig()
+	config.DisableCountWorkflowExecutions = dc.GetBoolPropertyFnFilteredByNamespace(true)
+	wh := s.getWorkflowHandler(config)
+	s.mockVisibilityMgr.EXPECT().CountWorkflowExecutions(gomock.Any(), gomock.Any()).Return(&manager.CountWorkflowExecutionsResponse{Count: 2}, nil)
+
+	resp, err := wh.countSchedulesWorkflow(context.Background(), s.testNamespaceID, s.testNamespace, "")
+	s.Require().NoError(err)
+	s.Require().Equal(int64(2), resp.GetCount())
+}
+
 func (s *WorkflowHandlerSuite) TestVerifyHistoryIsComplete() {
 	logger := log.NewTestLogger()
 	events := make([]*historyspb.StrippedHistoryEvent, 50)
@@ -3259,6 +3312,27 @@ func (s *WorkflowHandlerSuite) TestStartBatchOperation_WorkflowExecutions_TooMan
 
 	_, err := wh.StartBatchOperation(context.Background(), request)
 	s.EqualError(err, "Max concurrent batch operations is reached")
+}
+
+func (s *WorkflowHandlerSuite) TestStartBatchOperation_ZeroConcurrentLimit() {
+	config := s.newConfig()
+	config.MaxConcurrentBatchOperation = dc.GetIntPropertyFnFilteredByNamespace(0)
+	wh := s.getWorkflowHandler(config)
+	s.mockNamespaceCache.EXPECT().GetNamespaceID(s.testNamespace).Return(s.testNamespaceID, nil)
+	s.mockVisibilityMgr.EXPECT().CountWorkflowExecutions(gomock.Any(), gomock.Any()).Return(&manager.CountWorkflowExecutionsResponse{Count: 0}, nil)
+
+	_, err := wh.StartBatchOperation(context.Background(), &workflowservice.StartBatchOperationRequest{
+		Namespace:  s.testNamespace.String(),
+		JobId:      uuid.NewString(),
+		Reason:     "unit test",
+		Executions: []*commonpb.WorkflowExecution{{WorkflowId: uuid.NewString(), RunId: uuid.NewString()}},
+		Operation: &workflowservice.StartBatchOperationRequest_CancellationOperation{
+			CancellationOperation: &batchpb.BatchOperationCancellation{Identity: "unit test"},
+		},
+	})
+	var exhausted *serviceerror.ResourceExhausted
+	s.Require().ErrorAs(err, &exhausted)
+	s.Require().Equal("Max concurrent batch operations is reached", err.Error())
 }
 
 func (s *WorkflowHandlerSuite) TestStartBatchOperation_InvalidRequest() {

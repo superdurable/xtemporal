@@ -1,0 +1,26 @@
+xtemporal.frontend.disableCountWorkflowExecutions:
+  - value: true
+frontend.disableListVisibilityByFilter:
+  - value: true
+frontend.visibilityMaxPageSize:
+  - value: 100
+system.visibilityDisableOrderByClause:
+  - value: true
+system.enableDeployments:
+  - value: false
+system.enableDeploymentVersions:
+  - value: false
+frontend.workerVersioningDataAPIs:
+  - value: false
+frontend.workerVersioningWorkflowAPIs:
+  - value: false
+frontend.workerVersioningRuleAPIs:
+  - value: false
+frontend.MaxConcurrentBatchOperationPerNamespace:
+  - value: 0
+worker.enableNamespaceBatcher:
+  - value: false
+activity.enableStandalone:
+  - value: false
+nexusoperation.enableStandalone:
+  - value: false
