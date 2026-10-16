@@ -108,10 +108,18 @@ def explain_section(root):
 
 
 def worst_section(root):
-    d = load(root, 'worst.json')
+    lines = []
+    for name, label in (('worst.json', 'First run (cold caches after the mixed phases)'), ('worst-rerun.json', 'Rerun (warm caches)')):
+        lines += worst_one(root, name, label)
+    return lines
+
+
+def worst_one(root, name, label):
+    d = load(root, name)
     if not d:
         return []
-    lines = ['Flow rows and rare matches: ' + ', '.join(f'{k} = {d[k]}' for k in sorted(d) if k.endswith(('_flow_rows', '_rare_matches'))) + '.',
+    lines = [f'### {label}', '',
+             'Flow rows and rare matches: ' + ', '.join(f'{k} = {d[k]}' for k in sorted(d) if k.endswith(('_flow_rows', '_rare_matches'))) + '.',
              f"Promoted index: {d.get('promoted_index_bytes', 0) / MIB:.0f} MiB, built in {d.get('promoted_index_build_seconds', 0):.1f} s.", '']
     phases = [k for k in d if k == 'quiet' or k.startswith('under_')]
     keys = sorted({k for p in phases for k in d[p]})
