@@ -411,6 +411,18 @@ func (s *operatorHandlerSuite) Test_AddSearchAttributesInternal() {
 			addEsCalled:    true,
 			expectedErrMsg: "",
 		},
+		// xtemporal: ParadeDB Dex follows cluster registration, including real KeywordList names.
+		{
+			name: "success: add search attributes to ParadeDB Dex visibility",
+			request: &operatorservice.AddSearchAttributesRequest{
+				SearchAttributes: map[string]enumspb.IndexedValueType{
+					"CustomKeywordListField": enumspb.INDEXED_VALUE_TYPE_KEYWORD_LIST,
+				},
+			},
+			storeName:   visibility.ParadeDBDexStoreName,
+			indexName:   testIndexName,
+			addEsCalled: true,
+		},
 		{
 			name: "fail: cannot add search attributes to sql visibility",
 			request: &operatorservice.AddSearchAttributesRequest{
@@ -443,7 +455,7 @@ func (s *operatorHandlerSuite) Test_AddSearchAttributesInternal() {
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			saTypeMap := searchattribute.TestNameTypeMap()
-			if tc.storeName == elasticsearch.PersistenceName {
+			if visibility.UsesClusterSearchAttributes(tc.storeName) {
 				saTypeMap = searchattribute.TestEsNameTypeMap()
 			}
 
@@ -821,7 +833,7 @@ func (s *operatorHandlerSuite) Test_ListSearchAttributes_Elasticsearch() {
 	ctx := context.Background()
 
 	// Configure Elasticsearch: add advanced visibility store config with index name.
-	s.mockResource.VisibilityManager.EXPECT().HasStoreName(elasticsearch.PersistenceName).Return(true)
+	s.mockResource.VisibilityManager.EXPECT().GetStoreNames().Return([]string{elasticsearch.PersistenceName})
 	s.mockResource.VisibilityManager.EXPECT().GetIndexName().Return(testIndexName).AnyTimes()
 	s.mockResource.SearchAttributesManager.EXPECT().GetSearchAttributes(testIndexName, true).Return(searchattribute.TestEsNameTypeMap(), nil)
 	resp, err := handler.ListSearchAttributes(ctx, &operatorservice.ListSearchAttributesRequest{})
@@ -838,7 +850,7 @@ func (s *operatorHandlerSuite) Test_ListSearchAttributes_SQL() {
 	handler := s.handler
 	ctx := context.Background()
 
-	s.mockResource.VisibilityManager.EXPECT().HasStoreName(elasticsearch.PersistenceName).Return(false)
+	s.mockResource.VisibilityManager.EXPECT().GetStoreNames().Return([]string{mysql.PluginName})
 	s.mockResource.VisibilityManager.EXPECT().GetIndexName().Return(testIndexName).AnyTimes()
 	s.mockResource.ClientFactory.EXPECT().
 		NewLocalFrontendClientWithTimeout(gomock.Any(), gomock.Any()).
@@ -872,18 +884,31 @@ func (s *operatorHandlerSuite) Test_ListSearchAttributes_SQL() {
 	s.Nil(resp)
 }
 
+// xtemporal: ParadeDB Dex exposes the cluster map directly without namespace aliases.
+func (s *operatorHandlerSuite) Test_ListSearchAttributes_ParadeDBDex() {
+	attrs := searchattribute.TestEsNameTypeMap()
+	s.mockResource.VisibilityManager.EXPECT().GetStoreNames().Return([]string{visibility.ParadeDBDexStoreName})
+	s.mockResource.VisibilityManager.EXPECT().GetIndexName().Return(testIndexName)
+	s.mockResource.SearchAttributesManager.EXPECT().GetSearchAttributes(testIndexName, true).Return(attrs, nil)
+	response, err := s.handler.ListSearchAttributes(context.Background(), &operatorservice.ListSearchAttributesRequest{})
+	s.Require().NoError(err)
+	s.Require().Equal(attrs.Custom(), response.CustomAttributes)
+}
+
 func (s *operatorHandlerSuite) Test_RemoveSearchAttributes_Elasticsearch() {
 	ctx := context.Background()
 
 	type test struct {
 		Name       string
+		StoreName  string
 		Request    *operatorservice.RemoveSearchAttributesRequest
 		SaveCalled bool
 		Expected   error
 	}
 	testCases := []test{
 		{
-			Name: "success",
+			Name:      "success",
+			StoreName: elasticsearch.PersistenceName,
 			Request: &operatorservice.RemoveSearchAttributesRequest{
 				SearchAttributes: []string{
 					"CustomKeywordField",
@@ -891,8 +916,16 @@ func (s *operatorHandlerSuite) Test_RemoveSearchAttributes_Elasticsearch() {
 			},
 			SaveCalled: true,
 		},
+		// xtemporal: Dex removes real names from cluster metadata.
 		{
-			Name: "reserved search attribute",
+			Name:       "ParadeDB Dex success",
+			StoreName:  visibility.ParadeDBDexStoreName,
+			Request:    &operatorservice.RemoveSearchAttributesRequest{SearchAttributes: []string{"CustomKeywordField"}},
+			SaveCalled: true,
+		},
+		{
+			Name:      "reserved search attribute",
+			StoreName: elasticsearch.PersistenceName,
 			Request: &operatorservice.RemoveSearchAttributesRequest{
 				SearchAttributes: []string{
 					"WorkflowId",
@@ -901,7 +934,8 @@ func (s *operatorHandlerSuite) Test_RemoveSearchAttributes_Elasticsearch() {
 			Expected: &serviceerror.InvalidArgument{Message: "Unable to remove non-custom search attributes: WorkflowId."},
 		},
 		{
-			Name: "search attribute not found",
+			Name:      "search attribute not found",
+			StoreName: elasticsearch.PersistenceName,
 			Request: &operatorservice.RemoveSearchAttributesRequest{
 				SearchAttributes: []string{
 					"ProductId",
@@ -913,7 +947,7 @@ func (s *operatorHandlerSuite) Test_RemoveSearchAttributes_Elasticsearch() {
 	for _, testCase := range testCases {
 		s.Run(testCase.Name, func() {
 			saTypeMap := searchattribute.TestEsNameTypeMap()
-			s.mockResource.VisibilityManager.EXPECT().GetStoreNames().Return([]string{elasticsearch.PersistenceName})
+			s.mockResource.VisibilityManager.EXPECT().GetStoreNames().Return([]string{testCase.StoreName})
 			s.mockResource.VisibilityManager.EXPECT().GetIndexName().Return(testIndexName)
 			s.mockResource.SearchAttributesManager.EXPECT().
 				GetSearchAttributes(testIndexName, true).

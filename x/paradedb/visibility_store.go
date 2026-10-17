@@ -7,9 +7,11 @@ import (
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
-	visibilityservicespb "github.com/superdurable/xtemporal/api/visibilityservice/v1"
+	"github.com/superdurable/xtemporal/chasm"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/log/tag"
+	"github.com/superdurable/xtemporal/common/metrics"
+	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/manager"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store"
 	"github.com/superdurable/xtemporal/common/searchattribute"
@@ -19,11 +21,15 @@ import (
 )
 
 type VisibilityStore struct {
-	btree      *sqlx.DB
-	bm25       *sqlx.DB
-	indexName  string
-	saProvider searchattribute.Provider
-	logger     log.Logger
+	btree             *sqlx.DB
+	bm25              *sqlx.DB
+	indexName         string
+	saProvider        searchattribute.Provider
+	mapperProvider    searchattribute.MapperProvider
+	namespaceRegistry namespace.Registry
+	chasmRegistry     *chasm.Registry
+	metricsHandler    metrics.Handler
+	logger            log.Logger
 }
 
 var _ store.VisibilityStore = (*VisibilityStore)(nil)
@@ -82,7 +88,7 @@ sa_number, sa_datetime, sa_bool FROM executions_visibility WHERE namespace_id = 
 		return nil, serviceerror.NewNotFoundf("workflow execution with RunId %s not found", request.RunID)
 	}
 	if err != nil {
-		return nil, serviceerror.NewUnavailablef("get ParadeDB visibility execution: %v", err)
+		return nil, visibilityWriteError("get ParadeDB visibility execution", err)
 	}
 	types, err := s.searchAttributeTypes()
 	if err != nil {
@@ -93,22 +99,6 @@ sa_number, sa_datetime, sa_bool FROM executions_visibility WHERE namespace_id = 
 		return nil, serviceerror.NewInternalf("decode ParadeDB visibility execution: %v", err)
 	}
 	return &store.InternalGetWorkflowExecutionResponse{Execution: info}, nil
-}
-
-func (*VisibilityStore) ListWorkflowExecutions(context.Context, *manager.ListWorkflowExecutionsRequestV2) (*store.InternalListExecutionsResponse, error) {
-	return nil, serviceerror.NewUnimplemented("ListWorkflowExecutions implemented in P4")
-}
-
-func (*VisibilityStore) CountWorkflowExecutions(context.Context, *manager.CountWorkflowExecutionsRequest) (*store.InternalCountExecutionsResponse, error) {
-	return nil, serviceerror.NewUnimplemented("CountWorkflowExecutions implemented in P4")
-}
-
-func (*VisibilityStore) ListChasmExecutions(context.Context, *visibilityservicespb.ListChasmExecutionsRequest) (*store.InternalListExecutionsResponse, error) {
-	return nil, serviceerror.NewUnimplemented("ListChasmExecutions implemented in P4")
-}
-
-func (*VisibilityStore) CountChasmExecutions(context.Context, *visibilityservicespb.CountChasmExecutionsRequest) (*store.InternalCountExecutionsResponse, error) {
-	return nil, serviceerror.NewUnimplemented("CountChasmExecutions implemented in P4")
 }
 
 func (*VisibilityStore) AddSearchAttributes(context.Context, *manager.AddSearchAttributesRequest) error {

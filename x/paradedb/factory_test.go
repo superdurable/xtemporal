@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"go.temporal.io/api/serviceerror"
 )
@@ -37,6 +38,11 @@ func TestParseStoreOptions(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestUnknownCustomDatastoreName(t *testing.T) {
+	_, err := (VisibilityStoreFactory{}).NewVisibilityStore(config.CustomDatastoreConfig{Name: "unknown", IndexName: "dex_visibility"}, nil, nil, nil, nil, nil, nil, nil)
+	require.ErrorContains(t, err, `customDatastore.name="paradedb-dex"`)
 }
 
 type failingProvider struct{}

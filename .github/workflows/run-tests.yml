@@ -139,6 +139,9 @@ jobs:
           diff -u /tmp/paradedb_setup.schema /tmp/paradedb_update.schema
       - name: Run ParadeDB visibility store tests
         run: PARADEDB_TEST=1 go test -tags test_dep -count=1 ./x/paradedb/...
+      # xtemporal: Run the shared persistence contract against the custom visibility factory.
+      - name: Run ParadeDB shared visibility persistence suite
+        run: PARADEDB_TEST=1 go test -tags test_dep -count=1 ./common/persistence/tests -run '^TestParadeDBVisibilityPersistenceSuite$'
       - name: Show ParadeDB logs
         if: failure()
         run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml logs --no-color paradedb

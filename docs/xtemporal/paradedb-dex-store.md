@@ -8,6 +8,8 @@ The physical schema is `schema/paradedb/visibility/schema.sql`. It matches `vers
 
 ## Architecture and configuration
 
+P5 wires the factory into the server binary and registers custom search attributes under their real names in cluster metadata. A fresh `indexName` starts without preallocated SQL slots. The operator Add, Remove, and List APIs use the cluster map, and `system.visibilityAllowList` controls list values. Unknown custom datastore names fail factory validation.
+
 The factory in `x/paradedb` owns a PGX pool, typed JSONB codec, query conversion, and version check. It receives the cluster search-attribute type provider, mapper provider, CHASM registry, resolver, logger, and metrics through the existing custom-store factory interface. `cmd/server/main.go` supplies `temporal.WithCustomVisibilityStoreFactory(...)` in P5. No shared `sqlplugin.VisibilityRow` or SQL visibility store interface change is needed. Each service process owns a pool; deployments must budget their combined connections. The dedicated visibility database is separate from the default Temporal database.
 
 ```yaml
