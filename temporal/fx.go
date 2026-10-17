@@ -708,10 +708,7 @@ func ApplyClusterMetadataConfigProvider(
 		svc.Persistence.GetVisibilityStoreConfig(),
 		svc.Persistence.GetSecondaryVisibilityStoreConfig(),
 	}
-	indexSearchAttributes := make(map[string]*persistencespb.IndexSearchAttributes)
-	for _, ds := range visDataStores {
-		indexSearchAttributes[ds.GetIndexName()] = sadefs.GetDBIndexSearchAttributes(visCSAOverride)
-	}
+	indexSearchAttributes := initialVisibilityIndexSearchAttributes(visDataStores, visCSAOverride) // xtemporal: choose slots per store.
 
 	clusterMetadata := svc.ClusterMetadata
 	if len(clusterMetadata.ClusterInformation) > 1 {
@@ -769,6 +766,19 @@ func ApplyClusterMetadataConfigProvider(
 		return svc.ClusterMetadata, svc.Persistence, fmt.Errorf("error while loading metadata from cluster: %w", err)
 	}
 	return svc.ClusterMetadata, svc.Persistence, nil
+}
+
+// xtemporal: Dex metadata stores real custom names and must start without SQL slots.
+func initialVisibilityIndexSearchAttributes(dataStores []config.DataStore, overrides map[enumspb.IndexedValueType]int) map[string]*persistencespb.IndexSearchAttributes {
+	result := make(map[string]*persistencespb.IndexSearchAttributes)
+	for _, ds := range dataStores {
+		if ds.CustomDataStoreConfig != nil && ds.CustomDataStoreConfig.Name == visibility.ParadeDBDexStoreName {
+			result[ds.GetIndexName()] = &persistencespb.IndexSearchAttributes{CustomSearchAttributes: map[string]enumspb.IndexedValueType{}}
+		} else {
+			result[ds.GetIndexName()] = sadefs.GetDBIndexSearchAttributes(overrides)
+		}
+	}
+	return result
 }
 
 func initCurrentClusterMetadataRecord(

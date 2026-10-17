@@ -377,6 +377,17 @@ func TestUpdateIndexSearchAttributes(t *testing.T) {
 	}
 }
 
+// xtemporal: Dex indexes begin without preallocated SQL search attribute slots.
+func TestParadeDBInitialIndexSearchAttributes(t *testing.T) {
+	stores := []config.DataStore{
+		{CustomDataStoreConfig: &config.CustomDatastoreConfig{Name: "paradedb-dex", IndexName: "dex_visibility"}},
+		{SQL: &config.SQL{DatabaseName: "sql_visibility"}},
+	}
+	got := initialVisibilityIndexSearchAttributes(stores, nil)
+	require.Empty(t, got["dex_visibility"].CustomSearchAttributes)
+	require.Contains(t, got["sql_visibility"].CustomSearchAttributes, "Keyword01")
+}
+
 func TestTaskCategoryRegistryProvider(t *testing.T) {
 	for _, tc := range []struct {
 		name                   string

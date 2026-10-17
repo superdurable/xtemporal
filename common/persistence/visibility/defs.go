@@ -8,6 +8,8 @@ import (
 )
 
 const (
+	// xtemporal: ParadeDB Dex uses cluster-level search attributes.
+	ParadeDBDexStoreName = "paradedb-dex"
 	// SecondaryVisibilityWritingModeOff means do not write to advanced visibility store
 	SecondaryVisibilityWritingModeOff = "off"
 	// SecondaryVisibilityWritingModeOn means only write to advanced visibility store
@@ -15,6 +17,12 @@ const (
 	// SecondaryVisibilityWritingModeDual means write to both normal visibility and advanced visibility store
 	SecondaryVisibilityWritingModeDual = "dual"
 )
+
+// UsesClusterSearchAttributes reports whether a store registers real names in cluster metadata.
+// xtemporal: ParadeDB Dex shares this capability with Elasticsearch.
+func UsesClusterSearchAttributes(storeName string) bool {
+	return storeName == "elasticsearch" || storeName == ParadeDBDexStoreName
+}
 
 func AllowListForValidation(
 	storeNames []string,

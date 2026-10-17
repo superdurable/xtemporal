@@ -65,12 +65,12 @@ func parseStoreOptions(options map[string]any) (storeOptions, error) {
 func (VisibilityStoreFactory) NewVisibilityStore(
 	cfg config.CustomDatastoreConfig,
 	saProvider searchattribute.Provider,
-	_ searchattribute.MapperProvider,
-	_ namespace.Registry,
-	_ *chasm.Registry,
+	mapperProvider searchattribute.MapperProvider,
+	namespaceRegistry namespace.Registry,
+	chasmRegistry *chasm.Registry,
 	r resolver.ServiceResolver,
 	logger log.Logger,
-	_ metrics.Handler,
+	metricsHandler metrics.Handler,
 ) (store.VisibilityStore, error) {
 	if cfg.Name != StoreName || strings.TrimSpace(cfg.IndexName) == "" {
 		return nil, fmt.Errorf("ParadeDB visibility requires customDatastore.name=%q and nonempty indexName", StoreName)
@@ -109,7 +109,9 @@ func (VisibilityStoreFactory) NewVisibilityStore(
 	if err != nil {
 		return nil, closeWithError(btree.DB, fmt.Errorf("connect ParadeDB BM25 visibility route: %w", err))
 	}
-	return &VisibilityStore{btree: btree.DB, bm25: bm25.DB, indexName: cfg.IndexName, saProvider: saProvider, logger: logger}, nil
+	return &VisibilityStore{btree: btree.DB, bm25: bm25.DB, indexName: cfg.IndexName, saProvider: saProvider,
+		mapperProvider: mapperProvider, namespaceRegistry: namespaceRegistry, chasmRegistry: chasmRegistry,
+		metricsHandler: metricsHandler, logger: logger}, nil
 }
 
 func closeWithError(db *sqlx.DB, cause error) error {

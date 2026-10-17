@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"maps"
+	"slices"
 	"sync/atomic"
 	"time"
 
@@ -21,7 +22,6 @@ import (
 	"github.com/superdurable/xtemporal/common/persistence"
 	"github.com/superdurable/xtemporal/common/persistence/visibility"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/manager"
-	"github.com/superdurable/xtemporal/common/persistence/visibility/store/elasticsearch"
 	"github.com/superdurable/xtemporal/common/primitives"
 	"github.com/superdurable/xtemporal/common/resource"
 	"github.com/superdurable/xtemporal/common/sdk"
@@ -185,7 +185,7 @@ func (h *OperatorHandlerImpl) addSearchAttributesInternal(
 	visManager manager.VisibilityManager,
 ) error {
 	storeName := visManager.GetStoreNames()[0]
-	if storeName == elasticsearch.PersistenceName {
+	if visibility.UsesClusterSearchAttributes(storeName) { // xtemporal: ParadeDB Dex registers real cluster names.
 		return h.addSearchAttributesElasticsearch(ctx, request, visManager)
 	}
 	return h.addSearchAttributesSQL(ctx, request, visManager)
@@ -367,7 +367,7 @@ func (h *OperatorHandlerImpl) removeSearchAttributesInternal(
 	visManager manager.VisibilityManager,
 ) error {
 	storeName := visManager.GetStoreNames()[0]
-	if storeName == elasticsearch.PersistenceName {
+	if visibility.UsesClusterSearchAttributes(storeName) { // xtemporal: ParadeDB Dex removes cluster names.
 		return h.removeSearchAttributesElasticsearch(ctx, request, visManager)
 	}
 	return h.removeSearchAttributesSQL(ctx, request, visManager)
@@ -485,7 +485,7 @@ func (h *OperatorHandlerImpl) ListSearchAttributes(
 		)
 	}
 
-	if h.visibilityMgr.HasStoreName(elasticsearch.PersistenceName) {
+	if slices.ContainsFunc(h.visibilityMgr.GetStoreNames(), visibility.UsesClusterSearchAttributes) { // xtemporal: ParadeDB Dex lists cluster names.
 		return h.listSearchAttributesElasticsearch(ctx, indexName, searchAttributes)
 	}
 	return h.listSearchAttributesSQL(ctx, request, searchAttributes)

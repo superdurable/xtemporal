@@ -23,6 +23,7 @@ import (
 	"github.com/superdurable/xtemporal/temporal"
 	"github.com/superdurable/xtemporal/x/auth"
 	_ "github.com/superdurable/xtemporal/x/limitless" // xtemporal: register Limitless default-store plugin
+	"github.com/superdurable/xtemporal/x/paradedb"    // xtemporal: register Dex visibility factory
 	"github.com/urfave/cli/v2"
 )
 
@@ -228,7 +229,8 @@ func buildCLI() *cli.App {
 					temporal.WithLogger(logger),
 					temporal.InterruptOn(temporal.InterruptCh()),
 					temporal.WithAuthorizer(authorizer),
-					temporal.WithCustomMetricsHandler(metricHandler), // xtemporal: share the revocation metric with the server reporter
+					temporal.WithCustomMetricsHandler(metricHandler),                             // xtemporal: share the revocation metric with the server reporter
+					temporal.WithCustomVisibilityStoreFactory(paradedb.VisibilityStoreFactory{}), // xtemporal: serve the Dex visibility profile
 					temporal.WithClaimMapper(func(cfg *config.Config) authorization.ClaimMapper {
 						return claimMapper
 					}),
