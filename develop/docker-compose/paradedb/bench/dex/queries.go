@@ -57,7 +57,9 @@ var flowShapes = []Shape{
 
 var (
 	workflowIDShape = Shape{"workflow_id", routeBTree, "by_workflow_id", listSQL(userScope, `workflow_id = $2`, 50)}
-	readyzShape     = Shape{"readyz", routeBTree, "default_idx", listSQL(userScope, "", 1)}
+	// The Dex server's readiness probe sends an empty SearchFlows query; only Dex Web adds the Engine filter.
+	readyzShape = Shape{"readyz", routeBTree, "default_idx", fmt.Sprintf(
+		"SELECT %s FROM executions_visibility WHERE %s AND status <> 6 %s LIMIT 1", selectList, userScope, defaultSort)}
 	textShape       = Shape{"text_bm25", routeBM25, "ParadeDB scan", listSQL(bm25Scope, `flow_type = $2 AND sa_text->'text1' ||| $3::text`, 50)}
 	customOnlyShape = Shape{"custom_only_bm25", routeBM25, "ParadeDB scan", listSQL(bm25Scope, `sa_keyword->'keyword3' @@@ pdb.term($2::text)`, 50)}
 	scheduleShape   = Shape{"schedules", routeBTree, "by_namespace_division", fmt.Sprintf(
@@ -95,9 +97,12 @@ SELECT c.scanned, s.run_id FROM (SELECT count(*) AS scanned FROM scan) c
 LEFT JOIN LATERAL (SELECT run_id FROM scan WHERE sa_keyword->>'keyword3' = $3 %s LIMIT 50) s ON true`,
 	selectList, userScope, dexFilter, defaultSort, defaultSort)
 
-// keysetSQL pages the paging-test predicate after a cursor ($4..$6).
+// keysetSQL pages the paging-test predicate after a cursor ($4..$6). The redundant
+// sort_close_time <= $4 bound turns the leading sort key into an index condition, so a deep page does
+// not re-filter every row before the cursor.
 var keysetSQL = fmt.Sprintf(`SELECT run_id, sort_close_time, start_time, status FROM executions_visibility
 WHERE %s AND (flow_type = $2 AND sa_keyword->>'keyword1' = $3) AND %s
+  AND sort_close_time <= $4
   AND ((sort_close_time < $4) OR (sort_close_time = $4 AND start_time < $5)
     OR (sort_close_time = $4 AND start_time = $5 AND run_id COLLATE "C" > $6))
 %s LIMIT 50`, userScope, dexFilter, defaultSort)
@@ -112,7 +117,13 @@ const c3IndexDDL = `CREATE INDEX by_flow_type_status ON executions_visibility
     (namespace_id, flow_type, status, sort_close_time DESC, start_time DESC, run_id COLLATE "C")
     WHERE namespace_division IS NULL`
 
-// upsertSQL is the version-guarded store write. It takes the same advisory lock as a delete and does
+// lockSQL serializes writes and deletes of one run. It must be its own statement ahead of the write:
+// under READ COMMITTED a statement's snapshot is taken before any lock it acquires, and the planner
+// evaluates the uncorrelated tombstone check before a lock CTE, so an in-statement lock does not stop a
+// stale write from resurrecting a run deleted concurrently.
+const lockSQL = `SELECT pg_advisory_xact_lock(hashtextextended($1::text || $2::text, 0))`
+
+// upsertSQL is the version-guarded store write. It runs after lockSQL in the same transaction and does
 // not resurrect a tombstoned run.
 var upsertSQL = func() string {
 	params := make([]string, len(writeColumns))
@@ -125,16 +136,15 @@ var upsertSQL = func() string {
 			versionParam = i + 1
 		}
 	}
-	return fmt.Sprintf(`WITH lock AS (SELECT pg_advisory_xact_lock(hashtextextended($1::text || $2::text, 0)))
-INSERT INTO executions_visibility (%s) SELECT %s FROM lock
+	return fmt.Sprintf(`INSERT INTO executions_visibility (%s) SELECT %s
 WHERE NOT EXISTS (SELECT 1 FROM visibility_delete_tombstones t WHERE t.namespace_id = $1 AND t.run_id = $2 AND t._version >= $%d)
 ON CONFLICT (namespace_id, run_id) DO UPDATE SET %s WHERE executions_visibility._version < EXCLUDED._version`,
 		strings.Join(writeColumns, ", "), strings.Join(params, ", "), versionParam, strings.Join(sets, ", "))
 }()
 
-const deleteSQL = `WITH lock AS (SELECT pg_advisory_xact_lock(hashtextextended($1::text || $2::text, 0))),
-tomb AS (INSERT INTO visibility_delete_tombstones (namespace_id, run_id, _version) SELECT $1, $2, $3::bigint FROM lock
+// deleteSQL records the tombstone and deletes the row; it also runs after lockSQL.
+const deleteSQL = `WITH tomb AS (INSERT INTO visibility_delete_tombstones (namespace_id, run_id, _version) VALUES ($1, $2, $3::bigint)
   ON CONFLICT (namespace_id, run_id) DO UPDATE SET _version = GREATEST(visibility_delete_tombstones._version, EXCLUDED._version))
-DELETE FROM executions_visibility e USING lock WHERE e.namespace_id = $1 AND e.run_id = $2 AND e._version <= $3::bigint`
+DELETE FROM executions_visibility e WHERE e.namespace_id = $1 AND e.run_id = $2 AND e._version <= $3::bigint`
 
 func today() time.Time { return time.Now().UTC().Truncate(24 * time.Hour) }

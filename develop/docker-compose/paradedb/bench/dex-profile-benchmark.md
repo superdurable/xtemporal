@@ -50,7 +50,8 @@ The data generator and the write workload must follow the same rules as the stor
 - **Datetime attributes are UTC epoch microseconds,** stored as JSON numbers.
 - **`FlowType` is written to `flow_type`** and does not appear in `sa_keyword`.
 - **Writes are version-guarded.** Every write is `INSERT … ON CONFLICT (namespace_id, run_id) DO UPDATE … WHERE executions_visibility._version < EXCLUDED._version`.
-- **Deletes are tombstoned.** A delete records `(namespace_id, run_id, _version)` in `visibility_delete_tombstones` under `pg_advisory_xact_lock`, so a stale write cannot recreate the row. Report tombstone table growth.
+- **Deletes are tombstoned.** A delete records `(namespace_id, run_id, _version)` in `visibility_delete_tombstones`, so a stale write cannot recreate the row. Report tombstone table growth.
+- **Writes and deletes of a run are serialized.** Both take `pg_advisory_xact_lock` on the run as a separate statement before the write, in the same transaction. A lock taken inside the write statement does not work: under READ COMMITTED the statement's snapshot predates the lock.
 
 ### `TemporalNamespaceDivision`
 
@@ -86,14 +87,15 @@ These rules come from an executed spike on `pg_search` 0.26.1 (PostgreSQL 17.11)
 
 ## SQL shapes to generate
 
-`$ns` is the namespace ID. Every query has `namespace_id = $ns AND namespace_division IS NULL` outside the parentheses that hold the user predicates. Dex adds `workflow_type_name = 'Engine' AND status <> 6` (6 = ContinuedAsNew).
+`$ns` is the namespace ID. Every query has `namespace_id = $ns AND namespace_division IS NULL` outside the parentheses that hold the user predicates. The Dex server adds `status <> 6` (6 = ContinuedAsNew) to every query. Dex Web also adds `workflow_type_name = 'Engine'`; the readiness probe, dexcli and the SDKs do not.
 
 ### Default order and keyset paging
 
 ```sql
 ORDER BY sort_close_time DESC, start_time DESC, run_id COLLATE "C"
 LIMIT $n
--- next page:
+-- next page; the redundant first bound makes the leading sort key an index condition:
+AND sort_close_time <= $c
 AND ((sort_close_time < $c)
   OR (sort_close_time = $c AND start_time < $s)
   OR (sort_close_time = $c AND start_time = $s AND run_id COLLATE "C" > $r))
@@ -152,7 +154,7 @@ The source is a survey of the Dex server, Dex Web and the Dex console. It covers
   - Queries look like `FlowType = 'T'`, plus optional `(DexWorkQueuePermissions = 'p1' OR DexWorkQueuePermissions = 'p2' …)`, `WorkflowId =`, `ExecutionStatus =`, `StartTime`/`CloseTime` ranges, and application attributes.
   - Dex Web wraps them in `WorkflowType = "Engine"`.
   - The page size is at most 50. The Work Queue page defaults to `ExecutionStatus = 'Running'`.
-- **The readiness probe.** It sends an empty query (only the ContinuedAsNew filter) with page size 1. Only the platform Dex Web calls it, at about **0.2 QPS per replica**.
+- **The readiness probe.** It sends an empty query (only the ContinuedAsNew filter, no Engine filter) with page size 1. Only the platform Dex Web calls it, at about **0.2 QPS per replica**.
 - **The Dex console Runs and Inbox pages.** These are the hot user-facing queries. The console polls **every 10 s while the browser tab is visible**: page size 50, first page only, no `ORDER BY`.
   - **Runs** runs, per displayed FlowType:
     - the main list;

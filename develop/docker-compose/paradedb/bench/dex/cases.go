@@ -148,7 +148,7 @@ func percentiles(v []float64) map[string]any {
 	if n == 0 {
 		return map[string]any{}
 	}
-	return map[string]any{"p50_ms": v[(n-1)*50/100], "p95_ms": v[(n-1)*95/100], "p99_ms": v[(n-1)*99/100], "max_ms": v[n-1], "runs": n}
+	return map[string]any{"p50_ms": v[rank(n, 50)], "p95_ms": v[rank(n, 95)], "p99_ms": v[rank(n, 99)], "max_ms": v[n-1], "runs": n}
 }
 
 // bounded runs the bounded B-tree scan and falls back to BM25 when the bound is hit without a full page.
@@ -511,9 +511,9 @@ func pagingTest(ctx context.Context, dsn string, d *Dataset, cfg pagingConfig) (
 		if err != nil {
 			return nil, err
 		}
-		page, err := scanPage(rows)
-		if err != nil {
-			return nil, err
+		page, scanErr := scanPage(rows)
+		if scanErr != nil {
+			return nil, scanErr
 		}
 		pages++
 		for _, p := range page {

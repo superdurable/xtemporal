@@ -53,12 +53,17 @@ ensure_up() {
   exit 1
 }
 
+cpus() { nproc 2>/dev/null || sysctl -n hw.ncpu; }
+
+# free_mb prints the free space of a directory in MiB on both GNU and BSD df.
+free_mb() { df -Pm "$1" | awk 'NR == 2 { print $4 }'; }
+
 host_info() {
   {
     echo "date: $(date -u +%FT%TZ)"
-    echo "cpus: $(nproc)"
-    grep -m1 'model name' /proc/cpuinfo || true
-    free -g | sed -n 1,2p
+    echo "cpus: $(cpus)"
+    grep -m1 'model name' /proc/cpuinfo 2>/dev/null || sysctl -n machdep.cpu.brand_string 2>/dev/null || true
+    free -g 2>/dev/null | sed -n 1,2p || true
     df -h / | tail -1
     docker version --format 'docker {{.Server.Version}}'
     echo "image: $BENCH_IMAGE"
@@ -95,7 +100,7 @@ mix_step() {
   while kill -0 "$pid" 2>/dev/null; do
     docker stats --no-stream --format '{{.CPUPerc}},{{.MemUsage}}' "$container" >> "$output/$label-docker-stats.csv" || true
     # A full disk crashes the database and invalidates the run, so stop early instead.
-    if [[ $(df --output=avail -BM "$output" | tail -1 | tr -dc 0-9) -lt ${BENCH_MIN_FREE_MB:-1500} ]]; then
+    if [[ $(free_mb "$output") -lt ${BENCH_MIN_FREE_MB:-1500} ]]; then
       kill "$pid" 2>/dev/null || true
       echo "aborting $label: free disk below ${BENCH_MIN_FREE_MB:-1500} MB" >&2
       exit 1
@@ -114,7 +119,7 @@ if ! done_step load; then
   "${compose[@]}" down -v > /dev/null 2>&1 || true
   ensure_up
   "${bench[@]}" -mode load -schema "$bench_dir/dex-profile-schema.sql" -namespaces "$namespaces" -rows "$rows" \
-    -heavy-rows "$heavy_rows" -parallel "$(nproc)" > "$output/load.json"
+    -heavy-rows "$heavy_rows" -parallel "$(cpus)" > "$output/load.json"
   mark load
 fi
 if ! done_step sizes-before; then "${bench[@]}" -mode sizes > "$output/sizes-before.json"; mark sizes-before; fi

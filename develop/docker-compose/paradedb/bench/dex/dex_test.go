@@ -132,7 +132,13 @@ func TestRoutes(t *testing.T) {
 		if !strings.Contains(s.SQL, `ORDER BY sort_close_time DESC, start_time DESC, run_id COLLATE "C"`) {
 			t.Fatalf("%s does not use the default order", s.Name)
 		}
-		if s.Name != "schedules" {
+		switch s.Name {
+		case "schedules":
+		case "readyz":
+			if !strings.Contains(s.SQL, "namespace_division IS NULL") || !strings.Contains(s.SQL, "status <> 6") || strings.Contains(s.SQL, "'Engine'") {
+				t.Fatalf("readyz must carry only the user scope and the ContinuedAsNew filter")
+			}
+		default:
 			if !strings.Contains(s.SQL, "namespace_division IS NULL") || !strings.Contains(s.SQL, dexFilter) {
 				t.Fatalf("%s lacks the user scope or Dex filter", s.Name)
 			}
@@ -175,9 +181,26 @@ func TestUpsertSQL(t *testing.T) {
 			t.Fatalf("upsert is missing parameter %d", i)
 		}
 	}
-	for _, want := range []string{"pg_advisory_xact_lock", "visibility_delete_tombstones", "executions_visibility._version < EXCLUDED._version"} {
+	for _, want := range []string{"visibility_delete_tombstones", "executions_visibility._version < EXCLUDED._version"} {
 		if !strings.Contains(upsertSQL, want) {
 			t.Fatalf("upsert lacks %q", want)
+		}
+	}
+	// The lock must be a separate statement; see lockSQL.
+	for _, sql := range []string{upsertSQL, deleteSQL} {
+		if strings.Contains(sql, "pg_advisory") {
+			t.Fatal("writes must not take the advisory lock inside the write statement")
+		}
+	}
+	if !strings.Contains(lockSQL, "pg_advisory_xact_lock") {
+		t.Fatal("lockSQL must take a transaction-scoped advisory lock")
+	}
+}
+
+func TestRank(t *testing.T) {
+	for _, c := range []struct{ n, p, want int }{{20, 50, 9}, {20, 95, 18}, {20, 99, 19}, {100, 99, 98}, {1, 99, 0}} {
+		if got := rank(c.n, c.p); got != c.want {
+			t.Fatalf("rank(%d, %d) = %d, want %d", c.n, c.p, got, c.want)
 		}
 	}
 }

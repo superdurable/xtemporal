@@ -2,6 +2,8 @@
 
 This is the result of the benchmark specified in [dex-profile-benchmark.md](../../dex-profile-benchmark.md): the json-hybrid ParadeDB design with Dex-shaped data, console polling and a version-guarded, tombstoned write mix. Only the realistic tier ran here. The 100M tier did not fit on this host (see [Deviations](#deviations-from-the-spec)).
 
+The numbers below were measured before the review fixes in [Review corrections](#review-corrections). Those fixes do not change any recommendation, but they qualify several numbers, as noted there.
+
 ## Answers
 
 1. **Does B-tree-prefix routing with residual JSON filters keep Studio-style polling fast?** Yes, at realistic namespace sizes. With the default prepared-statement behavior and no `by_flow_type_status`, every console shape had p50 8–11 ms and p99 53–105 ms under 16 writers (about 1,280 writes/s) with 200 browsers polling three FlowTypes each. Single queries in a 330-row namespace take 0.8–4 ms. It holds only while the planner keeps choosing the intended index, which it did not always do (below).
@@ -10,15 +12,16 @@ This is the result of the benchmark specified in [dex-profile-benchmark.md](../.
    - **Plan instability.** Without C3, the custom plan for "Need a person" in the heavy namespace is a parallel bitmap scan plus sort that takes 1.0 s warm and 9.2 s cold, while the generic plan is an ordered scan of 0.6 ms. With C3, the *generic* plan for shapes without a status equality picks `by_flow_type_status`, which breaks the sort order and costs 1.5–4.0 s.
    - **Deep keyset pages.** The keyset predicate is an OR chain, so it runs as a heap filter and each page skips everything before the cursor: 1.5 ms at offset 100, 47.6 ms at offset 8,000. Adding a redundant `sort_close_time <= $cursor` brings it back to 1.4 ms.
    - **Saturation.** On 4 cores, 64 writers plus 200 browsers keep the CPU at about 345% and push B-tree p99 to 6.7–7.1 s without C3.
-3. **Is BM25 needed for the remaining shapes?** Only for Text matches and queries whose only selective filter is a custom attribute; no other shape needs it. Its cost depends on merge state: 48–144 ms with 29 segments and no writers, 1.3–1.6 s measured right after write bursts (141–170 segments), and 2–178 s p50 across the mixed phases (16 and 64 writers), where it queues behind the shared 32-connection pool on a saturated host.
+3. **Is BM25 needed for the remaining shapes?** Only for Text matches and queries whose only selective filter is a custom attribute; no other shape needs it. Its cost depends on merge state: 48–144 ms with 29 segments and no writers, 1.3–1.6 s measured right after write bursts (141–170 segments), and 2–178 s p50 across the mixed phases (16 and 64 writers), where it queues behind its own 32-connection pool on a saturated host. The mixed-phase BM25 numbers are lower bounds (see [Review corrections](#review-corrections)).
 
 ## Recommendations
 
 - **Residual-filter worst case: use a bounded B-tree scan with BM25 fallback** (scan at most 1,000 rows of the core prefix in sort order, apply the residual, and fall back to BM25 only when the bound is hit without a full page). Heavy namespace: 58 ms (absent value) and 153 ms (rare value), against 1,627 ms and 221 ms for pure residual filtering, and 49 / 144 ms for BM25 alone. Regular namespaces never fall back: 1.4 ms, against 53–59 ms for BM25. Promote an attribute to a column only when a hot, selective filter justifies it: the index takes about 1.5 GB per attribute at 12M rows and a minute to build, and brings the query to 0.4–0.8 ms.
-- **C3 (`by_flow_type_status`): do not create it.** It adds 1.5–1.7 GiB (1,546–1,778 MiB), cut write throughput by 39–51% at 16 writers (1,277 to 631–783 statements/s) and 12–13% at 64 writers (1,651 to 1,430–1,447), gave no read gain at 16 writers (p50 8–11 ms without it, 25–35 ms with it using custom plans, 10.6 s using generic plans), and makes small namespaces slower too (`done_today`, 1.0 ms to 8.7 ms). Its one benefit, fixing the "Need a person" custom-plan trap, is better handled through plan choice.
+- **C3 (`by_flow_type_status`): do not create it.** It adds 1.5–1.7 GiB (1,546–1,778 MiB), cut write throughput by 39–51% at 16 writers (1,277 to 631–783 statements/s) and 12–13% at 64 writers (1,651 to 1,430–1,447), gave no read gain at 16 writers (p50 8–11 ms without it, 25–35 ms with it using custom plans, 10.6 s using generic plans), and makes small namespaces slower too (`done_today`, 1.0 ms to 8.7 ms). Its one benefit, fixing the "Need a person" custom-plan trap, is better handled through plan choice. The write-throughput drop is not pure index maintenance: in the C3 phases, slow read plans held the read pools and most of the CPU, so part of the drop is read-side contention. The recommendation rests on the size, the missing read gain and the generic-plan trap, which do not depend on that number.
 - **Plan choice.** Keep the default prepared statements (generic plans after five executions) for B-tree shapes and do not add C3. Check this on production-sized data, because both custom and generic plans were wrong for some shape in some configuration.
 - **Keyset paging.** Add a redundant `sort_close_time <= $cursor` bound to the page predicate.
 - **JIT.** Turning it off saves 0.15–0.3 s on slow plans (warm), and costs nothing for this workload.
+- **Write lock.** The store must take the run's advisory lock in its own statement before the upsert or delete, in the same transaction. An advisory lock inside the write statement does not protect against resurrection (see [Review corrections](#review-corrections)).
 
 ## Recommended indexes
 
@@ -35,26 +38,27 @@ The schema as benchmarked, without `by_flow_type_status`. Sizes are after the lo
 
 Not created: `by_flow_type_status` (C3), and the generic `by_status`, `by_task_queue` and `by_execution_time` indexes (excluded by the spec, not re-measured). This benchmark did not test dropping any of the six, so the list is "nothing measured was unused", not a proven minimum. Status-only and workflow-type-only queries, which the spec routes to `default_idx` with a residual filter, were not benchmarked either.
 
-## Open question: is `namespace_division IS NULL` needed in the Dex profile?
+## `namespace_division IS NULL` in the Dex profile: keep it
 
-**Not measured; this is a hypothesis for a follow-up.**
+`namespace_division` marks system workflows that live in a user's namespace, such as Schedules (`TemporalScheduler`), batch operations (`TemporalBatcher`, `TemporalAdminBatcher`) and worker controllers. The server hides them from user queries by adding `namespace_division IS NULL`. These workflows also have dedicated `temporal-sys-*` workflow types, which raised the question of whether the Dex profile could drop the division filter, turn the partial indexes into ordinary indexes, and drop `by_namespace_division`. The answer is no, for four reasons:
 
-`namespace_division` marks system workflows that live in a user's namespace (Schedules `TemporalScheduler`, batch operations `TemporalBatcher` and `TemporalAdminBatcher`, worker controllers), which the server hides from user queries by adding `namespace_division IS NULL`. Those workflows also have dedicated workflow types, all prefixed `temporal-sys-` (for example `temporal-sys-scheduler-workflow`, `temporal-sys-batch-workflow`, `temporal-sys-worker-deployment-workflow`). Every Dex query already carries `workflow_type_name = 'Engine'`, so for Dex the division filter excludes nothing that the type filter does not already exclude.
-
-What dropping it would change:
-
-- The three partial indexes (`default_idx`, `by_flow_type`, and C3 if it existed) could become ordinary indexes and the division condition could leave the SQL. This is needed for the planner to rely on the type filter alone, because a partial index is only usable when the query implies its predicate.
-- `workflow_type_name` is not an index column in this schema, so it stays a residual filter; it protects correctness but selects no rows. System rows (0.1% here) would enter the indexes and be skipped by that filter.
-- `by_namespace_division` and the schedule listing stay as they are.
-
-Risks and costs:
-
-- **Correctness rests on naming.** It is true only while no Dex row has a system type and no system workflow is named `Engine`. Nothing enforces either; the code has no reserved-prefix check on workflow types.
-- **The profile becomes Dex-only.** Any other client in the same namespace would see system rows unless its queries add their own filter.
-- **It departs from upstream semantics,** where every user query implicitly adds the division filter, which makes syncs harder.
-- **The saving is unknown.** At 0.1% system rows the indexes barely change, and a namespace with thousands of Schedules would change them more. Nobody has measured the size, write or latency difference.
-
-To test it: load the same data with ordinary versions of the three indexes, drop the division condition from the Dex shapes, run the same mix, and compare index sizes, write throughput and per-shape latency. Include a namespace with many Schedules, since that is where the two designs would differ.
+- **Not every Dex query has the Engine filter.**
+  - Only Dex Web adds `WorkflowType = "Engine"`.
+  - The Dex server's `SearchFlows` only adds `ExecutionStatus != "ContinuedAsNew"`.
+  - The readiness probe sends an empty query.
+  - dexcli and the SDKs pass the caller's query through unchanged.
+  - Without the division filter, an SDK `SearchFlows("")` would also return the namespace's system workflows, such as the Schedule that Dex uses for blob cleanup.
+  - Any query with a `FlowType` condition does exclude system rows, because they have no `FlowType`. Queries without one do not.
+- **The store cannot apply the filter selectively.**
+  - The shared upstream converter injects the division predicate (`common/persistence/visibility/store/query/converter.go:201-231`) into every query that does not name the division.
+  - The store does not know whether the caller is Dex Web, an SDK or an operator tool. Dropping the predicate would change upstream semantics for every caller.
+- **There is nothing to gain.**
+  - Every query implies the partial-index predicate, so the planner uses those indexes at no extra cost. Every B-tree shape above used its intended index.
+  - System rows are 0.1% of the data, so ordinary indexes would be the same size and no faster.
+- **`by_namespace_division` (2 MiB) still has a reader.**
+  - The Dex profile turns off `ListSchedules`. The remaining reader is namespace deletion, which lists `TemporalNamespaceDivision IS NULL OR IS NOT NULL` (`service/worker/deletenamespace/deleteexecutions/activities.go:105`).
+  - With this index, the store can serve the two halves as ordered scans of `default_idx` and `by_namespace_division` and merge them. Without it, the system-row half is a full sort of the namespace.
+  - Only system rows enter this index, so its write cost is negligible.
 
 ## Setup
 
@@ -67,8 +71,8 @@ To test it: load the same data with ordinary versions of the three indexes, drop
 | Load | COPY in 260 s; index builds: BM25 460 s, `by_flow_type` 48 s, `default_idx` 45 s, `by_workflow_id` 39 s; vacuum 30 s |
 | Reads | 200 browsers, each polling every 10 s for three FlowTypes: main list, Need a person, Done today, Running, custom `=`, custom range, `WorkflowId =`; plus one Text-match or custom-only BM25 query per poll, a schedule listing, and a readiness probe at 0.6 QPS. Pools of 32 connections per route, so latency includes pool wait. |
 | Writes | 16 or 64 writers: starts, closes of own runs and of preloaded open rows, search-attribute upserts, continue-as-new (close plus insert), tombstoned deletes, all version-guarded |
-| Phases | 5 minutes each, in the order no C3 / 16, C3 / 16, C3 / 64, no C3 / 64, then C3 with custom plans / 16 and 64 |
-| Background load | No other containers. Database CPU averaged 320–354% of 400% in every phase (`mix-*-docker-stats.csv`). |
+| Phases | 5 minutes each. This run executed no C3 / 16, C3 / 16, C3 / 64, no C3 / 64, then the worst case and paging, then C3 with custom plans / 16 and 64. The custom-plan phases were added to `dex-compare.sh` after the first pass, so a fresh run executes them before the worst case. `worst-idle.json` and `worst-rerun.json` are manual `-mode worst` runs outside the script. |
+| Background load | No other containers were reported, but the all-container snapshots are not in this directory. Database CPU averaged 320–354% of 400% in every phase (`mix-*-docker-stats.csv`). |
 
 ## Deviations from the spec
 
@@ -136,7 +140,7 @@ Observations:
 
 ## Plan evidence
 
-`EXPLAIN (ANALYZE, BUFFERS)` per shape and namespace (regular = 1,000 rows; heavy = 2M rows, 733k in the FlowType), with both the custom plan and the generic plan (what a cached prepared statement settles on). Raw plans are in `explain-no-c3.json` and `explain-c3.json`. No B-tree shape contains `@@@`, and both BM25 shapes use a single ParadeDB scan with `TopKScanExecState`.
+`EXPLAIN (ANALYZE, BUFFERS)` per shape and namespace (regular = 1,000 rows; heavy = 2M rows, 733k in the FlowType), with both the custom plan and the generic plan forced with `plan_cache_mode = force_generic_plan`. In auto mode, a cached prepared statement switches to the generic plan only when its estimated cost is no worse than the average of the custom plans seen so far. The forced generic plan is the plan a statement may settle on, not necessarily the one it does. Raw plans are in `explain-no-c3.json` and `explain-c3.json`. No B-tree shape contains `@@@`, and both BM25 shapes use a single ParadeDB scan with `TopKScanExecState`.
 
 | Shape | Namespace | No C3, custom plan | ms | No C3, generic plan | ms | C3, custom plan | ms | C3, generic plan | ms |
 |---|---|---|---:|---|---:|---|---:|---|---:|
@@ -167,7 +171,7 @@ The intended path was used everywhere except the entries that differ from the ta
 
 ## Worst case: residual filtering in the heavy namespace
 
-`FlowType = approval` matches 733k of the roughly 2M heavy-namespace rows; the residual is `keyword3 = X`, where "rare" has 234 matches and "absent" has none. p50 / p99 in ms, 20 runs each, no C3. Idle means no writers and a merged BM25 index (29 segments); all values are in `worst-idle.json`, `worst.json` and `worst-rerun.json`.
+`FlowType = approval` matches 733k of the roughly 2M heavy-namespace rows; the residual is `keyword3 = X`, where "rare" has 234 matches and "absent" has none. p50 / p99 in ms, 20 runs each, no C3. With 20 runs, the percentile method used here takes the 19th value for both p95 and p99, so "p99" is the second-largest run. The B-tree variants ran on an auto-mode connection, so later runs may have used a generic plan. Idle means no writers and a merged BM25 index (29 segments); all values are in `worst-idle.json`, `worst.json` and `worst-rerun.json`.
 
 | Approach | Namespace | Absent, idle | Rare, idle | Absent, 16 writers | Rare, 16 writers |
 |---|---|---:|---:|---:|---:|
@@ -201,7 +205,7 @@ Paging the heavy namespace with `flow_type = approval AND keyword1 = team-3` (a 
 | Deleted / inserted during paging | 23,109 / 110,220 (358 inserted rows were reached) |
 | Result | passed |
 
-Writers made 112k starts, 112k closes, 225k rewrites (same row, higher version, unchanged sort key) and 56k tombstoned deletes during the run, with zero errors. Pages averaged 1.2 s under 8 concurrent writers on the saturated host. The keyset filter's cost grows with depth (see the probe below) but was only 48 ms at offset 8,000 (page 160) on an idle database, so it does not explain the average; the rest was not isolated.
+Writers made 112k starts, 112k closes, 225k rewrites (same row, higher version, unchanged sort key) and 56k tombstoned deletes during the run, with zero errors. These counts include no-op statements: only 23,109 rows were deleted, and most rewrites of deleted rows were rejected by the tombstone check. So the write pressure on the stable rows was lower than the totals suggest. Pages averaged 1.2 s under 8 concurrent writers on the saturated host. The keyset filter's cost grows with depth (see the probe below) but was only 48 ms at offset 8,000 (page 160) on an idle database, so it does not explain the average; the rest was not isolated.
 
 ## Probes behind the recommendations
 
@@ -224,6 +228,28 @@ Run with `psql` against the heavy namespace after the last phase; the SQL follow
 | After C3, custom plans / 64 | 10,973 | 8,251 (C3: 1,778) | 2,902 | 170 | 240,870 |
 
 The BM25 index stays at 2.9 GB through the mixed phases; the B-tree indexes grow with the data and `by_flow_type_status` adds 1.5–1.7 GiB. The tombstone table grew by 16k–70k rows per phase, which is the cost of tombstoned deletes (10% of the write operations here); this benchmark does not prune it.
+
+## Review corrections
+
+A review after the run found these issues. Fixes 1, 2, 6 and 7 are in the harness now; the numbers above predate all of them.
+
+1. **Tombstone race in the write path. Fixed.**
+   - **Cause:** the upsert took its advisory lock in a CTE inside the write statement. Under READ COMMITTED, a statement's snapshot predates any lock it takes, and the planner evaluates the uncorrelated tombstone check as an InitPlan before the lock CTE.
+   - **Effect:** a stale write that ran concurrently with a delete could resurrect the deleted run. This was reproduced on `paradedb/paradedb:v0.26.1-pg17`: the old form left `1 stale` row, and the new form leaves none.
+   - **Fix:** writers now send `pg_advisory_xact_lock` as its own statement, followed by the write, in one pgx batch. pgx runs a batch as a single implicit transaction, so the write's snapshot is taken after the lock is held.
+   - **Impact on the results:** the published write rates come from a cheaper, incorrect write. The paging test passed, but this race could in principle have produced spurious skips.
+2. **No-op writes counted as writes. Fixed.** Writes that affect no row (stale version or tombstoned) are now counted separately as `noops`. Preloaded closes use a fixed version, so they become no-ops in later phases.
+3. **Right-censored, closed-loop reads. Not fixed.**
+   - Queries still running when a phase ends are dropped.
+   - Each browser waits for its slowest query before starting its next poll.
+   - In the slow phases, BM25 p50 values of 2–178 s and the 10.6 s C3 generic-plan p50 are therefore lower bounds, measured at a fraction of the offered load. For example, the 64-writer no-C3 phase completed 562 of the expected polls, against 5,755 at 16 writers.
+4. **C3 write cost is confounded. Not fixed.** See the C3 recommendation. Isolating it needs a write-only phase with and without the index.
+5. **Forced generic plans in EXPLAIN. Not fixed.** See [Plan evidence](#plan-evidence). `boundedSQL` was never explained.
+6. **Percentiles. Fixed.** They now use the nearest rank (`ceil(n·p/100)`), and sample latency is taken before the recorder's mutex.
+7. **Other harness changes.**
+   - The readiness probe now matches the Dex server: an empty `SearchFlows` with only the ContinuedAsNew filter and no Engine filter.
+   - The paging test uses the recommended redundant `sort_close_time <= $cursor` bound.
+   - `dex-compare.sh` now also runs on macOS, which lacks `nproc`, `free` and GNU `df`.
 
 ## Not measured
 

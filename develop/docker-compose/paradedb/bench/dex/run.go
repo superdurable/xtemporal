@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -18,10 +19,16 @@ type sample struct {
 	mu       sync.Mutex
 	latency  []float64
 	errors   int64
+	noops    int64 // writes that affected no row (stale version or tombstoned)
 	firstErr string
 }
 
 func (s *sample) add(begun time.Time, err error) {
+	s.addWrite(begun, 1, err)
+}
+
+func (s *sample) addWrite(begun time.Time, affected int64, err error) {
+	elapsed := float64(time.Since(begun).Microseconds()) / 1000
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if err != nil {
@@ -31,20 +38,23 @@ func (s *sample) add(begun time.Time, err error) {
 		}
 		return
 	}
-	s.latency = append(s.latency, float64(time.Since(begun).Microseconds())/1000)
+	if affected == 0 {
+		s.noops++
+	}
+	s.latency = append(s.latency, elapsed)
 }
 
 func (s *sample) result(seconds float64) map[string]any {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	sort.Float64s(s.latency)
-	out := map[string]any{"count": len(s.latency), "errors": s.errors, "per_second": float64(len(s.latency)) / seconds}
+	out := map[string]any{"count": len(s.latency), "errors": s.errors, "noops": s.noops, "per_second": float64(len(s.latency)) / seconds}
 	if s.firstErr != "" {
 		out["first_error"] = s.firstErr
 	}
 	if n := len(s.latency); n > 0 {
 		for _, p := range []int{50, 95, 99} {
-			out[fmt.Sprintf("p%d_ms", p)] = s.latency[(n-1)*p/100]
+			out[fmt.Sprintf("p%d_ms", p)] = s.latency[rank(n, p)]
 		}
 		out["max_ms"] = s.latency[n-1]
 	}
@@ -374,18 +384,36 @@ func newWriter(ctx context.Context, dsn string, d *Dataset, w, writers int, rec 
 		cursor: int64(w), stride: int64(writers), lo: 0, hi: d.Total()}, nil
 }
 
-func (wr *writer) exec(ctx context.Context, op, sql string, args ...any) error {
+// rank is the nearest-rank index of percentile p in n sorted samples.
+func rank(n, p int) int {
+	return max((n*p+99)/100-1, 0)
+}
+
+// exec runs lockSQL and then sql as one batch, which pgx sends as a single implicit transaction, so
+// the write takes its snapshot after the run's advisory lock is held.
+func (wr *writer) exec(ctx context.Context, op, nsID, runID, sql string, args ...any) error {
 	t := time.Now()
-	_, err := wr.conn.Exec(ctx, sql, args...)
+	b := &pgx.Batch{}
+	b.Queue(lockSQL, nsID, runID)
+	b.Queue(sql, args...)
+	br := wr.conn.SendBatch(ctx, b)
+	_, err := br.Exec()
+	var tag pgconn.CommandTag
+	if err == nil {
+		tag, err = br.Exec()
+	}
+	if cerr := br.Close(); err == nil {
+		err = cerr
+	}
 	if ctx.Err() != nil {
 		return ctx.Err()
 	}
-	wr.rec.get(op).add(t, err)
+	wr.rec.get(op).addWrite(t, tag.RowsAffected(), err)
 	return err
 }
 
 func (wr *writer) upsert(ctx context.Context, op string, r *Row) error {
-	return wr.exec(ctx, op, upsertSQL, r.Values()...)
+	return wr.exec(ctx, op, r.NamespaceID, r.RunID, upsertSQL, r.Values()...)
 }
 
 func (wr *writer) start(ctx context.Context) error {
@@ -501,7 +529,7 @@ func (wr *writer) loop(ctx context.Context, mix writeMix) {
 				continue
 			}
 			r := wr.d.Row(g)
-			err = wr.exec(ctx, "delete", deleteSQL, r.NamespaceID, r.RunID, time.Now().UnixNano())
+			err = wr.exec(ctx, "delete", r.NamespaceID, r.RunID, deleteSQL, r.NamespaceID, r.RunID, time.Now().UnixNano())
 		default:
 			// Re-delivered visibility task: same row, higher version, unchanged sort key. Microsecond
 			// versions stay below the nanosecond delete versions, so a rewrite never outranks a tombstone.
