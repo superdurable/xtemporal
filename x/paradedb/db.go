@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/superdurable/xtemporal/common/persistence/schema"
-
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin"
 )
 
