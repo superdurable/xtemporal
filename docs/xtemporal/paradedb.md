@@ -1,6 +1,6 @@
 # ParadeDB Dex visibility
 
-The [design of record](paradedb-dex-store.md) defines a fresh-only v2.0 visibility schema for ParadeDB 0.26.1. The `paradedb` SQL plugin is registered in `temporal-sql-tool` for schema administration only. Server configuration with `sql.pluginName: paradedb` fails at startup. P5 wires the dedicated `customDatastore.name: paradedb-dex` visibility store into the server. P6 adds functional and advanced visibility test coverage.
+The `paradedb-dex` custom visibility store keeps Temporal visibility in ParadeDB 0.26.1 (`paradedb/paradedb:v0.26.1-pg17`). The [design of record](paradedb-dex-store.md) describes its schema, query routing and limits. The schema is v2.0 and supports fresh databases only. The `paradedb` SQL plugin is registered in `temporal-sql-tool` for schema administration only; a server configured with `sql.pluginName: paradedb` fails at startup.
 
 From the repository root, start the local ParadeDB service and build the SQL tool:
 
