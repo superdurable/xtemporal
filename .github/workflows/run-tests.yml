@@ -101,11 +101,10 @@ jobs:
         run: docker compose -f "$DOCKER_COMPOSE_FILE" down --volumes
 
   paradedb-persistence-test:
-    name: ParadeDB persistence tests
+    name: ParadeDB schema and store tests
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     env:
-      PARADEDB_TEST: 1
       POSTGRES_PORT: 55432
       CGO_ENABLED: 1
     steps:
@@ -123,18 +122,23 @@ jobs:
           for database in paradedb_setup paradedb_update; do
             /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database "$database" --plugin paradedb create-database
           done
-          /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database paradedb_setup --plugin paradedb setup-schema --schema-name paradedb/visibility --version 1.14
+          /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database paradedb_setup --plugin paradedb setup-schema --schema-name paradedb/visibility --version 2.0
           /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database paradedb_update --plugin paradedb setup-schema --version 0.0
           /tmp/temporal-sql-tool --endpoint 127.0.0.1 --port 55432 --user temporal --password temporal --database paradedb_update --plugin paradedb update-schema --schema-name paradedb/visibility
-      - name: Run ParadeDB visibility persistence suite
-        run: make integration-test-coverage INTEGRATION_TEST_DIRS='./common/persistence/tests' TEST_ARGS='-run=^TestParadeDBVisibilityPersistence$$' TEST_PARALLEL_FLAGS='-p 1' TEST_TIMEOUT=20m TEST_RUNNER_TIMEOUT=30m
-      - name: Upload JUnit reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: paradedb-persistence-junit
-          path: .testoutput/junit.*.xml
-          if-no-files-found: ignore
+      - name: Compare schema catalogs and versions
+        run: |
+          set -euo pipefail
+          extension_version=$(docker compose -f develop/docker-compose/paradedb/docker-compose.yml exec -T paradedb psql -U temporal -d paradedb_setup -Atc "SELECT extversion FROM pg_extension WHERE extname='pg_search'")
+          echo "pg_search extension version: $extension_version"
+          test "$extension_version" = '0.26.1'
+          for database in paradedb_setup paradedb_update; do
+            docker compose -f develop/docker-compose/paradedb/docker-compose.yml exec -T paradedb psql -U temporal -d "$database" -Atc 'SELECT curr_version, min_compatible_version FROM schema_version' | tee "/tmp/${database}.version"
+            test "$(cat "/tmp/${database}.version")" = '2.0|2.0'
+            docker compose -f develop/docker-compose/paradedb/docker-compose.yml exec -T paradedb pg_dump -U temporal -d "$database" --schema-only --no-owner --no-privileges --no-comments --restrict-key=0123456789abcdef0123456789abcdef | sed "s/${database}/<database>/g" > "/tmp/${database}.schema"
+          done
+          diff -u /tmp/paradedb_setup.schema /tmp/paradedb_update.schema
+      - name: Run ParadeDB visibility store tests
+        run: PARADEDB_TEST=1 go test -tags test_dep -count=1 ./x/paradedb/...
       - name: Show ParadeDB logs
         if: failure()
         run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml logs --no-color paradedb
@@ -187,75 +191,7 @@ jobs:
         if: always()
         run: docker compose -f "$DOCKER_COMPOSE_FILE" down --volumes
 
-  functional-test-paradedb:
-    name: ParadeDB functional tests (${{ matrix.shard }}/3)
-    runs-on: ubuntu-24.04
-    timeout-minutes: 70
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [0, 1, 2]
-    env:
-      CGO_ENABLED: 1
-      GOMEMLIMIT: 8GiB
-      POSTGRES_PORT: 55432
-      XT_TEST_PARALLELISM: 4
-      TEST_TOTAL_SHARDS: 3
-      TEST_SHARD_INDEX: ${{ matrix.shard }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache: true
-      - name: Start ParadeDB
-        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml up --detach --wait paradedb
-      - name: Run functional tests
-        run: ./.github/scripts/run-functional-shard.sh paradedb
-      - name: Upload JUnit reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: paradedb-functional-junit-${{ matrix.shard }}
-          path: .testoutput/junit.*.xml
-          if-no-files-found: ignore
-      - name: Upload memory diagnostics
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: paradedb-functional-memory-${{ matrix.shard }}
-          path: .testoutput/memory/
-          if-no-files-found: ignore
-      - name: Show ParadeDB logs
-        if: failure()
-        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml logs --no-color paradedb
-      - name: Stop ParadeDB
-        if: always()
-        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml down --volumes
-
-  advanced-visibility-paradedb:
-    name: ParadeDB advanced visibility
-    runs-on: ubuntu-24.04
-    timeout-minutes: 75
-    env:
-      CGO_ENABLED: 1
-      POSTGRES_PORT: 55432
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache: true
-      - name: Start ParadeDB
-        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml up --detach --wait paradedb
-      - name: Run complete advanced visibility suites
-        run: go test -tags disable_grpc_modules,test_dep -race -p 2 -parallel 1 -timeout 65m -count=1 ./tests -run '^TestAdvancedVisibilitySuite' -persistenceType=sql -persistenceDriver=paradedb
-      - name: Show ParadeDB logs
-        if: failure()
-        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml logs --no-color paradedb
-      - name: Stop ParadeDB
-        if: always()
-        run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml down --volumes
+  # xtemporal: P6 restores ParadeDB functional and advanced visibility jobs with the dedicated store.
 
   functional-test-postgres-multi-cluster:
     name: PostgreSQL functional tests (${{ matrix.suite }})
@@ -292,7 +228,7 @@ jobs:
   tests-succeed:
     name: All Tests Succeed
     if: always()
-    needs: [build, unit-test, integration-test, paradedb-persistence-test, functional-test-postgres, functional-test-paradedb, advanced-visibility-paradedb, functional-test-postgres-multi-cluster]
+    needs: [build, unit-test, integration-test, paradedb-persistence-test, functional-test-postgres, functional-test-postgres-multi-cluster]
     runs-on: ubuntu-24.04-arm
     env:
       RESULTS: ${{ toJSON(needs) }}
@@ -306,8 +242,6 @@ jobs:
             .["integration-test"].result == "success" and
             .["paradedb-persistence-test"].result == "success" and
             .["functional-test-postgres"].result == "success" and
-            .["functional-test-paradedb"].result == "success" and
-            .["advanced-visibility-paradedb"].result == "success" and
             .["functional-test-postgres-multi-cluster"].result == (if $event == "schedule" then "success" else "skipped" end)
           ' <<< "$RESULTS"; then
             exit 0

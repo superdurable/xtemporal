@@ -2,7 +2,7 @@
 
 **Decision: adopt the `pdb-json-hybrid` design** for the ParadeDB visibility store. Search attributes are stored in typed JSONB columns covered by one BM25 index, and core fields get dedicated B-tree indexes. Core-field queries are routed to B-tree, and search-attribute queries to BM25. This is based on the 2026-10-16 comparison in `develop/docker-compose/paradedb/bench/results/2026-10-16-cloud-4cpu/`. The prerequisites listed at the end must pass before it ships.
 
-Today the design exists only as the benchmark schema `develop/docker-compose/paradedb/bench/json-hybrid-schema.sql`. `schema/paradedb/visibility` and the `x/paradedb` plugin still use the column-based layout.
+The original comparison used the benchmark schema `develop/docker-compose/paradedb/bench/json-hybrid-schema.sql`. The selected Dex schema is now `schema/paradedb/visibility/schema.sql`; the remaining SQL plugin is for schema tooling.
 
 ## Background
 
@@ -99,9 +99,4 @@ Before production:
 - **Fair search-attribute comparison:** compare `pdb-cols-hybrid` and `pdb-json-hybrid` at the same fixed write rate.
 - **Production-size data:** repeat at a larger row count on hardware closer to production, with the load generator on a separate host.
 
-Server work:
-
-- Implement the JSON layout in `schema/paradedb/visibility` and `x/paradedb`: the query converter, JSON-path BM25 predicates, and core-field routing to B-tree.
-- Drop the name-to-slot mapping and revisit the search-attribute count limits for this store.
-- Replace internal "is the count zero" `CountWorkflowExecutions` calls with existence checks (`List` with page size 1). These are the deployment drainage check, namespace-deletion verification and build-ID checks. Consider a per-namespace switch to reject user `Count` requests on this store.
-- Set `system.enableDeploymentVersions=false` where Worker Versioning is not used. First confirm that no deployments exist with `temporal worker deployment list`.
+Server work now follows the [Dex visibility design of record](paradedb-dex-store.md). P1 installs the fresh-only v2.0 schema and removes the old column-based SQL visibility plugin path. P2–P5 add the dedicated `paradedb-dex` custom store, versioned writes, typed query routing, and server registration. P6 restores functional CI against that store; P7 runs the large-scale gate. The benchmark rejected `by_flow_type_status`, and the owner accepted plain deletes without tombstones. The runtime store is not available until P2–P5 land.

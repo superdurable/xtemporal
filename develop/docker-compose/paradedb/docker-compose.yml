@@ -1,6 +1,6 @@
 services:
   paradedb:
-    image: paradedb/paradedb:v0.26.0-pg17
+    image: paradedb/paradedb:v0.26.1-pg17
     environment:
       POSTGRES_PASSWORD: spike
       POSTGRES_DB: visibility

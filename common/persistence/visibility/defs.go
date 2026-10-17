@@ -25,7 +25,7 @@ func AllowListForValidation(
 	}
 
 	switch storeNames[0] {
-	case mysql.PluginName, postgresql.PluginName, postgresql.PluginNamePGX, sqlite.PluginName, "paradedb": // xtemporal: ParadeDB uses SQL visibility
+	case mysql.PluginName, postgresql.PluginName, postgresql.PluginNamePGX, sqlite.PluginName:
 		// Advanced visibility with SQL DB don't support list of values
 		return dynamicconfig.GetBoolPropertyFnFilteredByNamespace(false)
 	default:

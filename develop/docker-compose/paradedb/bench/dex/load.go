@@ -12,8 +12,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// schemaStatements splits the DDL file into executable statements, dropping comments (which also
-// drops the commented-out by_flow_type_status index; that variant is created by -mode c3).
+// schemaStatements splits the DDL file into executable statements, dropping comments.
 func schemaStatements(path string) ([]string, error) {
 	raw, err := os.ReadFile(path)
 	if err != nil {
@@ -186,17 +185,16 @@ func firstLine(s string) string {
 	return s
 }
 
-// sizes reports heap, per-index and tombstone sizes plus the BM25 segment count.
+// sizes reports heap, per-index sizes and the BM25 segment count.
 func sizes(ctx context.Context, conn *pgx.Conn) (map[string]any, error) {
 	out := map[string]any{}
-	var heap, toast, tomb, tombRows int64
+	var heap, toast int64
 	if err := conn.QueryRow(ctx, `SELECT pg_relation_size('executions_visibility'),
-		coalesce(pg_total_relation_size(reltoastrelid), 0), pg_total_relation_size('visibility_delete_tombstones'),
-		(SELECT count(*) FROM visibility_delete_tombstones)
-		FROM pg_class WHERE relname = 'executions_visibility'`).Scan(&heap, &toast, &tomb, &tombRows); err != nil {
+		coalesce(pg_total_relation_size(reltoastrelid), 0)
+		FROM pg_class WHERE relname = 'executions_visibility'`).Scan(&heap, &toast); err != nil {
 		return nil, err
 	}
-	out["heap_bytes"], out["toast_bytes"], out["tombstone_bytes"], out["tombstone_rows"] = heap, toast, tomb, tombRows
+	out["heap_bytes"], out["toast_bytes"] = heap, toast
 	rows, err := conn.Query(ctx, `SELECT indexrelname, pg_relation_size(indexrelid) FROM pg_stat_user_indexes
 		WHERE relname = 'executions_visibility' ORDER BY 1`)
 	if err != nil {
