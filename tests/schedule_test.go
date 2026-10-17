@@ -2352,6 +2352,17 @@ func testListSchedulesFilterByScheduleID(t *testing.T, newContext contextFactory
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			if testcore.UseParadeDBVisibility() && strings.Contains(tc.query, "STARTS_WITH") { // xtemporal: Dex rejects keyword prefix queries after ScheduleId rewrites to WorkflowId
+				_, err := s.FrontendClient().ListSchedules(ctx, &workflowservice.ListSchedulesRequest{
+					Namespace:       s.Namespace().String(),
+					MaximumPageSize: 10,
+					Query:           tc.query,
+				})
+				var invalidArgument *serviceerror.InvalidArgument
+				require.ErrorAs(t, err, &invalidArgument)
+				require.ErrorContains(t, err, "STARTS_WITH")
+				return
+			}
 			s.EventuallyWithT(func(c *assert.CollectT) {
 				ids := listScheduleIDs(tc.query)
 				require.Len(c, ids, len(tc.wantIDs))

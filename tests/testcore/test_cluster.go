@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"sync"
 	"testing"
 	"time"
 
@@ -41,6 +42,7 @@ import (
 	"github.com/superdurable/xtemporal/temporal"
 	"github.com/superdurable/xtemporal/temporal/environment"
 	"github.com/superdurable/xtemporal/tests/testutils"
+	"github.com/superdurable/xtemporal/x/paradedb" // xtemporal: onebox custom visibility factory
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.temporal.io/api/operatorservice/v1"
 	"go.temporal.io/api/workflowservice/v1"
@@ -52,8 +54,9 @@ type (
 
 	// TestCluster is a testcore struct for functional tests
 	TestCluster struct {
-		testBase *persistencetests.TestBase
-		host     *temporalImpl
+		testBase          *persistencetests.TestBase
+		host              *temporalImpl
+		cleanupVisibility func() error // xtemporal: drop the cluster's Dex database after server shutdown
 	}
 
 	// TestClusterConfig are config for a test cluster
@@ -141,8 +144,14 @@ func newClusterWithPersistenceTestBaseFactory(
 	clusterConfig *TestClusterConfig,
 	logger log.Logger,
 	tbFactory persistenceTestBaseFactory,
-) (*TestCluster, error) {
+) (_ *TestCluster, retErr error) {
 	const minNodes = 1
+	if cliFlags.visibilityStore != "" && !UseParadeDBVisibility() { // xtemporal: reject unknown visibility backends before provisioning persistence
+		return nil, fmt.Errorf("unsupported -visibilityStore=%q", cliFlags.visibilityStore)
+	}
+	if UseParadeDBVisibility() && (cliFlags.persistenceType != config.StoreTypeSQL || cliFlags.persistenceDriver != "postgres12_pgx") {
+		return nil, errors.New("-visibilityStore=paradedb-dex requires -persistenceType=sql -persistenceDriver=postgres12_pgx")
+	}
 	clusterConfig.FrontendConfig.NumFrontendHosts = max(minNodes, clusterConfig.FrontendConfig.NumFrontendHosts)
 	clusterConfig.HistoryConfig.NumHistoryHosts = max(minNodes, clusterConfig.HistoryConfig.NumHistoryHosts)
 	clusterConfig.MatchingConfig.NumMatchingHosts = max(minNodes, clusterConfig.MatchingConfig.NumMatchingHosts)
@@ -198,8 +207,28 @@ func newClusterWithPersistenceTestBaseFactory(
 
 	pConfig := testBase.DefaultTestCluster.Config()
 	pConfig.NumHistoryShards = clusterConfig.HistoryConfig.NumHistoryShards
+	visibilityFactory := testBase.VisibilityStoreFactory
+	var cleanupVisibility func() error
+	defer func() { // xtemporal: a pooled cluster owns its Dex database until cluster teardown
+		if retErr != nil && cleanupVisibility != nil {
+			retErr = multierr.Combine(retErr, cleanupVisibility())
+		}
+	}()
+	if UseParadeDBVisibility() { // xtemporal: provision a fresh Dex visibility database for this cluster
+		cleanup, setupErr := setupParadeDBVisibility(&pConfig)
+		if setupErr != nil {
+			return nil, setupErr
+		}
+		var once sync.Once
+		var cleanupErr error
+		cleanupVisibility = func() error {
+			once.Do(func() { cleanupErr = cleanup() })
+			return cleanupErr
+		}
+		visibilityFactory = paradedb.VisibilityStoreFactory{}
+	}
 
-	if !UseSQLVisibility() {
+	if UseESVisibility() {
 		clusterConfig.ESConfig = &esclient.Config{
 			Indices: map[string]string{
 				esclient.VisibilityAppName: RandomizeStr("temporal_visibility_v1_test"),
@@ -261,7 +290,7 @@ func newClusterWithPersistenceTestBaseFactory(
 		resolver.NewNoopResolver(),
 		persistenceclient.FactoryProvider,
 		testBase.AbstractDataStoreFactory,
-		testBase.VisibilityStoreFactory,
+		visibilityFactory,
 		metrics.NoopMetricsHandler,
 		serialization.NewSerializer(),
 	)
@@ -320,7 +349,7 @@ func newClusterWithPersistenceTestBaseFactory(
 		Config:                    serverConfig,
 		MetadataMgr:               testBase.MetadataManager,
 		AbstractDataStoreFactory:  testBase.AbstractDataStoreFactory,
-		VisibilityStoreFactory:    testBase.VisibilityStoreFactory,
+		VisibilityStoreFactory:    visibilityFactory,
 		Logger:                    logger,
 		MockAdminClient:           clusterConfig.MockAdminClient,
 		DynamicConfigOverrides:    clusterConfig.DynamicConfigOverrides,
@@ -337,7 +366,7 @@ func newClusterWithPersistenceTestBaseFactory(
 		return nil, err
 	}
 
-	return &TestCluster{testBase: testBase, host: host}, nil
+	return &TestCluster{testBase: testBase, host: host, cleanupVisibility: cleanupVisibility}, nil
 }
 
 func newPProfInitializerImpl(logger log.Logger, port int) *pprof.PProfInitializerImpl {
@@ -384,7 +413,10 @@ func enableArchivalConfig(cfg *config.Config) {
 func (tc *TestCluster) TearDownCluster() error {
 	errs := tc.host.Stop()
 	tc.testBase.TearDownWorkflowStore()
-	if !UseSQLVisibility() {
+	if tc.cleanupVisibility != nil { // xtemporal: close the custom store before dropping its database
+		errs = multierr.Combine(errs, tc.cleanupVisibility())
+	}
+	if UseESVisibility() {
 		if esConfig := tc.host.serverConfig.Persistence.DataStores[tc.host.serverConfig.Persistence.VisibilityStore].Elasticsearch; esConfig != nil {
 			if err := persistencetests.DeleteEsIndex(esConfig, tc.host.logger); err != nil {
 				errs = multierr.Combine(errs, err)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -170,12 +171,38 @@ func (s *VisibilityStore) countExecutions(ctx context.Context, req readRequest) 
 			}
 		}
 	default:
-		return nil, serviceerror.NewInvalidArgumentf("unsupported GROUP BY %s", plan.GroupBy)
+		if err := appendMappedKeywordCountGroups(ctx, db, plan, response); err != nil {
+			return nil, err
+		}
 	}
 	if err != nil {
 		return nil, visibilityWriteError("count ParadeDB visibility executions", err)
 	}
 	return response, nil
+}
+
+func appendMappedKeywordCountGroups(
+	ctx context.Context,
+	db *sqlx.DB,
+	plan *countPlan,
+	response *store.InternalCountExecutionsResponse,
+) error {
+	if !strings.HasPrefix(plan.GroupBy, "TemporalLowCardinalityKeyword") {
+		return serviceerror.NewInvalidArgumentf("unsupported GROUP BY %s", plan.GroupBy)
+	}
+	var groups []struct {
+		Value string `db:"group_value"`
+		Count int64  `db:"count"`
+	}
+	if err := db.SelectContext(ctx, &groups, plan.SQL, plan.Args...); err != nil {
+		return visibilityWriteError("count ParadeDB visibility executions", err)
+	}
+	for _, group := range groups {
+		if err := appendCountGroup(response, group.Value, enumspb.INDEXED_VALUE_TYPE_KEYWORD, group.Count); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func appendCountGroup(response *store.InternalCountExecutionsResponse, value string, typ enumspb.IndexedValueType, count int64) error {

@@ -272,7 +272,7 @@ func renderCount(q *convertedQuery, namespaceID string) (*countPlan, error) {
 	if predicate != "" {
 		where += " AND (" + predicate + ")"
 	}
-	plan := &countPlan{Route: r, Args: b.args, GroupBy: q.groupBy}
+	plan := &countPlan{Route: r, GroupBy: q.groupBy}
 	switch q.groupBy {
 	case "":
 		plan.SQL = fmt.Sprintf("SELECT count(*) FROM %s WHERE %s", visibilityTable, where)
@@ -281,8 +281,13 @@ func renderCount(q *convertedQuery, namespaceID string) (*countPlan, error) {
 	case sadefs.TemporalNamespaceDivision:
 		plan.SQL = fmt.Sprintf("SELECT coalesce(namespace_division, '') AS namespace_division, count(*) FROM %s WHERE %s GROUP BY coalesce(namespace_division, '')", visibilityTable, where)
 	default:
-		return nil, serviceerror.NewInvalidArgument("unsupported GROUP BY")
+		if !strings.HasPrefix(q.groupBy, "TemporalLowCardinalityKeyword") {
+			return nil, serviceerror.NewInvalidArgument("unsupported GROUP BY")
+		}
+		field := b.bind(q.groupBy)
+		plan.SQL = fmt.Sprintf("SELECT sa_keyword ->> %s AS group_value, count(*) FROM %s WHERE %s AND sa_keyword ? %s GROUP BY group_value", field, visibilityTable, where, field)
 	}
+	plan.Args = b.args
 	return plan, nil
 }
 
