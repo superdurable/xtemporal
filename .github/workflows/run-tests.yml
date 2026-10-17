@@ -208,6 +208,7 @@ jobs:
       GOMEMLIMIT: 8GiB
       POSTGRES_PORT: 55432
       VISIBILITY_STORE: paradedb-dex
+      TEMPORAL_TEST_TIMEOUT: 3m # xtemporal: cover three-shard functional batches without exhausting test contexts
       TEST_TOTAL_SHARDS: 3
       TEST_SHARD_INDEX: ${{ matrix.shard }}
     steps:
