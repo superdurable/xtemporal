@@ -225,6 +225,45 @@ func TestParadeDBPlans(t *testing.T) {
 		require.Equal(t, []string{"chasm"}, queryRunIDs(ctx, t, conn, plan.SQL, plan.Args))
 	})
 
+	t.Run("chasm status group", func(t *testing.T) {
+		field := "TemporalLowCardinalityKeyword01"
+		mapper := chasm.NewTestVisibilitySearchAttributesMapper(
+			map[string]string{field: "ExecutionStatus"},
+			map[string]enumspb.IndexedValueType{field: enumspb.INDEXED_VALUE_TYPE_KEYWORD},
+		)
+		division := strconv.Itoa(int(chasm.SchedulerArchetypeID))
+		for _, row := range []struct{ run, attrs string }{
+			{"running-1", `{"TemporalLowCardinalityKeyword01":"Running"}`},
+			{"running-2", `{"TemporalLowCardinalityKeyword01":"Running"}`},
+			{"canceled", `{"TemporalLowCardinalityKeyword01":"Canceled"}`},
+			{"missing", `{}`},
+		} {
+			_, insertErr := conn.Exec(ctx, `INSERT INTO executions_visibility
+				(namespace_id, run_id, workflow_id, workflow_type_name, status, start_time, execution_time, namespace_division, sa_keyword)
+				VALUES ('ns-groups', $1, $1, 'Engine', 1, '2026-01-01', '2026-01-01', $2, $3::jsonb)`,
+				row.run, division, row.attrs)
+			require.NoError(t, insertErr)
+		}
+		q, convertErr := convertQuery("GROUP BY ExecutionStatus", namespace.Name("test"),
+			searchattribute.NewNameTypeMap(nil), &searchattribute.TestMapper{}, mapper,
+			chasm.SchedulerArchetypeID, nil, log.NewNoopLogger())
+		require.NoError(t, convertErr)
+		plan, renderErr := renderCount(q, "ns-groups")
+		require.NoError(t, renderErr)
+		rows, queryErr := conn.Query(ctx, plan.SQL, plan.Args...)
+		require.NoError(t, queryErr)
+		defer rows.Close()
+		groups := map[string]int64{}
+		for rows.Next() {
+			var value string
+			var count int64
+			require.NoError(t, rows.Scan(&value, &count))
+			groups[value] = count
+		}
+		require.NoError(t, rows.Err())
+		require.Equal(t, map[string]int64{"Running": 2, "Canceled": 1}, groups)
+	})
+
 	_, err = conn.Exec(ctx, `INSERT INTO executions_visibility
         (namespace_id, run_id, workflow_id, workflow_type_name, status, start_time, execution_time, close_time, flow_type)
         SELECT 'ns-plan', 'filler-' || g, 'filler-' || g, 'Engine', 2,

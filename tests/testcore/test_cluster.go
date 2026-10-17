@@ -144,7 +144,7 @@ func newClusterWithPersistenceTestBaseFactory(
 	clusterConfig *TestClusterConfig,
 	logger log.Logger,
 	tbFactory persistenceTestBaseFactory,
-) (*TestCluster, error) {
+) (_ *TestCluster, retErr error) {
 	const minNodes = 1
 	if cliFlags.visibilityStore != "" && !UseParadeDBVisibility() { // xtemporal: reject unknown visibility backends before provisioning persistence
 		return nil, fmt.Errorf("unsupported -visibilityStore=%q", cliFlags.visibilityStore)
@@ -209,6 +209,11 @@ func newClusterWithPersistenceTestBaseFactory(
 	pConfig.NumHistoryShards = clusterConfig.HistoryConfig.NumHistoryShards
 	visibilityFactory := testBase.VisibilityStoreFactory
 	var cleanupVisibility func() error
+	defer func() { // xtemporal: a pooled cluster owns its Dex database until cluster teardown
+		if retErr != nil && cleanupVisibility != nil {
+			retErr = multierr.Combine(retErr, cleanupVisibility())
+		}
+	}()
 	if UseParadeDBVisibility() { // xtemporal: provision a fresh Dex visibility database for this cluster
 		cleanup, setupErr := setupParadeDBVisibility(&pConfig)
 		if setupErr != nil {
@@ -220,11 +225,6 @@ func newClusterWithPersistenceTestBaseFactory(
 			once.Do(func() { cleanupErr = cleanup() })
 			return cleanupErr
 		}
-		t.Cleanup(func() {
-			if err := cleanupVisibility(); err != nil {
-				t.Errorf("drop ParadeDB visibility database: %v", err)
-			}
-		})
 		visibilityFactory = paradedb.VisibilityStoreFactory{}
 	}
 

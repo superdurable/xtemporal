@@ -146,6 +146,22 @@ func TestConvertCHASMMapper(t *testing.T) {
 	require.Contains(t, plan.SQL, `sa_keyword->'ChasmField'`)
 	require.Contains(t, plan.Args, strconv.Itoa(int(chasm.SchedulerArchetypeID)))
 	require.Contains(t, plan.Args, "value")
+
+	statusField := "TemporalLowCardinalityKeyword01"
+	statusMapper := chasm.NewTestVisibilitySearchAttributesMapper(
+		map[string]string{statusField: sadefs.ExecutionStatus},
+		map[string]enumspb.IndexedValueType{statusField: enumspb.INDEXED_VALUE_TYPE_KEYWORD},
+	)
+	q, err = convertQuery("GROUP BY ExecutionStatus", namespace.Name("test"),
+		searchattribute.NewNameTypeMap(nil), &searchattribute.TestMapper{}, statusMapper,
+		chasm.SchedulerArchetypeID, nil, log.NewNoopLogger())
+	require.NoError(t, err)
+	count, err := renderCount(q, "ns")
+	require.NoError(t, err)
+	require.Equal(t, statusField, count.GroupBy)
+	require.Contains(t, count.SQL, "sa_keyword ->>")
+	require.Contains(t, count.SQL, "sa_keyword ?")
+	require.Contains(t, count.Args, statusField)
 }
 
 func TestFlowTypeMustBeScalar(t *testing.T) {

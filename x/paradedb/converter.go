@@ -3,6 +3,7 @@ package paradedb
 import (
 	"errors"
 	"math"
+	"strings"
 	"time"
 
 	"github.com/superdurable/xtemporal/chasm"
@@ -242,7 +243,8 @@ func convertQuery(
 	out := &convertedQuery{predicate: params.QueryExpr}
 	if len(params.GroupBy) > 0 {
 		out.groupBy = params.GroupBy[0].FieldName
-		if out.groupBy != sadefs.ExecutionStatus && out.groupBy != sadefs.TemporalNamespaceDivision {
+		if out.groupBy != sadefs.ExecutionStatus && out.groupBy != sadefs.TemporalNamespaceDivision &&
+			!strings.HasPrefix(out.groupBy, "TemporalLowCardinalityKeyword") {
 			return nil, invalidQueryError(query.NewConverterError("%s: 'GROUP BY' %s", query.NotSupportedErrMessage, out.groupBy))
 		}
 	}
