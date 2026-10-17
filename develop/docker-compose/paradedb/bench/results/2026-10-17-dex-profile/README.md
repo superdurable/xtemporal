@@ -20,6 +20,42 @@ This is the result of the benchmark specified in [dex-profile-benchmark.md](../.
 - **Keyset paging.** Add a redundant `sort_close_time <= $cursor` bound to the page predicate.
 - **JIT.** Turning it off saves 0.15–0.3 s on slow plans (warm), and costs nothing for this workload.
 
+## Recommended indexes
+
+The schema as benchmarked, without `by_flow_type_status`. Sizes are after the load (12M rows); every index was used by at least one measured shape.
+
+| Index | Size | Serves |
+|---|---:|---|
+| `executions_visibility_pkey (namespace_id, run_id)` | 1.4 GiB | `ON CONFLICT` of every write |
+| `default_idx (namespace_id, sort_close_time DESC, start_time DESC, run_id COLLATE "C") WHERE namespace_division IS NULL` | 1.4 GiB | default list, readiness probe |
+| `by_flow_type (namespace_id, flow_type, <same sort>) WHERE namespace_division IS NULL` | 1.5 GiB | main list, Need a person, Done today, Running, custom `=` and range: most console shapes |
+| `by_workflow_id (namespace_id, workflow_id)` | 0.8 GiB | `WorkflowId =` |
+| `by_namespace_division (namespace_id, namespace_division, <sort>) WHERE namespace_division IS NOT NULL` | 2 MiB | schedule listing |
+| `visibility_core_bm25` | 2.9 GiB | Text matches, custom-attribute-only queries, the BM25 fallback |
+
+Not created: `by_flow_type_status` (C3), and the generic `by_status`, `by_task_queue` and `by_execution_time` indexes (excluded by the spec, not re-measured). This benchmark did not test dropping any of the six, so the list is "nothing measured was unused", not a proven minimum. Status-only and workflow-type-only queries, which the spec routes to `default_idx` with a residual filter, were not benchmarked either.
+
+## Open question: is `namespace_division IS NULL` needed in the Dex profile?
+
+**Not measured; this is a hypothesis for a follow-up.**
+
+`namespace_division` marks system workflows that live in a user's namespace (Schedules `TemporalScheduler`, batch operations `TemporalBatcher` and `TemporalAdminBatcher`, worker controllers), which the server hides from user queries by adding `namespace_division IS NULL`. Those workflows also have dedicated workflow types, all prefixed `temporal-sys-` (for example `temporal-sys-scheduler-workflow`, `temporal-sys-batch-workflow`, `temporal-sys-worker-deployment-workflow`). Every Dex query already carries `workflow_type_name = 'Engine'`, so for Dex the division filter excludes nothing that the type filter does not already exclude.
+
+What dropping it would change:
+
+- The three partial indexes (`default_idx`, `by_flow_type`, and C3 if it existed) could become ordinary indexes and the division condition could leave the SQL. This is needed for the planner to rely on the type filter alone, because a partial index is only usable when the query implies its predicate.
+- `workflow_type_name` is not an index column in this schema, so it stays a residual filter; it protects correctness but selects no rows. System rows (0.1% here) would enter the indexes and be skipped by that filter.
+- `by_namespace_division` and the schedule listing stay as they are.
+
+Risks and costs:
+
+- **Correctness rests on naming.** It is true only while no Dex row has a system type and no system workflow is named `Engine`. Nothing enforces either; the code has no reserved-prefix check on workflow types.
+- **The profile becomes Dex-only.** Any other client in the same namespace would see system rows unless its queries add their own filter.
+- **It departs from upstream semantics,** where every user query implicitly adds the division filter, which makes syncs harder.
+- **The saving is unknown.** At 0.1% system rows the indexes barely change, and a namespace with thousands of Schedules would change them more. Nobody has measured the size, write or latency difference.
+
+To test it: load the same data with ordinary versions of the three indexes, drop the division condition from the Dex shapes, run the same mix, and compare index sizes, write throughput and per-shape latency. Include a namespace with many Schedules, since that is where the two designs would differ.
+
 ## Setup
 
 | | |
