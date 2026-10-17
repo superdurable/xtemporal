@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -19,7 +18,7 @@ type sample struct {
 	mu       sync.Mutex
 	latency  []float64
 	errors   int64
-	noops    int64 // writes that affected no row (stale version or tombstoned)
+	noops    int64 // writes that affected no row
 	firstErr string
 }
 
@@ -389,22 +388,9 @@ func rank(n, p int) int {
 	return max((n*p+99)/100-1, 0)
 }
 
-// exec runs lockSQL and then sql as one batch, which pgx sends as a single implicit transaction, so
-// the write takes its snapshot after the run's advisory lock is held.
-func (wr *writer) exec(ctx context.Context, op, nsID, runID, sql string, args ...any) error {
+func (wr *writer) exec(ctx context.Context, op, sql string, args ...any) error {
 	t := time.Now()
-	b := &pgx.Batch{}
-	b.Queue(lockSQL, nsID, runID)
-	b.Queue(sql, args...)
-	br := wr.conn.SendBatch(ctx, b)
-	_, err := br.Exec()
-	var tag pgconn.CommandTag
-	if err == nil {
-		tag, err = br.Exec()
-	}
-	if cerr := br.Close(); err == nil {
-		err = cerr
-	}
+	tag, err := wr.conn.Exec(ctx, sql, args...)
 	if ctx.Err() != nil {
 		return ctx.Err()
 	}
@@ -413,7 +399,7 @@ func (wr *writer) exec(ctx context.Context, op, nsID, runID, sql string, args ..
 }
 
 func (wr *writer) upsert(ctx context.Context, op string, r *Row) error {
-	return wr.exec(ctx, op, r.NamespaceID, r.RunID, upsertSQL, r.Values()...)
+	return wr.exec(ctx, op, upsertSQL, r.Values()...)
 }
 
 func (wr *writer) start(ctx context.Context) error {
@@ -529,10 +515,10 @@ func (wr *writer) loop(ctx context.Context, mix writeMix) {
 				continue
 			}
 			r := wr.d.Row(g)
-			err = wr.exec(ctx, "delete", r.NamespaceID, r.RunID, deleteSQL, r.NamespaceID, r.RunID, time.Now().UnixNano())
+			err = wr.exec(ctx, "delete", deleteSQL, r.NamespaceID, r.RunID)
 		default:
 			// Re-delivered visibility task: same row, higher version, unchanged sort key. Microsecond
-			// versions stay below the nanosecond delete versions, so a rewrite never outranks a tombstone.
+			// A delayed rewrite after deletion can recreate the row, matching upstream SQL visibility.
 			g, ok := wr.randomClosedPreloaded()
 			if !ok {
 				continue

@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 	"reflect"
-	"regexp"
 	"strconv"
 	"strings"
 	"testing"
@@ -149,7 +148,7 @@ func TestRoutes(t *testing.T) {
 	}
 }
 
-func TestSchemaStatementsAndC3(t *testing.T) {
+func TestSchemaStatements(t *testing.T) {
 	stmts, err := schemaStatements("../dex-profile-schema.sql")
 	if err != nil {
 		t.Fatal(err)
@@ -168,10 +167,8 @@ func TestSchemaStatementsAndC3(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	commented := regexp.MustCompile(`(?m)^-- ?`).ReplaceAllString(string(raw), "")
-	norm := func(s string) string { return strings.Join(strings.Fields(s), " ") }
-	if !strings.Contains(norm(commented), norm(c3IndexDDL)) {
-		t.Fatal("c3IndexDDL must match the commented by_flow_type_status DDL in the schema")
+	if strings.Contains(string(raw), "by_flow_type_status") || strings.Contains(string(raw), "visibility_delete_tombstones") {
+		t.Fatal("the v2 schema must not contain C3 or tombstones")
 	}
 }
 
@@ -181,19 +178,13 @@ func TestUpsertSQL(t *testing.T) {
 			t.Fatalf("upsert is missing parameter %d", i)
 		}
 	}
-	for _, want := range []string{"visibility_delete_tombstones", "executions_visibility._version < EXCLUDED._version"} {
+	for _, want := range []string{"VALUES (", "executions_visibility._version < EXCLUDED._version"} {
 		if !strings.Contains(upsertSQL, want) {
 			t.Fatalf("upsert lacks %q", want)
 		}
 	}
-	// The lock must be a separate statement; see lockSQL.
-	for _, sql := range []string{upsertSQL, deleteSQL} {
-		if strings.Contains(sql, "pg_advisory") {
-			t.Fatal("writes must not take the advisory lock inside the write statement")
-		}
-	}
-	if !strings.Contains(lockSQL, "pg_advisory_xact_lock") {
-		t.Fatal("lockSQL must take a transaction-scoped advisory lock")
+	if deleteSQL != "DELETE FROM executions_visibility WHERE namespace_id = $1 AND run_id = $2" {
+		t.Fatal("delete must use upstream SQL visibility semantics")
 	}
 }
 

@@ -1,5 +1,5 @@
--- Dex-profile visibility schema for the json-hybrid ParadeDB design.
--- This is the candidate v2.0 layout; see dex-profile-benchmark.md.
+-- Dex-profile visibility schema for ParadeDB 0.26.1.
+-- Version 2.0 requires a fresh database.
 
 CREATE EXTENSION IF NOT EXISTS pg_search;
 
@@ -47,11 +47,6 @@ CREATE INDEX by_namespace_division ON executions_visibility
     (namespace_id, namespace_division, sort_close_time DESC, start_time DESC, run_id COLLATE "C")
     WHERE namespace_division IS NOT NULL;
 
--- Optional (decision C3): benchmark with and without this index.
--- CREATE INDEX by_flow_type_status ON executions_visibility
---     (namespace_id, flow_type, status, sort_close_time DESC, start_time DESC, run_id COLLATE "C")
---     WHERE namespace_division IS NULL;
-
 CREATE INDEX visibility_core_bm25 ON executions_visibility USING paradedb (
     (namespace_id::pdb.literal),
     (run_id::pdb.literal),
@@ -65,12 +60,4 @@ CREATE INDEX visibility_core_bm25 ON executions_visibility USING paradedb (
     (sa_number::pdb.whitespace('columnar=true')),
     (sa_datetime::pdb.whitespace('columnar=true')),
     (sa_bool::pdb.whitespace('columnar=true'))
-);
-
--- Prevents a stale write from resurrecting a deleted run.
-CREATE TABLE visibility_delete_tombstones (
-    namespace_id text NOT NULL,
-    run_id text NOT NULL,
-    _version bigint NOT NULL,
-    PRIMARY KEY (namespace_id, run_id)
 );

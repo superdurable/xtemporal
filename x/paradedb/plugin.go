@@ -23,7 +23,7 @@ func init() {
 }
 
 func (*plugin) GetVisibilityQueryConverter() sqlplugin.VisibilityQueryConverter {
-	return &queryConverter{}
+	return nil
 }
 
 func (*plugin) CreateDB(

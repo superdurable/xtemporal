@@ -117,34 +117,19 @@ const c3IndexDDL = `CREATE INDEX by_flow_type_status ON executions_visibility
     (namespace_id, flow_type, status, sort_close_time DESC, start_time DESC, run_id COLLATE "C")
     WHERE namespace_division IS NULL`
 
-// lockSQL serializes writes and deletes of one run. It must be its own statement ahead of the write:
-// under READ COMMITTED a statement's snapshot is taken before any lock it acquires, and the planner
-// evaluates the uncorrelated tombstone check before a lock CTE, so an in-statement lock does not stop a
-// stale write from resurrecting a run deleted concurrently.
-const lockSQL = `SELECT pg_advisory_xact_lock(hashtextextended($1::text || $2::text, 0))`
-
-// upsertSQL is the version-guarded store write. It runs after lockSQL in the same transaction and does
-// not resurrect a tombstoned run.
+// upsertSQL matches the version-guarded SQL visibility write.
 var upsertSQL = func() string {
 	params := make([]string, len(writeColumns))
 	sets := make([]string, len(writeColumns))
-	versionParam := 0
 	for i, c := range writeColumns {
 		params[i] = fmt.Sprintf("$%d::%s", i+1, writeColumnTypes[i])
 		sets[i] = c + " = EXCLUDED." + c
-		if c == "_version" {
-			versionParam = i + 1
-		}
 	}
-	return fmt.Sprintf(`INSERT INTO executions_visibility (%s) SELECT %s
-WHERE NOT EXISTS (SELECT 1 FROM visibility_delete_tombstones t WHERE t.namespace_id = $1 AND t.run_id = $2 AND t._version >= $%d)
+	return fmt.Sprintf(`INSERT INTO executions_visibility (%s) VALUES (%s)
 ON CONFLICT (namespace_id, run_id) DO UPDATE SET %s WHERE executions_visibility._version < EXCLUDED._version`,
-		strings.Join(writeColumns, ", "), strings.Join(params, ", "), versionParam, strings.Join(sets, ", "))
+		strings.Join(writeColumns, ", "), strings.Join(params, ", "), strings.Join(sets, ", "))
 }()
 
-// deleteSQL records the tombstone and deletes the row; it also runs after lockSQL.
-const deleteSQL = `WITH tomb AS (INSERT INTO visibility_delete_tombstones (namespace_id, run_id, _version) VALUES ($1, $2, $3::bigint)
-  ON CONFLICT (namespace_id, run_id) DO UPDATE SET _version = GREATEST(visibility_delete_tombstones._version, EXCLUDED._version))
-DELETE FROM executions_visibility e WHERE e.namespace_id = $1 AND e.run_id = $2 AND e._version <= $3::bigint`
+const deleteSQL = `DELETE FROM executions_visibility WHERE namespace_id = $1 AND run_id = $2`
 
 func today() time.Time { return time.Now().UTC().Truncate(24 * time.Hour) }

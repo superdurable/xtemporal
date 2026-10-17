@@ -6,9 +6,9 @@ xtemporal tracks upstream [Temporal Server](https://github.com/temporalio/tempor
 
 | Path | Purpose |
 | --- | --- |
-| `x/` | Fork specific extensions: `x/limitless` (Aurora Limitless default store), `x/limitless-verify` (its on-demand end-to-end script and verification tools), and `x/paradedb` (ParadeDB visibility). |
+| `x/` | Fork specific extensions: `x/limitless` (Aurora Limitless default store), `x/limitless-verify` (its on-demand end-to-end script and verification tools), and `x/paradedb` (ParadeDB schema tooling and Dex visibility store). |
 | `schema/limitless/` | Aurora Limitless default-store schema; must mirror `schema/postgresql/v12` (a drift test enforces this). |
-| `schema/paradedb/` | ParadeDB visibility schema. |
+| `schema/paradedb/` | Fresh-only ParadeDB Dex visibility schema v2.0. |
 | `scripts/xtemporal/` | Upstream rewrite, sync, and release tooling. |
 | `docs/xtemporal/` | Fork maintenance and extension documentation. |
 
@@ -40,3 +40,8 @@ To release fork changes on the same upstream version, push an annotated tag `vX.
 ## Configuration
 
 - [Dex dynamic config profile](dex-profile.md)
+
+## ParadeDB
+
+- [Dex visibility design of record](paradedb-dex-store.md)
+- [Schema tooling and local setup](paradedb.md)

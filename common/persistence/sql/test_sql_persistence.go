@@ -98,9 +98,6 @@ func (s *TestCluster) SetupTestDatabase() {
 	if s.cfg.PluginName == "postgres12_limitless" { // xtemporal: Limitless uses PostgreSQL visibility
 		visibilitySchema = path.Join(testutils.GetRepoRootDirectory(), "schema/postgresql/v12/visibility/schema.sql")
 	}
-	if s.cfg.PluginName == "paradedb" { // xtemporal: ParadeDB has its own visibility schema
-		visibilitySchema = path.Join(testutils.GetRepoRootDirectory(), "schema/paradedb/visibility/schema.sql")
-	}
 	if s.visibilityCfg != nil { // xtemporal: visibility schema is unsupported on Limitless
 		s.loadSchemaForConfig(visibilitySchema, s.visibilityCfg)
 	} else {
@@ -120,19 +117,6 @@ func (s *TestCluster) SetupTestDatabase() {
 // Config returns the persistence config for connecting to this test cluster
 func (s *TestCluster) Config() config.Persistence {
 	cfg := s.cfg
-	if cfg.PluginName == "paradedb" { // xtemporal: keep the default store on PostgreSQL
-		mainCfg := cfg
-		mainCfg.PluginName = "postgres12_pgx"
-		return config.Persistence{
-			DefaultStore:    "test",
-			VisibilityStore: "test-visibility",
-			DataStores: map[string]config.DataStore{
-				"test":            {SQL: &mainCfg, FaultInjection: s.faultInjection},
-				"test-visibility": {SQL: &cfg, FaultInjection: s.faultInjection},
-			},
-			TransactionSizeLimit: dynamicconfig.GetIntPropertyFn(primitives.DefaultTransactionSizeLimit),
-		}
-	}
 	if cfg.PluginName == "postgres12_limitless" { // xtemporal: keep visibility on PostgreSQL
 		visibilityCfg := cfg
 		visibilityCfg.PluginName = "postgres12_pgx"

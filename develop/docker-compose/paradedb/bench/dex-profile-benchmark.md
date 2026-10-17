@@ -1,6 +1,6 @@
 # Dex-profile visibility benchmark (json-hybrid, 10M and 100M rows)
 
-This is the self-contained input for the next ParadeDB visibility benchmark. It collects the design decisions, ParadeDB 0.26.1 behavior, the exact SQL shapes the future store will generate, and the Dex workload the benchmark must model. The earlier decision is in [paradedb-schema-decision.md](../../../../docs/xtemporal/paradedb-schema-decision.md); the existing harness is in this directory (`compare.sh`, `main.go`, `results/2026-10-16-cloud-4cpu/`).
+This records the Dex-profile benchmark specification and its v2.0 harness updates. The completed run is in `results/2026-10-17-dex-profile/`. It collects the design decisions, ParadeDB 0.26.1 behavior, the exact SQL shapes the future store will generate, and the Dex workload the benchmark must model. The earlier decision is in [paradedb-schema-decision.md](../../../../docs/xtemporal/paradedb-schema-decision.md); the existing harness is in this directory (`compare.sh`, `main.go`, `results/2026-10-16-cloud-4cpu/`).
 
 ## Goal
 
@@ -12,7 +12,7 @@ Measure the Dex-profile design at realistic shape and scale, using SQL that matc
 
 Two results feed open decisions:
 
-- whether to create `by_flow_type_status` (C3);
+- the measured cost of the optional `by_flow_type_status` (C3), which the v2.0 schema excludes;
 - the latency and throughput targets for the store.
 
 ## Why the previous numbers are not representative
@@ -33,13 +33,13 @@ Two results feed open decisions:
 | Routing (R2) | A query with a usable core prefix uses the B-tree, with the other conditions as residual SQL. A Text match, or a query whose only selective filter is a custom attribute, uses BM25. |
 | `ContinuedAsNew` filter (C2) | `status <> 6` is a residual filter. The partial indexes filter on division only. |
 | Generic indexes (C4) | No `by_status`, `by_task_queue` or `by_execution_time` index in the Dex profile. |
-| `by_flow_type_status` (C3) | **Open:** decided by this benchmark. |
+| `by_flow_type_status` (C3) | Excluded from v2.0 after the benchmark; historical C3 modes remain for comparison. |
 | Unsupported | Custom-attribute `ORDER BY` and `STARTS_WITH` return InvalidArgument. Do not benchmark them. |
 | Count | Disabled for users in the Dex profile (`xtemporal.frontend.disableCountWorkflowExecutions`). Internal Count (namespace deletion) still runs. It is not part of the read mix. |
 
 ## Schema
 
-[`dex-profile-schema.sql`](dex-profile-schema.sql) is the exact DDL. Benchmark two variants: without `by_flow_type_status` (as written) and with it (uncomment).
+[`dex-profile-schema.sql`](dex-profile-schema.sql) is the exact DDL. The production schema excludes `by_flow_type_status`; the `c3` benchmark mode can still add it for historical comparison.
 
 ### Write rules
 
@@ -50,8 +50,7 @@ The data generator and the write workload must follow the same rules as the stor
 - **Datetime attributes are UTC epoch microseconds,** stored as JSON numbers.
 - **`FlowType` is written to `flow_type`** and does not appear in `sa_keyword`.
 - **Writes are version-guarded.** Every write is `INSERT … ON CONFLICT (namespace_id, run_id) DO UPDATE … WHERE executions_visibility._version < EXCLUDED._version`.
-- **Deletes are tombstoned.** A delete records `(namespace_id, run_id, _version)` in `visibility_delete_tombstones`, so a stale write cannot recreate the row. Report tombstone table growth.
-- **Writes and deletes of a run are serialized.** Both take `pg_advisory_xact_lock` on the run as a separate statement before the write, in the same transaction. A lock taken inside the write statement does not work: under READ COMMITTED the statement's snapshot predates the lock.
+- **Deletes are plain SQL deletes.** A delayed write can recreate a deleted row, matching upstream SQL visibility semantics. No advisory lock or tombstone table is used.
 
 ### `TemporalNamespaceDivision`
 
@@ -237,7 +236,7 @@ Run a steady mixed write workload in parallel with the reads, using the version 
 - closes, which move `sort_close_time`;
 - attribute upserts;
 - continue-as-new, which closes a row and inserts a new run;
-- deletes with tombstones.
+- plain deletes.
 
 Run 16 and 64 writers, as in `compare.sh`.
 
@@ -258,7 +257,7 @@ Run 16 and 64 writers, as in `compare.sh`.
 - **Per-shape latency and throughput:** p50, p95 and p99 latency and achieved QPS per query shape, for both tiers and for both `by_flow_type_status` variants.
 - **Writes:** writes per second and write p50/p95/p99.
 - **Plan evidence:** run `EXPLAIN (ANALYZE, BUFFERS)` per shape. Confirm the intended path: the right partial index with no `@@@`, a heap filter, or a single ParadeDB scan.
-- **Storage:** heap size, B-tree index size, BM25 index size and segment count, and tombstone table growth.
+- **Storage:** heap size, B-tree index size, BM25 index size and segment count, with no tombstone table.
 - **Environment:**
   - Record the host spec and background load (see `compare.sh`).
   - Use a host comparable to the 2026-10-16 cloud run, ideally with the load generator on a separate host.

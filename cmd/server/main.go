@@ -23,7 +23,6 @@ import (
 	"github.com/superdurable/xtemporal/temporal"
 	"github.com/superdurable/xtemporal/x/auth"
 	_ "github.com/superdurable/xtemporal/x/limitless" // xtemporal: register Limitless default-store plugin
-	_ "github.com/superdurable/xtemporal/x/paradedb"  // xtemporal: register ParadeDB visibility plugin
 	"github.com/urfave/cli/v2"
 )
 

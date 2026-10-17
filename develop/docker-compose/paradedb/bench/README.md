@@ -28,7 +28,7 @@ Index sets differ by design. `postgres` uses all v12 indexes. `pdb-cols` and `pd
 
 1. Preload a deterministic Dex-like dataset with parallel COPY.
 2. Record EXPLAIN evidence for every query shape.
-3. Run console "browsers" polling every 10 s against store-style writers (version-guarded upserts and tombstoned deletes), with and without `by_flow_type_status`. The order is A16, B16, B64, A64.
+3. Run console "browsers" polling every 10 s against store-style writers (version-guarded upserts and plain deletes), with and without `by_flow_type_status`. The order is A16, B16, B64, A64.
 4. Measure the residual-filter worst case and page-token stability.
 
 Steps leave markers in the output directory and the database volume is kept until the end, so rerunning the same command resumes. `dex-summarize.py <output-dir>` regenerates `summary.md`.

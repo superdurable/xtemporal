@@ -18,13 +18,13 @@ var cliFlags struct {
 
 func init() {
 	flag.StringVar(&cliFlags.persistenceType, "persistenceType", "sql", "type of persistence - [nosql or sql]")
-	flag.StringVar(&cliFlags.persistenceDriver, "persistenceDriver", "sqlite", "driver of nosql/sql - [cassandra, mysql8, paradedb, postgres12, postgres12_limitless, postgres12_pgx, sqlite]") // xtemporal: Limitless functional tests
+	flag.StringVar(&cliFlags.persistenceDriver, "persistenceDriver", "sqlite", "driver of nosql/sql - [cassandra, mysql8, postgres12, postgres12_limitless, postgres12_pgx, sqlite]") // xtemporal: Limitless functional tests
 	flag.StringVar(&cliFlags.enableFaultInjection, "enableFaultInjection", "", "enable global fault injection")
 }
 
 func UseSQLVisibility() bool {
 	switch cliFlags.persistenceDriver {
-	case mysql.PluginName, postgresql.PluginName, postgresql.PluginNamePGX, sqlite.PluginName, "paradedb", "postgres12_limitless": // xtemporal: Limitless uses PostgreSQL visibility
+	case mysql.PluginName, postgresql.PluginName, postgresql.PluginNamePGX, sqlite.PluginName, "postgres12_limitless": // xtemporal: Limitless uses PostgreSQL visibility
 		return true
 	// If the main storage is Cassandra, Elasticsearch is used for visibility.
 	default:

@@ -118,6 +118,13 @@ func (s *queryUtilSuite) TestLoadAndSplitQueryFromReaders() {
 	s.Nil(statements)
 }
 
+// xtemporal: ParadeDB schema setup needs CREATE EXTENSION IF NOT EXISTS to stay one statement.
+func TestSplitCreateExtensionIfNotExists(t *testing.T) {
+	stmts, err := LoadAndSplitQueryFromReaders([]io.Reader{bytes.NewBufferString("CREATE EXTENSION IF NOT EXISTS pg_search; CREATE TABLE runs (id bigint);")})
+	require.NoError(t, err)
+	require.Equal(t, []string{"CREATE EXTENSION IF NOT EXISTS pg_search;", "CREATE TABLE runs (id bigint);"}, stmts)
+}
+
 func (s *queryUtilSuite) TestHasWordAt() {
 	s.True(hasWordAt("BEGIN", "BEGIN", 0))
 	s.True(hasWordAt(" BEGIN ", "BEGIN", 1))

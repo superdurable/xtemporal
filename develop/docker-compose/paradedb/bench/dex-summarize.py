@@ -159,6 +159,7 @@ def paging_section(root):
 
 def sizes_section(root):
     rows = []
+    historical_tombstones = False
     for name in ('sizes-before.json', 'mix-no-c3-16-sizes.json', 'mix-c3-16-sizes.json', 'mix-c3-64-sizes.json',
                  'mix-no-c3-64-sizes.json', 'mix-c3-custom-16-sizes.json', 'mix-c3-custom-64-sizes.json', 'sizes-after.json'):
         d = load(root, name)
@@ -166,9 +167,18 @@ def sizes_section(root):
             continue
         idx = d['index_bytes']
         btree = sum(v for k, v in idx.items() if k != 'visibility_core_bm25')
-        rows.append([name.replace('.json', ''), d['live_rows_estimate'], d['heap_bytes'] / MIB, btree / MIB,
-                     idx.get('visibility_core_bm25', 0) / MIB, d['bm25_segments'], d['tombstone_rows'], d['tombstone_bytes'] / MIB])
-    lines = [table(['Snapshot', 'live rows', 'heap MiB', 'B-tree MiB', 'BM25 MiB', 'BM25 segments', 'tombstones', 'tombstone MiB'], rows)]
+        row = [name.replace('.json', ''), d['live_rows_estimate'], d['heap_bytes'] / MIB, btree / MIB,
+               idx.get('visibility_core_bm25', 0) / MIB, d['bm25_segments']]
+        if 'tombstone_rows' in d:
+            historical_tombstones = True
+        row += [d.get('tombstone_rows'), d.get('tombstone_bytes', 0) / MIB]
+        rows.append(row)
+    header = ['Snapshot', 'live rows', 'heap MiB', 'B-tree MiB', 'BM25 MiB', 'BM25 segments']
+    if historical_tombstones:
+        header += ['tombstones', 'tombstone MiB']
+    else:
+        rows = [row[:-2] for row in rows]
+    lines = [table(header, rows)]
     d = load(root, 'sizes-before.json')
     if d:
         lines.append(table(['Index', 'MiB'], [[k, v / MIB] for k, v in sorted(d['index_bytes'].items())]))

@@ -17,6 +17,7 @@ const (
 	sqlLeftParenthesis     = '('
 	sqlRightParenthesis    = ')'
 	sqlCreateKeyword       = "create"
+	sqlExtensionKeyword    = "extension" // xtemporal: ParadeDB schema uses CREATE EXTENSION IF NOT EXISTS
 	sqlTableKeyword        = "table"
 	sqlIndexKeyword        = "index"
 	sqlConcurrentlyKeyword = "concurrently"
@@ -103,6 +104,7 @@ func LoadAndSplitQueryFromReaders(
 						continue
 					}
 					if hasWordsBefore(contentStr, j-1, sqlAddKeyword, sqlColumnKeyword) ||
+						hasWordsBefore(contentStr, j-1, sqlCreateKeyword, sqlExtensionKeyword) || // xtemporal: preserve extension setup statements
 						hasWordsBefore(contentStr, j-1, sqlCreateKeyword, sqlIndexKeyword) ||
 						hasWordsBefore(contentStr, j-1, sqlCreateKeyword, sqlIndexKeyword, sqlConcurrentlyKeyword) ||
 						hasWordsBefore(contentStr, j-1, sqlCreateKeyword, sqlTableKeyword) {
