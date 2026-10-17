@@ -25,6 +25,10 @@ type encodedSearchAttributes struct {
 	boolean  []byte
 	flowType *string
 	division *string
+	// skipped lists attributes left out of the row: unregistered names and non-scalar FlowType or
+	// division values. Like the Elasticsearch store, a write keeps the rest of the row instead of
+	// failing the visibility task.
+	skipped []string
 }
 
 func searchAttributeType(types searchattribute.NameTypeMap, name string) (enumspb.IndexedValueType, error) {
@@ -93,7 +97,8 @@ func encodeOneSearchAttribute(
 ) error {
 	t, err := searchAttributeType(types, name)
 	if err != nil {
-		return serviceerror.NewInvalidArgumentf("unregistered search attribute %q", name)
+		result.skipped = append(result.skipped, name)
+		return nil
 	}
 	value, err := sadefs.DecodeValue(payload, t, true)
 	if err != nil {
@@ -105,7 +110,8 @@ func encodeOneSearchAttribute(
 	if name == flowTypeSearchAttribute || name == sadefs.TemporalNamespaceDivision {
 		str, ok := value.(string)
 		if !ok {
-			return serviceerror.NewInvalidArgumentf("%s must be a scalar keyword", name)
+			result.skipped = append(result.skipped, name)
+			return nil
 		}
 		if err := validateSAString(str); err != nil {
 			return err

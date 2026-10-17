@@ -8,6 +8,8 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	visibilityservicespb "github.com/superdurable/xtemporal/api/visibilityservice/v1"
+	"github.com/superdurable/xtemporal/common/log"
+	"github.com/superdurable/xtemporal/common/log/tag"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/manager"
 	"github.com/superdurable/xtemporal/common/persistence/visibility/store"
 	"github.com/superdurable/xtemporal/common/searchattribute"
@@ -21,6 +23,7 @@ type VisibilityStore struct {
 	bm25       *sqlx.DB
 	indexName  string
 	saProvider searchattribute.Provider
+	logger     log.Logger
 }
 
 var _ store.VisibilityStore = (*VisibilityStore)(nil)
@@ -117,7 +120,11 @@ func (s *VisibilityStore) encodeRequestAttributes(attrs *commonpb.SearchAttribut
 	if err != nil {
 		return encodedSearchAttributes{}, err
 	}
-	return encodeSearchAttributes(attrs, types)
+	encoded, err := encodeSearchAttributes(attrs, types)
+	for _, name := range encoded.skipped {
+		s.logger.Warn("Skipping unknown or non-scalar search attribute while writing visibility record", tag.String("search-attribute", name))
+	}
+	return encoded, err
 }
 
 func visibilityWriteError(action string, err error) error {

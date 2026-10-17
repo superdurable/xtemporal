@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/searchattribute"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	commonpb "go.temporal.io/api/common/v1"
@@ -76,16 +77,19 @@ func TestSearchAttributeCodecOmissionAndValidation(t *testing.T) {
 	require.NoError(t, err)
 	require.JSONEq(t, `{}`, string(encoded.keyword))
 
+	// A write skips what it cannot store instead of failing the visibility task.
 	attrs.IndexedFields["Unknown"], err = sadefs.EncodeValue("value", enumspb.INDEXED_VALUE_TYPE_KEYWORD)
 	require.NoError(t, err)
-	_, err = encodeSearchAttributes(attrs, types)
-	require.ErrorAs(t, err, new(*serviceerror.InvalidArgument))
-	delete(attrs.IndexedFields, "Unknown")
 	attrs.IndexedFields["FlowType"], err = sadefs.EncodeValue([]string{"a"}, enumspb.INDEXED_VALUE_TYPE_KEYWORD)
 	require.NoError(t, err)
-	_, err = encodeSearchAttributes(attrs, types)
-	require.ErrorAs(t, err, new(*serviceerror.InvalidArgument))
-	store := &VisibilityStore{indexName: "test", saProvider: integrationProvider{}}
+	encoded, err = encodeSearchAttributes(attrs, types)
+	require.NoError(t, err)
+	require.ElementsMatch(t, []string{"Unknown", "FlowType"}, encoded.skipped)
+	require.Nil(t, encoded.flowType)
+	require.JSONEq(t, `{}`, string(encoded.keyword))
+	delete(attrs.IndexedFields, "Unknown")
+	delete(attrs.IndexedFields, "FlowType")
+	store := &VisibilityStore{indexName: "test", saProvider: integrationProvider{}, logger: log.NewNoopLogger()}
 	_, err = store.ValidateCustomSearchAttributes(map[string]any{"FlowType": []string{"a"}})
 	require.ErrorAs(t, err, new(*serviceerror.InvalidArgument))
 	_, err = store.ValidateCustomSearchAttributes(map[string]any{"Unknown": "value"})

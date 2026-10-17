@@ -69,7 +69,7 @@ func (VisibilityStoreFactory) NewVisibilityStore(
 	_ namespace.Registry,
 	_ *chasm.Registry,
 	r resolver.ServiceResolver,
-	_ log.Logger,
+	logger log.Logger,
 	_ metrics.Handler,
 ) (store.VisibilityStore, error) {
 	if cfg.Name != StoreName || strings.TrimSpace(cfg.IndexName) == "" {
@@ -81,6 +81,9 @@ func (VisibilityStoreFactory) NewVisibilityStore(
 	}
 	if r == nil {
 		r = resolver.NewNoopResolver()
+	}
+	if logger == nil {
+		logger = log.NewNoopLogger()
 	}
 	base := options.SQL
 	base.ConnectAttributes = make(map[string]string, len(options.SQL.ConnectAttributes)+2)
@@ -106,7 +109,7 @@ func (VisibilityStoreFactory) NewVisibilityStore(
 	if err != nil {
 		return nil, closeWithError(btree.DB, fmt.Errorf("connect ParadeDB BM25 visibility route: %w", err))
 	}
-	return &VisibilityStore{btree: btree.DB, bm25: bm25.DB, indexName: cfg.IndexName, saProvider: saProvider}, nil
+	return &VisibilityStore{btree: btree.DB, bm25: bm25.DB, indexName: cfg.IndexName, saProvider: saProvider, logger: logger}, nil
 }
 
 func closeWithError(db *sqlx.DB, cause error) error {
