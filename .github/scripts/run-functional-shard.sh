@@ -7,6 +7,7 @@ if [[ $# -ne 1 ]]; then
 fi
 
 xt_driver="$1"
+xt_visibility_store="${VISIBILITY_STORE:-}" # xtemporal: pass the independent visibility backend flag to every shard
 xt_parallelism="${XT_TEST_PARALLELISM:-1}"
 xt_list="$(mktemp "${RUNNER_TEMP:-/tmp}/xt-functional-list.XXXXXX")"
 trap 'rm -f "$xt_list"' EXIT
@@ -32,5 +33,5 @@ for ((xt_start=0; xt_start<${#xt_suites[@]}; xt_start+=xt_batch_size)); do
   go run ./cmd/tools/test-runner test --gotestsum-path=.bin/gotestsum-v1.12.3 --max-attempts=3 --junitfile="$xt_report" -- \
     -tags disable_grpc_modules,test_dep -p 1 -timeout=25m -parallel="$xt_parallelism" -shuffle=on \
     -run="^(${xt_pattern})$" -coverprofile="$xt_coverage" ./tests \
-    -args -persistenceType=sql -persistenceDriver="$xt_driver"
+    -args -persistenceType=sql -persistenceDriver="$xt_driver" -visibilityStore="$xt_visibility_store"
 done

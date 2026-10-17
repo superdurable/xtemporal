@@ -84,7 +84,7 @@ func (s *AdvancedVisibilitySuite) newTestEnv(enableUnifiedQueryConverter bool, o
 	}
 	env := testcore.NewEnv(s.T(), append(baseOpts, opts...)...)
 
-	if !testcore.UseSQLVisibility() {
+	if testcore.UseESVisibility() { // xtemporal: Dex uses page tokens without Elasticsearch index settings
 		// To ensure that Elasticsearch won't return more than defaultPageSize documents,
 		// but returns error if page size on request is greater than defaultPageSize.
 		// Probably can be removed and replaced with assert on items count in response.
@@ -504,14 +504,19 @@ func (s *AdvancedVisibilitySuite) TestListWorkflow_KeywordQuery(enableUnifiedQue
 		Query:     `CustomKeywordField STARTS_WITH "justice"`,
 	}
 	resp, err = env.FrontendClient().ListWorkflowExecutions(s.Context(), listRequest)
-	s.NoError(err)
-	s.Len(resp.GetExecutions(), 1)
-	s.Equal(id, resp.Executions[0].GetExecution().GetWorkflowId())
-	s.Equal(wt, resp.Executions[0].GetType().GetName())
+	if testcore.UseParadeDBVisibility() { // xtemporal: Dex rejects keyword prefix operators
+		var invalidArgument *serviceerror.InvalidArgument
+		s.ErrorAs(err, &invalidArgument)
+	} else {
+		s.NoError(err)
+		s.Len(resp.GetExecutions(), 1)
+		s.Equal(id, resp.Executions[0].GetExecution().GetWorkflowId())
+		s.Equal(wt, resp.Executions[0].GetType().GetName())
 
-	decodedSearchAttr, err := searchattribute.Decode(resp.Executions[0].GetSearchAttributes(), nil, false)
-	s.NoError(err)
-	s.Equal(searchAttr, decodedSearchAttr)
+		decodedSearchAttr, err := searchattribute.Decode(resp.Executions[0].GetSearchAttributes(), nil, false)
+		s.NoError(err)
+		s.Equal(searchAttr, decodedSearchAttr)
+	}
 
 	listRequest = &workflowservice.ListWorkflowExecutionsRequest{
 		Namespace: env.Namespace().String(),
@@ -519,8 +524,13 @@ func (s *AdvancedVisibilitySuite) TestListWorkflow_KeywordQuery(enableUnifiedQue
 		Query:     fmt.Sprintf(`WorkflowId = %q AND CustomKeywordField NOT STARTS_WITH "justice"`, id),
 	}
 	resp, err = env.FrontendClient().ListWorkflowExecutions(s.Context(), listRequest)
-	s.NoError(err)
-	s.Empty(resp.GetExecutions())
+	if testcore.UseParadeDBVisibility() { // xtemporal: negated prefix queries are unsupported too
+		var invalidArgument *serviceerror.InvalidArgument
+		s.ErrorAs(err, &invalidArgument)
+	} else {
+		s.NoError(err)
+		s.Empty(resp.GetExecutions())
+	}
 }
 
 func (s *AdvancedVisibilitySuite) TestListWorkflow_StringQuery(enableUnifiedQueryConverter bool) {
@@ -640,6 +650,17 @@ func (s *AdvancedVisibilitySuite) TestListWorkflow_OrderBy(enableUnifiedQueryCon
 	env := s.newTestEnv(enableUnifiedQueryConverter)
 	if testcore.UseSQLVisibility() {
 		s.T().Skip("This test is only for Elasticsearch")
+	}
+	if testcore.UseParadeDBVisibility() { // xtemporal: Dex supports its fixed keyset order, not custom attribute sorting
+		for _, field := range []string{"CustomIntField", "CustomDoubleField", "CustomKeywordField", "CustomDatetimeField"} {
+			_, err := env.FrontendClient().ListWorkflowExecutions(s.Context(), &workflowservice.ListWorkflowExecutionsRequest{
+				Namespace: env.Namespace().String(), PageSize: testcore.DefaultPageSize,
+				Query: fmt.Sprintf("ORDER BY %s DESC", field),
+			})
+			var invalidArgument *serviceerror.InvalidArgument
+			s.ErrorAs(err, &invalidArgument)
+		}
+		return
 	}
 
 	id := "es-functional-list-workflow-order-by-test"
