@@ -1,6 +1,7 @@
 package paradedb
 
 import (
+	"encoding/json"
 	"math"
 	"testing"
 	"time"
@@ -25,6 +26,16 @@ func codecTypes() searchattribute.NameTypeMap {
 		"Datetime": enumspb.INDEXED_VALUE_TYPE_DATETIME,
 		"Bool":     enumspb.INDEXED_VALUE_TYPE_BOOL,
 	})
+}
+
+func TestIntCodecStoresExactIntegers(t *testing.T) {
+	value, err := normalizeSAValue(int64(2), enumspb.INDEXED_VALUE_TYPE_INT)
+	require.NoError(t, err)
+	encoded, err := json.Marshal(value)
+	require.NoError(t, err)
+	require.Equal(t, "2", string(encoded))
+	_, err = normalizeSAValue(float64(2), enumspb.INDEXED_VALUE_TYPE_INT)
+	require.Error(t, err)
 }
 
 func TestSearchAttributeCodecRoundTrip(t *testing.T) {

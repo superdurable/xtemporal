@@ -23,11 +23,11 @@ func TestRenderOperators(t *testing.T) {
 		{`KeywordField != 'x'`, `NOT (`, routeBM25},
 		{`KeywordField IN ('x', 'y')`, ` OR `, routeBM25},
 		{`KeywordField NOT IN ('x', 'y')`, `NOT (`, routeBM25},
-		{`KeywordField > 'x'`, `element.value::text >`, routeBM25},
-		{`KeywordField >= 'x'`, `element.value::text >=`, routeBM25},
-		{`KeywordField < 'x'`, `element.value::text <`, routeBM25},
-		{`KeywordField <= 'x'`, `element.value::text <=`, routeBM25},
-		{`KeywordField BETWEEN 'a' AND 'z'`, `element.value::text >=`, routeBM25},
+		{`KeywordField > 'x'`, `element.value::text COLLATE "C" >`, routeBM25},
+		{`KeywordField >= 'x'`, `element.value::text COLLATE "C" >=`, routeBM25},
+		{`KeywordField < 'x'`, `element.value::text COLLATE "C" <`, routeBM25},
+		{`KeywordField <= 'x'`, `element.value::text COLLATE "C" <=`, routeBM25},
+		{`KeywordField BETWEEN 'a' AND 'z'`, `element.value::text COLLATE "C" >=`, routeBM25},
 		{`KeywordField NOT BETWEEN 'a' AND 'z'`, `NOT (`, routeBM25},
 		{`Tags = 'x'`, `@@@ pdb.term`, routeBM25},
 		{`Tags != 'x'`, `NOT (`, routeBM25},
@@ -71,12 +71,7 @@ func TestRenderMissingArrayAndNested(t *testing.T) {
 	require.Contains(t, p.SQL, `EXISTS (SELECT 1 FROM jsonb_array_elements_text`)
 	require.Contains(t, p.SQL, `NOT (`)
 	require.Contains(t, p.SQL, ` OR `)
-	require.NotNil(t, p.Bounded)
-	require.Equal(t, boundedScanLimit, p.Bounded.Bound)
-	require.Contains(t, p.Bounded.SQL, `AS residual_match`)
-	require.Contains(t, p.Bounded.SQL, `LIMIT $`)
-	require.Contains(t, p.Bounded.FallbackSQL, `@@@`)
-	require.NotContains(t, p.Bounded.SQL, `@@@`)
+	require.Nil(t, p.Bounded)
 }
 
 func TestRenderInjectionAndFullSelect(t *testing.T) {
@@ -89,9 +84,9 @@ func TestRenderInjectionAndFullSelect(t *testing.T) {
 	for _, col := range strings.Split(strings.ReplaceAll(selectColumns, "\n", ""), ",") {
 		require.Contains(t, p.SQL, strings.TrimSpace(col))
 	}
-	name, err := quoteAttributeName("key'with quote")
+	name, err := quoteAttributeName("key_with_quote")
 	require.NoError(t, err)
-	require.Equal(t, "'key''with quote'", name)
+	require.Equal(t, "'key_with_quote'", name)
 	_, err = quoteAttributeName("bad\x00name")
 	require.Error(t, err)
 }
@@ -152,4 +147,82 @@ func TestRenderMalformedAst(t *testing.T) {
 	_, err := renderList(bad, "ns", 10, nil)
 	var arg *serviceerror.InvalidArgument
 	require.ErrorAs(t, err, &arg)
+}
+
+func TestRenderDoubleEqualityUsesTypedSQL(t *testing.T) {
+	for _, input := range []string{`FloatField = 2`, `FloatField IN (2, 3.5)`, `FloatField != 2`} {
+		t.Run(input, func(t *testing.T) {
+			q, err := testConvert(t, input, chasm.UnspecifiedArchetypeID)
+			require.NoError(t, err)
+			plan, err := renderList(q, "ns", 10, nil)
+			require.NoError(t, err)
+			require.Contains(t, plan.SQL, "::double precision")
+			require.NotContains(t, plan.SQL, `sa_number->'FloatField' @@@ pdb.term`)
+		})
+	}
+}
+
+func TestRenderBoundedEquivalence(t *testing.T) {
+	for _, tc := range []struct {
+		filter  string
+		bounded bool
+	}{
+		{`FlowType = 'approval' AND FloatField = 1`, true},
+		{`FlowType = 'approval' AND KeywordField = 'x'`, true},
+		{`FlowType = 'approval' AND IntField > 4`, false},
+	} {
+		q, err := testConvert(t, tc.filter, chasm.UnspecifiedArchetypeID)
+		require.NoError(t, err)
+		plan, err := renderList(q, "ns", 2, nil)
+		require.NoError(t, err)
+		if tc.bounded {
+			require.NotNil(t, plan.Bounded)
+			require.Contains(t, plan.Bounded.SQL, "scanned_count")
+			require.NotContains(t, plan.Bounded.SQL, "memo FROM executions_visibility")
+		} else {
+			require.Nil(t, plan.Bounded)
+		}
+	}
+}
+
+func TestRenderKeywordRangeCollation(t *testing.T) {
+	for _, tc := range []struct{ input, fragment string }{
+		{`KeywordField > 'a'`, `element.value::text COLLATE "C" >`},
+		{`KeywordField BETWEEN 'a' AND 'z'`, `element.value::text COLLATE "C" >=`},
+		{`FlowType = 'approval' AND KeywordField < 'z'`, `element.value::text COLLATE "C" <`},
+		{`WorkflowId > 'a'`, `workflow_id COLLATE "C" >`},
+		{`WorkflowType BETWEEN 'a' AND 'z'`, `workflow_type_name COLLATE "C" >=`},
+		{`RunId < 'z'`, `run_id COLLATE "C" <`},
+		{`TaskQueue >= 'a'`, `task_queue COLLATE "C" >=`},
+	} {
+		t.Run(tc.input, func(t *testing.T) {
+			q, err := testConvert(t, tc.input, chasm.UnspecifiedArchetypeID)
+			require.NoError(t, err)
+			plan, err := renderList(q, "ns", 10, nil)
+			require.NoError(t, err)
+			require.Contains(t, plan.SQL, tc.fragment)
+		})
+	}
+}
+
+func TestRenderIntRangeExtremes(t *testing.T) {
+	for _, input := range []string{`IntField > 9223372036854775807`, `IntField < -9223372036854775808`} {
+		q, err := testConvert(t, input, chasm.UnspecifiedArchetypeID)
+		require.NoError(t, err)
+		plan, err := renderList(q, "ns", 10, nil)
+		require.NoError(t, err)
+		require.Contains(t, plan.SQL, "FALSE")
+		require.NotContains(t, plan.SQL, "int8range")
+	}
+}
+
+func TestQuoteAttributeNameRejectsUnsafeNames(t *testing.T) {
+	for _, name := range []string{"9bad", "bad-name", "bad'name", "bad name", "bad.name", "éclair"} {
+		_, err := quoteAttributeName(name)
+		var invalid *serviceerror.InvalidArgument
+		require.ErrorAs(t, err, &invalid)
+	}
+	quoted, err := quoteAttributeName("Good_name9")
+	require.NoError(t, err)
+	require.Equal(t, "'Good_name9'", quoted)
 }

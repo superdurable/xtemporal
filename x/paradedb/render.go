@@ -4,10 +4,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
-	"github.com/superdurable/xtemporal/common/persistence/visibility/store/query"
 	"github.com/superdurable/xtemporal/common/searchattribute/sadefs"
 	"github.com/temporalio/sqlparser"
 	enumspb "go.temporal.io/api/enums/v1"
@@ -38,6 +38,8 @@ type listPlan struct {
 }
 
 type boundedPlan struct {
+	// SQL returns the normal list columns followed by scanned_count. A null run_id is
+	// the single count-only row when no matches are found in the scan.
 	SQL          string
 	Args         []any
 	Bound        int
@@ -190,7 +192,7 @@ func renderList(q *convertedQuery, namespaceID string, pageSize int, token []byt
 	if err != nil {
 		return nil, err
 	}
-	if r == routeBTree && containsCustom(q.predicate) && hasCorePrefix(q.predicate) && !containsTextMatch(q.predicate) {
+	if r == routeBTree && containsCustom(q.predicate) && hasCorePrefix(q.predicate) && !containsTextMatch(q.predicate) && bm25Equivalent(q.predicate) {
 		bound, err := renderBounded(q.predicate, namespaceID, pageSize, cursor)
 		if err != nil {
 			return nil, err
@@ -198,6 +200,38 @@ func renderList(q *convertedQuery, namespaceID string, pageSize int, token []byt
 		plain.Bounded = bound
 	}
 	return plain, nil
+}
+
+func bm25Equivalent(e *expression) bool {
+	if e == nil {
+		return true
+	}
+	if e.kind != atomExpr {
+		for _, child := range e.children {
+			if !bm25Equivalent(child) {
+				return false
+			}
+		}
+		return true
+	}
+	if isCoreAttribute(e.column.FieldName) {
+		return true
+	}
+	switch e.column.ValueType {
+	case enumspb.INDEXED_VALUE_TYPE_KEYWORD, enumspb.INDEXED_VALUE_TYPE_KEYWORD_LIST,
+		enumspb.INDEXED_VALUE_TYPE_DOUBLE, enumspb.INDEXED_VALUE_TYPE_BOOL:
+		return true
+	case enumspb.INDEXED_VALUE_TYPE_INT, enumspb.INDEXED_VALUE_TYPE_DATETIME:
+		switch e.op {
+		case sqlparser.EqualStr, sqlparser.NotEqualStr, sqlparser.InStr, sqlparser.NotInStr,
+			sqlparser.IsNullStr, sqlparser.IsNotNullStr:
+			return true
+		default:
+			return false
+		}
+	default:
+		return false
+	}
 }
 
 func renderListRoute(e *expression, namespaceID string, pageSize int, cursor *pageCursor, r route) (*listPlan, error) {
@@ -253,6 +287,9 @@ func renderCount(q *convertedQuery, namespaceID string) (*countPlan, error) {
 }
 
 func renderBounded(e *expression, namespaceID string, pageSize int, cursor *pageCursor) (*boundedPlan, error) {
+	if !bm25Equivalent(e) {
+		return nil, nil
+	}
 	core := coreOnly(e)
 	if core == nil || !hasCorePrefix(core) {
 		return nil, nil
@@ -276,10 +313,50 @@ func renderBounded(e *expression, namespaceID string, pageSize int, cursor *page
 	if err != nil {
 		return nil, err
 	}
+	pageArg := b.bind(pageSize)
+	columns := scanColumns(e)
+	fullColumns := qualifyColumns(selectColumns, "matched_row")
 	return &boundedPlan{
-		SQL:  fmt.Sprintf("WITH scan AS MATERIALIZED (SELECT %s FROM %s WHERE %s %s LIMIT %s) SELECT scan.*, coalesce((%s), false) AS residual_match FROM scan %s", selectColumns, visibilityTable, where, defaultOrder, boundArg, residual, defaultOrder),
+		SQL: fmt.Sprintf(`WITH scan AS MATERIALIZED (SELECT %s FROM %s WHERE %s %s LIMIT %s),
+matches AS MATERIALIZED (SELECT namespace_id, run_id, sort_close_time, start_time FROM scan WHERE coalesce((%s), false) %s LIMIT %s),
+stats AS (SELECT count(*) AS scanned_count FROM scan)
+SELECT %s, stats.scanned_count FROM stats LEFT JOIN matches ON true
+LEFT JOIN %s AS matched_row ON matched_row.namespace_id = matches.namespace_id AND matched_row.run_id = matches.run_id
+ORDER BY matches.sort_close_time DESC, matches.start_time DESC, matches.run_id COLLATE "C"`, strings.Join(columns, ", "), visibilityTable, where, defaultOrder, boundArg, residual, defaultOrder, pageArg, fullColumns, visibilityTable),
 		Args: b.args, Bound: boundedScanLimit, FallbackSQL: fallback.SQL, FallbackArgs: fallback.Args,
 	}, nil
+}
+
+func scanColumns(e *expression) []string {
+	columns := []string{"namespace_id", "run_id", "sort_close_time", "start_time"}
+	seen := map[string]bool{"namespace_id": true, "run_id": true, "sort_close_time": true, "start_time": true}
+	var collect func(*expression)
+	collect = func(e *expression) {
+		if e == nil {
+			return
+		}
+		if e.kind == atomExpr {
+			col, ok := columnForAttribute(e.column.FieldName, e.column.ValueType)
+			if ok && !seen[col] {
+				columns = append(columns, col)
+				seen[col] = true
+			}
+			return
+		}
+		for _, child := range e.children {
+			collect(child)
+		}
+	}
+	collect(e)
+	return columns
+}
+
+func qualifyColumns(columns, alias string) string {
+	parts := strings.Split(columns, ",")
+	for i, part := range parts {
+		parts[i] = alias + "." + strings.TrimSpace(part)
+	}
+	return strings.Join(parts, ", ")
 }
 
 func coreOnly(e *expression) *expression {
@@ -388,10 +465,16 @@ func (b *sqlBuilder) renderNegated(e *expression, r route) (string, error) {
 }
 
 func quoteAttributeName(name string) (string, error) {
-	if err := validateQueryName(name); err != nil {
-		return "", query.NewConverterError("%s: %s", query.InvalidSearchAttribute, name)
+	for i, r := range name {
+		if r == '_' || r >= 'A' && r <= 'Z' || r >= 'a' && r <= 'z' || i > 0 && r >= '0' && r <= '9' {
+			continue
+		}
+		return "", serviceerror.NewInvalidArgument("invalid search attribute name")
 	}
-	return "'" + strings.ReplaceAll(name, "'", "''") + "'", nil
+	if name == "" {
+		return "", serviceerror.NewInvalidArgument("invalid search attribute name")
+	}
+	return "'" + name + "'", nil
 }
 
 func (b *sqlBuilder) renderAtom(e *expression, r route) (string, error) {
@@ -426,7 +509,7 @@ func (b *sqlBuilder) renderAtom(e *expression, r route) (string, error) {
 		}
 		return match, nil
 	}
-	if r == routeBM25 {
+	if r == routeBM25 && e.column.ValueType != enumspb.INDEXED_VALUE_TYPE_DOUBLE {
 		match, indexed := b.renderIndexedJSON(path, e.column.ValueType, positiveOp, e.values)
 		if indexed {
 			if negate {
@@ -469,6 +552,20 @@ func (b *sqlBuilder) renderIndexedJSON(path string, typ enumspb.IndexedValueType
 	if cast != "bigint" {
 		return "", false
 	}
+	return b.renderIndexedIntRange(path, op, values)
+}
+
+func (b *sqlBuilder) renderIndexedIntRange(path, op string, values []any) (string, bool) {
+	if v, ok := values[0].(int64); ok {
+		switch {
+		case op == sqlparser.GreaterThanStr && v == math.MaxInt64,
+			op == sqlparser.LessThanStr && v == math.MinInt64:
+			return "FALSE", true
+		case op == sqlparser.GreaterEqualStr && v == math.MinInt64,
+			op == sqlparser.LessEqualStr && v == math.MaxInt64:
+			return "(" + path + " IS NOT NULL AND " + path + " <> '[]'::jsonb)", true
+		}
+	}
 	var bounds string
 	switch op {
 	case sqlparser.GreaterThanStr:
@@ -480,6 +577,17 @@ func (b *sqlBuilder) renderIndexedJSON(path string, typ enumspb.IndexedValueType
 	case sqlparser.LessEqualStr:
 		bounds = fmt.Sprintf("int8range(NULL, %s::bigint, '(]')", b.bind(values[0]))
 	case sqlparser.BetweenStr:
+		low, lowOK := values[0].(int64)
+		high, highOK := values[1].(int64)
+		if lowOK && highOK {
+			if low > high {
+				return "FALSE", true
+			}
+			if high == math.MaxInt64 {
+				bounds = fmt.Sprintf("int8range(%s::bigint, NULL, '[)')", b.bind(low))
+				break
+			}
+		}
 		bounds = fmt.Sprintf("int8range(%s::bigint, %s::bigint, '[]')", b.bind(values[0]), b.bind(values[1]))
 	default:
 		return "", false
@@ -508,7 +616,7 @@ func (b *sqlBuilder) renderCoreAtom(col string, e *expression) (string, error) {
 		return col + " IS NOT NULL", nil
 	}
 	op, negate := positiveOperator(e.op)
-	match, err := b.renderScalarComparison(col, op, e.values)
+	match, err := b.renderScalarComparison(col, op, e.values, e.column.ValueType == enumspb.INDEXED_VALUE_TYPE_KEYWORD)
 	if err != nil {
 		return "", err
 	}
@@ -518,7 +626,11 @@ func (b *sqlBuilder) renderCoreAtom(col string, e *expression) (string, error) {
 	return match, nil
 }
 
-func (b *sqlBuilder) renderScalarComparison(col, op string, values []any) (string, error) {
+func (b *sqlBuilder) renderScalarComparison(col, op string, values []any, textRange bool) (string, error) {
+	if textRange && (op == sqlparser.LessThanStr || op == sqlparser.LessEqualStr ||
+		op == sqlparser.GreaterThanStr || op == sqlparser.GreaterEqualStr || op == sqlparser.BetweenStr) {
+		col += ` COLLATE "C"`
+	}
 	switch op {
 	case sqlparser.EqualStr, sqlparser.LessThanStr, sqlparser.LessEqualStr, sqlparser.GreaterThanStr, sqlparser.GreaterEqualStr:
 		return col + " " + op + " " + b.bind(values[0]), nil
@@ -557,11 +669,11 @@ func (b *sqlBuilder) renderJSONComparison(path string, typ enumspb.IndexedValueT
 	if cast != "text" {
 		scalar = fmt.Sprintf("(CASE WHEN jsonb_typeof(%s) = '%s' THEN (%s #>> '{}')::%s ELSE NULL END)", path, jsonType(typ), path, cast)
 	}
-	matchScalar, err := b.renderScalarComparison(scalar, op, values)
+	matchScalar, err := b.renderScalarComparison(scalar, op, values, cast == "text")
 	if err != nil {
 		return "", err
 	}
-	matchArray, err := b.renderScalarComparison("element.value::"+cast, op, values)
+	matchArray, err := b.renderScalarComparison("element.value::"+cast, op, values, cast == "text")
 	if err != nil {
 		return "", err
 	}

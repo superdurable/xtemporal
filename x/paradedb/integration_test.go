@@ -48,10 +48,16 @@ func TestParadeDBPlans(t *testing.T) {
 		{"int array", `IntField >= 5`, []string{"r2", "r5"}, routeBM25},
 		{"int between array", `IntField BETWEEN 3 AND 5`, []string{"r1", "r2"}, routeBM25},
 		{"int not between array", `IntField NOT BETWEEN 3 AND 5`, []string{"r3", "r5"}, routeBM25},
+		{"int equality", `IntField = 2`, []string{"r3", "r5"}, routeBM25},
+		{"int in", `IntField IN (2, 3)`, []string{"r1", "r3", "r5"}, routeBM25},
+		{"int overflow impossible", `IntField > 9223372036854775807`, []string{}, routeBM25},
+		{"int overflow unbounded", `IntField <= 9223372036854775807`, []string{"r1", "r2", "r3", "r5"}, routeBM25},
+		{"int upper between", `IntField BETWEEN 9223372036854775807 AND 9223372036854775807`, []string{}, routeBM25},
 		{"double", `FloatField > 2.0`, []string{"r2"}, routeBM25},
 		{"boolean", `Flag = true`, []string{"r1", "r3"}, routeBM25},
 		{"boolean negative", `Flag != true`, []string{"r2", "r5"}, routeBM25},
 		{"datetime", `DateField >= '2026-01-02T00:00:00Z'`, []string{"r2"}, routeBM25},
+		{"datetime equality", `DateField = '2026-01-01T00:00:00Z'`, []string{"r1"}, routeBM25},
 		{"is null", `Tags IS NULL`, []string{"r3"}, routeBM25},
 		{"is not null", `Tags IS NOT NULL`, []string{"r1", "r2", "r5"}, routeBM25},
 		{"nested", `FlowType = 'approval' AND (KeywordField = 'red' OR Tags = 'y')`, []string{"r1", "r2", "r5"}, routeBTree},
@@ -70,7 +76,7 @@ func TestParadeDBPlans(t *testing.T) {
 			got := queryRunIDs(ctx, t, conn, plan.SQL, plan.Args)
 			sort.Strings(got)
 			sort.Strings(tc.want)
-			require.Equal(t, tc.want, got)
+			require.ElementsMatch(t, tc.want, got)
 			count, countErr := renderCount(q, "ns-a")
 			require.NoError(t, countErr)
 			var n int64
@@ -78,6 +84,32 @@ func TestParadeDBPlans(t *testing.T) {
 			require.Equal(t, int64(len(tc.want)), n)
 		})
 	}
+
+	t.Run("double whole number terms", func(t *testing.T) {
+		for _, row := range []struct{ run, number string }{{"whole", `2`}, {"decimal", `1.0`}, {"fraction", `3.5`}} {
+			_, insertErr := conn.Exec(ctx, `INSERT INTO executions_visibility
+                (namespace_id, run_id, workflow_id, workflow_type_name, status, start_time, execution_time, close_time, sa_number)
+                VALUES ('ns-double',$1,$1,'Engine',1,'2026-01-01','2026-01-01','2026-01-01',$2::jsonb)`, row.run, `{"FloatField":`+row.number+`}`)
+			require.NoError(t, insertErr)
+		}
+		for _, tc := range []struct {
+			filter string
+			want   []string
+		}{
+			{`FloatField = 2`, []string{"whole"}},
+			{`FloatField = 1`, []string{"decimal"}},
+			{`FloatField IN (2, 3.5)`, []string{"fraction", "whole"}},
+			{`FloatField != 2`, []string{"decimal", "fraction"}},
+		} {
+			q, convertErr := testConvert(t, tc.filter, chasm.UnspecifiedArchetypeID)
+			require.NoError(t, convertErr)
+			plan, renderErr := renderList(q, "ns-double", 10, nil)
+			require.NoError(t, renderErr)
+			got := queryRunIDs(ctx, t, conn, plan.SQL, plan.Args)
+			sort.Strings(got)
+			require.Equal(t, tc.want, got)
+		}
+	})
 
 	t.Run("keyset", func(t *testing.T) {
 		q, convertErr := testConvert(t, `FlowType = 'approval'`, chasm.UnspecifiedArchetypeID)
@@ -105,18 +137,18 @@ func TestParadeDBPlans(t *testing.T) {
 		rows, queryErr := conn.Query(ctx, plan.Bounded.SQL, plan.Bounded.Args...)
 		require.NoError(t, queryErr)
 		var matches []string
-		var scanned int
+		var scanned int64
 		for rows.Next() {
 			values, valuesErr := rows.Values()
 			require.NoError(t, valuesErr)
-			scanned++
-			if values[len(values)-1].(bool) {
+			scanned = values[len(values)-1].(int64)
+			if values[1] != nil {
 				matches = append(matches, values[1].(string))
 			}
 		}
 		require.NoError(t, rows.Err())
 		rows.Close()
-		require.Equal(t, 3, scanned)
+		require.Equal(t, int64(3), scanned)
 		sort.Strings(matches)
 		require.Equal(t, []string{"r1", "r5"}, matches)
 		fallback := queryRunIDs(ctx, t, conn, plan.Bounded.FallbackSQL, plan.Bounded.FallbackArgs)
@@ -225,21 +257,78 @@ func TestParadeDBPlans(t *testing.T) {
 		require.NotNil(t, plan.Bounded)
 		rows, queryErr := conn.Query(ctx, plan.Bounded.SQL, plan.Bounded.Args...)
 		require.NoError(t, queryErr)
-		var scanned, matched int
+		var scanned int64
+		var matched int
 		for rows.Next() {
 			values, valuesErr := rows.Values()
 			require.NoError(t, valuesErr)
-			scanned++
-			if values[len(values)-1].(bool) {
+			scanned = values[len(values)-1].(int64)
+			if values[1] != nil {
 				matched++
 			}
 		}
 		require.NoError(t, rows.Err())
 		rows.Close()
-		require.Equal(t, boundedScanLimit, scanned)
+		require.Equal(t, int64(boundedScanLimit), scanned)
 		require.Zero(t, matched)
 		require.Equal(t, []string{"target"}, queryRunIDs(ctx, t, conn,
 			plan.Bounded.FallbackSQL, plan.Bounded.FallbackArgs))
+		commonQuery, convertErr := testConvert(t, `FlowType = 'approval' AND KeywordField = 'common'`, chasm.UnspecifiedArchetypeID)
+		require.NoError(t, convertErr)
+		commonPlan, renderErr := renderList(commonQuery, "ns-bound", 1, nil)
+		require.NoError(t, renderErr)
+		require.NotNil(t, commonPlan.Bounded)
+		commonRows, queryErr := conn.Query(ctx, commonPlan.Bounded.SQL, commonPlan.Bounded.Args...)
+		require.NoError(t, queryErr)
+		var count int
+		for commonRows.Next() {
+			values, valuesErr := commonRows.Values()
+			require.NoError(t, valuesErr)
+			require.NotNil(t, values[1])
+			require.Equal(t, int64(boundedScanLimit), values[len(values)-1])
+			count++
+		}
+		require.NoError(t, commonRows.Err())
+		commonRows.Close()
+		require.Equal(t, 1, count)
+	})
+	t.Run("double bounded equivalence", func(t *testing.T) {
+		_, updateErr := conn.Exec(ctx, `UPDATE executions_visibility SET sa_number = '{"FloatField":2}'::jsonb WHERE namespace_id = 'ns-bound' AND run_id LIKE 'candidate-%'`)
+		require.NoError(t, updateErr)
+		_, updateErr = conn.Exec(ctx, `UPDATE executions_visibility SET sa_number = '{"FloatField":1}'::jsonb WHERE namespace_id = 'ns-bound' AND run_id = 'target'`)
+		require.NoError(t, updateErr)
+		q, convertErr := testConvert(t, `FlowType = 'approval' AND FloatField = 1`, chasm.UnspecifiedArchetypeID)
+		require.NoError(t, convertErr)
+		for _, tc := range []struct {
+			namespace string
+			want      []string
+			scanned   int64
+		}{{"ns-a", []string{"r5"}, 3}, {"ns-bound", []string{"target"}, boundedScanLimit}} {
+			plan, renderErr := renderList(q, tc.namespace, 1, nil)
+			require.NoError(t, renderErr)
+			require.NotNil(t, plan.Bounded)
+			full := queryRunIDs(ctx, t, conn, plan.SQL, plan.Args)
+			require.Equal(t, tc.want, full)
+			rows, queryErr := conn.Query(ctx, plan.Bounded.SQL, plan.Bounded.Args...)
+			require.NoError(t, queryErr)
+			var got []string
+			var scanned int64
+			for rows.Next() {
+				values, valuesErr := rows.Values()
+				require.NoError(t, valuesErr)
+				scanned = values[len(values)-1].(int64)
+				if values[1] != nil {
+					got = append(got, values[1].(string))
+				}
+			}
+			require.NoError(t, rows.Err())
+			rows.Close()
+			require.Equal(t, tc.scanned, scanned)
+			if scanned == boundedScanLimit && len(got) < 1 {
+				got = queryRunIDs(ctx, t, conn, plan.Bounded.FallbackSQL, plan.Bounded.FallbackArgs)
+			}
+			require.Equal(t, full, got)
+		}
 	})
 	t.Run("bounded nullable residual", func(t *testing.T) {
 		_, insertErr := conn.Exec(ctx, `INSERT INTO executions_visibility
@@ -256,7 +345,8 @@ func TestParadeDBPlans(t *testing.T) {
 		require.True(t, rows.Next())
 		values, valuesErr := rows.Values()
 		require.NoError(t, valuesErr)
-		require.Equal(t, false, values[len(values)-1])
+		require.Nil(t, values[1])
+		require.Equal(t, int64(1), values[len(values)-1])
 		require.False(t, rows.Next())
 		require.NoError(t, rows.Err())
 		rows.Close()

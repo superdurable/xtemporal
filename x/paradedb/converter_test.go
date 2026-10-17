@@ -112,6 +112,26 @@ func TestConvertRejects(t *testing.T) {
 	}
 }
 
+func TestConvertIntFractions(t *testing.T) {
+	for _, input := range []string{
+		`IntField = 2.9`,
+		`IntField < 3.5`,
+		`HistoryLength = 2.9`,
+		`HistorySizeBytes < 3.5`,
+		`ExecutionDuration = 2.9`,
+		`StateTransitionCount < 3.5`,
+	} {
+		t.Run(input, func(t *testing.T) {
+			_, err := testConvert(t, input, chasm.UnspecifiedArchetypeID)
+			var invalid *serviceerror.InvalidArgument
+			require.ErrorAs(t, err, &invalid)
+		})
+	}
+	q, err := testConvert(t, `IntField = 2.0`, chasm.UnspecifiedArchetypeID)
+	require.NoError(t, err)
+	require.Equal(t, int64(2), q.predicate.children[len(q.predicate.children)-1].values[0])
+}
+
 func TestConvertCHASMMapper(t *testing.T) {
 	mapper := chasm.NewTestVisibilitySearchAttributesMapper(
 		map[string]string{"ChasmField": "ChasmAlias"},

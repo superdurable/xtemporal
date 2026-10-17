@@ -2,7 +2,7 @@ package paradedb
 
 import (
 	"errors"
-	"strings"
+	"math"
 	"time"
 
 	"github.com/superdurable/xtemporal/chasm"
@@ -156,6 +156,14 @@ func normalizeQueryValue(col *query.SAColumn, value any) (any, error) {
 			return float64(v), nil
 		}
 	}
+	if col.ValueType == enumspb.INDEXED_VALUE_TYPE_INT {
+		if v, ok := value.(float64); ok {
+			if math.Trunc(v) != v || v < -0x1p63 || v >= 0x1p63 {
+				return nil, query.NewConverterError("%s: fractional or out-of-range Int value for %s", query.InvalidExpressionErrMessage, col.Alias)
+			}
+			return int64(v), nil
+		}
+	}
 	return value, nil
 }
 
@@ -237,22 +245,8 @@ func convertQuery(
 		if out.groupBy != sadefs.ExecutionStatus && out.groupBy != sadefs.TemporalNamespaceDivision {
 			return nil, invalidQueryError(query.NewConverterError("%s: 'GROUP BY' %s", query.NotSupportedErrMessage, out.groupBy))
 		}
-		if out.groupBy == sadefs.TemporalNamespaceDivision && !c.SeenNamespaceDivision() && archetypeID == chasm.UnspecifiedArchetypeID {
-			out.predicate = stripImplicitDivision(out.predicate)
-		}
 	}
 	return out, nil
-}
-
-func stripImplicitDivision(e *expression) *expression {
-	if e != nil && e.kind == andExpr && len(e.children) == 2 && e.children[0].kind == atomExpr &&
-		e.children[0].column.FieldName == sadefs.TemporalNamespaceDivision && e.children[0].op == sqlparser.IsNullStr {
-		return e.children[1]
-	}
-	if e != nil && e.kind == atomExpr && e.column.FieldName == sadefs.TemporalNamespaceDivision && e.op == sqlparser.IsNullStr {
-		return nil
-	}
-	return e
 }
 
 func invalidQueryError(err error) error {
@@ -261,11 +255,4 @@ func invalidQueryError(err error) error {
 		return converterErr.ToInvalidArgument()
 	}
 	return err
-}
-
-func validateQueryName(name string) error {
-	if name == "" || strings.ContainsAny(name, "\x00\n\r") {
-		return errors.New("invalid search attribute name")
-	}
-	return nil
 }
