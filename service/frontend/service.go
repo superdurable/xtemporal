@@ -87,7 +87,8 @@ type Config struct {
 	MaxBadBinaries dynamicconfig.IntPropertyFnWithNamespaceFilter
 
 	// security protection settings
-	DisableListVisibilityByFilter dynamicconfig.BoolPropertyFnWithNamespaceFilter
+	DisableListVisibilityByFilter  dynamicconfig.BoolPropertyFnWithNamespaceFilter
+	DisableCountWorkflowExecutions dynamicconfig.BoolPropertyFnWithNamespaceFilter
 
 	// size limit system protection
 	BlobSizeLimitError dynamicconfig.IntPropertyFnWithNamespaceFilter
@@ -328,6 +329,7 @@ func NewConfig(
 		ReachabilityQuerySetDurationSinceDefault: dynamicconfig.ReachabilityQuerySetDurationSinceDefault.Get(dc),
 		MaxBadBinaries:                           dynamicconfig.FrontendMaxBadBinaries.Get(dc),
 		DisableListVisibilityByFilter:            dynamicconfig.DisableListVisibilityByFilter.Get(dc),
+		DisableCountWorkflowExecutions:           dynamicconfig.DisableCountWorkflowExecutions.Get(dc),
 		BlobSizeLimitError:                       dynamicconfig.BlobSizeLimitError.Get(dc),
 		BlobSizeLimitWarn:                        dynamicconfig.BlobSizeLimitWarn.Get(dc),
 		MemoSizeLimitError:                       dynamicconfig.MemoSizeLimitError.Get(dc),

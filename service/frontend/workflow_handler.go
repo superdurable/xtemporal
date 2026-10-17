@@ -2869,6 +2869,10 @@ func (wh *WorkflowHandler) CountWorkflowExecutions(ctx context.Context, request 
 	if request == nil {
 		return nil, errRequestNotSet
 	}
+	// xtemporal: Keep the visibility manager available to internal callers.
+	if wh.config.DisableCountWorkflowExecutions(request.GetNamespace()) {
+		return nil, serviceerror.NewUnimplemented("CountWorkflowExecutions is disabled for this namespace")
+	}
 
 	namespaceName := namespace.Name(request.GetNamespace())
 	namespaceID, err := wh.namespaceRegistry.GetNamespaceID(namespaceName)
@@ -5295,6 +5299,10 @@ func (wh *WorkflowHandler) CountSchedules(
 
 	if request == nil {
 		return nil, errRequestNotSet
+	}
+	// xtemporal: CountSchedules also counts through visibility in the V1 path.
+	if wh.config.DisableCountWorkflowExecutions(request.GetNamespace()) {
+		return nil, serviceerror.NewUnimplemented("CountSchedules is disabled for this namespace")
 	}
 
 	if !wh.config.EnableSchedules(request.Namespace) {

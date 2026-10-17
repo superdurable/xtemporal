@@ -36,3 +36,7 @@ To release fork changes on the same upstream version, push an annotated tag `vX.
 ## Authentication
 
 - [Revocable JWT API keys](jti-denylist.md)
+
+## Configuration
+
+- [Dex dynamic config profile](dex-profile.md)
