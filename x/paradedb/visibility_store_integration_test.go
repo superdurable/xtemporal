@@ -3,7 +3,6 @@ package paradedb
 import (
 	"context"
 	"math"
-	"os"
 	"testing"
 	"time"
 
@@ -26,17 +25,13 @@ func (integrationProvider) GetSearchAttributes(string, bool) (searchattribute.Na
 }
 
 func TestParadeDBVisibilityStoreIntegration(t *testing.T) {
-	if os.Getenv("PARADEDB_TEST") != "1" {
-		t.Skip("set PARADEDB_TEST=1 to run ParadeDB integration test")
-	}
-	port := os.Getenv("POSTGRES_PORT")
-	require.NotEmpty(t, port)
+	port, dbName := paradeDBTestDatabase(t)
 	cfg := config.CustomDatastoreConfig{
 		Name: StoreName, IndexName: "dex_visibility",
 		Options: map[string]any{"profile": "dex", "sql": map[string]any{
 			"pluginName": "postgres12_pgx", "connectAddr": "127.0.0.1:" + port,
-			"databaseName": "visibility", "connectProtocol": "tcp",
-			"user": "postgres", "password": "postgres", "maxConns": 4,
+			"databaseName": dbName, "connectProtocol": "tcp",
+			"user": "temporal", "password": "temporal", "maxConns": 4,
 		}},
 	}
 	opened, err := (VisibilityStoreFactory{}).NewVisibilityStore(cfg, integrationProvider{}, nil, nil, nil, nil, nil, nil)
@@ -44,8 +39,6 @@ func TestParadeDBVisibilityStoreIntegration(t *testing.T) {
 	s := opened.(*VisibilityStore)
 	t.Cleanup(s.Close)
 	ctx := context.Background()
-	_, err = s.btree.ExecContext(ctx, `TRUNCATE executions_visibility`)
-	require.NoError(t, err)
 
 	var jit, planMode string
 	require.NoError(t, s.btree.GetContext(ctx, &jit, `SHOW jit`))
@@ -145,19 +138,18 @@ func TestParadeDBVisibilityStoreIntegration(t *testing.T) {
 	badBase.TaskID = 13
 	badAttrs := &commonpb.SearchAttributes{IndexedFields: map[string]*commonpb.Payload{"FlowType": badFlow}}
 	badBase.SearchAttributes = badAttrs
-	err = s.UpsertWorkflowExecution(ctx, &store.InternalUpsertWorkflowExecutionRequest{InternalVisibilityRequestBase: &badBase})
-	require.ErrorAs(t, err, new(*serviceerror.InvalidArgument))
+	// A list-valued FlowType is skipped, not stored, and the rest of the row is still written.
+	require.NoError(t, s.UpsertWorkflowExecution(ctx, &store.InternalUpsertWorkflowExecutionRequest{InternalVisibilityRequestBase: &badBase}))
+	var skippedFlow *string
+	require.NoError(t, s.btree.GetContext(ctx, &skippedFlow, `SELECT flow_type FROM executions_visibility WHERE run_id = 'run' AND _version = 13`))
+	require.Nil(t, skippedFlow)
 
 	require.NoError(t, s.DeleteWorkflowExecution(ctx, &manager.VisibilityDeleteWorkflowExecutionRequest{NamespaceID: namespace.ID("namespace"), RunID: "run", TaskID: math.MaxInt64}))
 	_, err = s.GetWorkflowExecution(ctx, &manager.GetWorkflowExecutionRequest{NamespaceID: namespace.ID("namespace"), RunID: "run"})
 	require.ErrorAs(t, err, new(*serviceerror.NotFound))
 
-	_, err = s.btree.ExecContext(ctx, `UPDATE schema_version SET curr_version = '1.14' WHERE db_name = 'visibility'`)
+	_, err = s.btree.ExecContext(ctx, `UPDATE schema_version SET curr_version = '1.14' WHERE db_name = $1`, dbName)
 	require.NoError(t, err)
-	t.Cleanup(func() {
-		_, restoreErr := s.btree.ExecContext(context.Background(), `UPDATE schema_version SET curr_version = '2.0' WHERE db_name = 'visibility'`)
-		require.NoError(t, restoreErr)
-	})
 	_, err = (VisibilityStoreFactory{}).NewVisibilityStore(cfg, integrationProvider{}, nil, nil, nil, nil, nil, nil)
 	require.ErrorContains(t, err, "requires schema version 2.0")
 }

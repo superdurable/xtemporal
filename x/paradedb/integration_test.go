@@ -2,9 +2,6 @@ package paradedb
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -17,44 +14,16 @@ import (
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/namespace"
 	"github.com/superdurable/xtemporal/common/searchattribute"
-	"github.com/superdurable/xtemporal/common/testing/await"
 	enumspb "go.temporal.io/api/enums/v1"
 )
 
 func TestParadeDBPlans(t *testing.T) {
-	if os.Getenv("PARADEDB_TEST") != "1" {
-		t.Skip("PARADEDB_TEST=1 enables ParadeDB integration tests")
-	}
 	ctx := context.Background()
-	dsn := os.Getenv("PARADEDB_TEST_DSN")
-	if dsn == "" {
-		dsn = "postgres://postgres:postgres@127.0.0.1:56693/postgres?sslmode=disable"
-	}
-	var admin *pgx.Conn
-	await.Require(ctx, t, func(a *await.T) {
-		conn, connectErr := pgx.Connect(a.Context(), dsn)
-		require.NoError(a, connectErr)
-		admin = conn
-	}, 30*time.Second, 200*time.Millisecond)
-	defer func() { require.NoError(t, admin.Close(ctx)) }()
-	dbName := fmt.Sprintf("p4_query_%d", time.Now().UnixNano())
-	_, err := admin.Exec(ctx, "CREATE DATABASE "+dbName)
-	require.NoError(t, err)
-	defer func() {
-		_, dropErr := admin.Exec(ctx, "DROP DATABASE "+dbName+" WITH (FORCE)")
-		require.NoError(t, dropErr)
-	}()
-	config, err := pgx.ParseConfig(dsn)
-	require.NoError(t, err)
-	config.Database = dbName
-	conn, err := pgx.ConnectConfig(ctx, config)
+	port, dbName := paradeDBTestDatabase(t)
+	conn, err := pgx.Connect(ctx, paradeDBTestDSN(port, dbName))
 	require.NoError(t, err)
 	defer func() { require.NoError(t, conn.Close(ctx)) }()
 	_, err = conn.Exec(ctx, "SET plan_cache_mode = force_custom_plan")
-	require.NoError(t, err)
-	schema, err := os.ReadFile(filepath.Join("..", "..", "schema", "paradedb", "visibility", "schema.sql"))
-	require.NoError(t, err)
-	_, err = conn.Exec(ctx, string(schema))
 	require.NoError(t, err)
 	seedParadeDB(ctx, t, conn)
 

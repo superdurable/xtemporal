@@ -101,7 +101,7 @@ jobs:
         run: docker compose -f "$DOCKER_COMPOSE_FILE" down --volumes
 
   paradedb-persistence-test:
-    name: ParadeDB schema tests
+    name: ParadeDB schema and store tests
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     env:
@@ -137,6 +137,8 @@ jobs:
             docker compose -f develop/docker-compose/paradedb/docker-compose.yml exec -T paradedb pg_dump -U temporal -d "$database" --schema-only --no-owner --no-privileges --no-comments --restrict-key=0123456789abcdef0123456789abcdef | sed "s/${database}/<database>/g" > "/tmp/${database}.schema"
           done
           diff -u /tmp/paradedb_setup.schema /tmp/paradedb_update.schema
+      - name: Run ParadeDB visibility store tests
+        run: PARADEDB_TEST=1 go test -tags test_dep -count=1 ./x/paradedb/...
       - name: Show ParadeDB logs
         if: failure()
         run: docker compose -f develop/docker-compose/paradedb/docker-compose.yml logs --no-color paradedb
