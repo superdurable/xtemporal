@@ -109,7 +109,7 @@ def explain_section(root):
 
 def worst_section(root):
     lines = []
-    for name, label in (('worst.json', 'First run (cold caches after the mixed phases)'), ('worst-rerun.json', 'Rerun (warm caches)')):
+    for name, label in (('worst-idle.json', 'Idle, no writers, BM25 merged (29 segments)'), ('worst.json', 'Under writers, first run (right after the mixed phases)'), ('worst-rerun.json', 'Under writers, rerun')):
         lines += worst_one(root, name, label)
     return lines
 

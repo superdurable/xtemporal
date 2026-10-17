@@ -1,0 +1,1 @@
+{"bm25_segments":170,"heap_bytes":11506221056,"index_bytes":{"by_flow_type":2210340864,"by_flow_type_status":1864564736,"by_namespace_division":1720320,"by_workflow_id":947036160,"default_idx":1908875264,"executions_visibility_pkey":1719320576,"visibility_core_bm25":3042508800},"live_rows_estimate":12731188,"toast_bytes":8192,"tombstone_bytes":57057280,"tombstone_rows":240870}

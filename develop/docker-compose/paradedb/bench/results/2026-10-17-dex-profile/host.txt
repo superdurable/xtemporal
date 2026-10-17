@@ -1,0 +1,10 @@
+date: 2026-10-16T23:27:41Z
+cpus: 4
+model name	: Intel(R) Xeon(R) Processor @ 2.80GHz
+               total        used        free      shared  buff/cache   available
+Mem:              15           4           0           4          15          10
+/dev/vda        252G   32G  7.1G  82% /
+docker 29.8.2
+image: paradedb/paradedb:v0.26.1-pg17
+shared_buffers: 4GB effective_cache_size: 10GB
+load generator: same host as the database
