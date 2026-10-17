@@ -1,7 +1,12 @@
 -- Dex-profile visibility schema for ParadeDB 0.26.1.
 -- Version 2.0 requires a fresh database.
 
-CREATE EXTENSION IF NOT EXISTS pg_search;
+DO LANGUAGE 'plpgsql' $$
+BEGIN
+  IF (NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_search')) THEN
+    CREATE EXTENSION pg_search;
+  END IF;
+END $$;
 
 CREATE TABLE executions_visibility (
     namespace_id text NOT NULL,

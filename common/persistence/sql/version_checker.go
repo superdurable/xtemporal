@@ -1,8 +1,6 @@
 package sql
 
 import (
-	"errors"
-
 	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/log"
 	"github.com/superdurable/xtemporal/common/metrics"
@@ -17,11 +15,6 @@ func VerifyCompatibleVersion(
 	r resolver.ServiceResolver,
 	logger log.Logger,
 ) error {
-	for _, name := range []string{cfg.VisibilityStore, cfg.SecondaryVisibilityStore} { // xtemporal: reserve ParadeDB SQL plugin for schema tooling
-		if ds, ok := cfg.DataStores[name]; ok && ds.SQL != nil && ds.SQL.PluginName == "paradedb" {
-			return errors.New("the ParadeDB visibility store is configured through customDatastore (paradedb-dex); the paradedb SQL plugin is for schema tooling only")
-		}
-	}
 
 	if err := checkMainDatabase(cfg, r, logger); err != nil {
 		return err

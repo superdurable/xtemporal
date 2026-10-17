@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/superdurable/xtemporal/common/config"
 	"github.com/superdurable/xtemporal/common/persistence/sql/sqlplugin"
 )
 
@@ -42,5 +43,12 @@ func TestVerifyVersion(t *testing.T) {
 		} else {
 			require.NoError(t, err)
 		}
+	}
+}
+
+func TestCreateDBRejectsServerDatabases(t *testing.T) {
+	for _, kind := range []sqlplugin.DbKind{sqlplugin.DbKindMain, sqlplugin.DbKindVisibility} {
+		_, err := (&plugin{}).CreateDB(kind, &config.SQL{PluginName: PluginName}, nil, nil, nil)
+		require.ErrorIs(t, err, errSchemaToolingOnly)
 	}
 }

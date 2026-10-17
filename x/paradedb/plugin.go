@@ -14,6 +14,10 @@ import (
 
 const PluginName = "paradedb"
 
+// The server reads ParadeDB visibility through its custom datastore store; this SQL plugin only lets
+// the SQL tool manage the schema, so it refuses the main and visibility databases a server opens.
+var errSchemaToolingOnly = errors.New("the ParadeDB visibility store is configured through customDatastore (paradedb-dex); the paradedb SQL plugin is for schema tooling only")
+
 type plugin struct{}
 
 var _ sqlplugin.Plugin = (*plugin)(nil)
@@ -33,6 +37,9 @@ func (*plugin) CreateDB(
 	l log.Logger,
 	mh metrics.Handler,
 ) (sqlplugin.GenericDB, error) {
+	if dbKind != sqlplugin.DbKindUnknown {
+		return nil, errSchemaToolingOnly
+	}
 	pgConfig := *cfg
 	pgConfig.PluginName = postgresql.PluginNamePGX
 	pgDB, err := sql.NewSQLDB(dbKind, &pgConfig, r, l, mh)
