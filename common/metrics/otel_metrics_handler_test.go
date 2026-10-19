@@ -192,6 +192,8 @@ func TestMeter(t *testing.T) {
 		cmpopts.SortSlices(func(x, y metricdata.Metrics) bool {
 			return x.Name < y.Name
 		}),
+		// xtemporal: Gauge exemplars can be nil or empty depending on collection timing.
+		cmp.FilterValues(func(_, _ []metricdata.Exemplar[float64]) bool { return true }, cmpopts.EquateEmpty()),
 		cmpopts.IgnoreFields(metricdata.DataPoint[int64]{}, "StartTime", "Time"),
 		cmpopts.IgnoreFields(metricdata.DataPoint[float64]{}, "StartTime", "Time"),
 		cmpopts.IgnoreFields(metricdata.HistogramDataPoint[int64]{}, "StartTime", "Time", "Bounds"),
